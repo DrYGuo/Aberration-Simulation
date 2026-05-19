@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aberration-simulation"
+version = "0.1.0"
+description = "Refactored aberrated electron probe simulation from notebook code."
+requires-python = ">=3.7"
+dependencies = [
+  "numpy>=1.20",
+  "scipy>=1.7",
+  "matplotlib>=3.4",
+  "h5py>=3.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
