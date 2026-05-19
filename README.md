@@ -47,7 +47,13 @@ This writes PNG files under `outputs/plots/`.
 
 ## Run on Colab GPU
 
-Open `notebooks/colab_gpu_smoke_test.ipynb` in Google Colab, choose a GPU runtime, and run the cells. The notebook checks `nvidia-smi`, installs CuPy if needed, verifies the active backend, runs the smoke test, and displays the generated line-profile plots.
+Open `notebooks/colab_gpu_smoke_test.ipynb` in Google Colab, choose a GPU runtime, and run the cells. The notebook clones or pulls the latest `main` branch from GitHub, checks `nvidia-smi`, installs CuPy if needed, verifies the active backend, runs the smoke test, and displays the generated line-profile plots.
+
+Direct Colab URL:
+
+```text
+https://colab.research.google.com/github/DrYGuo/Aberration-Simulation/blob/main/notebooks/colab_gpu_smoke_test.ipynb
+```
 
 For a Jupyter/VS Code notebook smoke test, run `notebooks/gpu_smoke_test.ipynb`. It uses the same project modules, prints whether CuPy is active, runs the reduced coefficient grid, and displays probe images plus line profiles inline.
 
