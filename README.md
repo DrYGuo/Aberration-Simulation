@@ -1,5 +1,7 @@
 # Aberration Simulation
 
+Simulation of electron probes with aberrations under GPU parallel computing.
+
 Refactored Python project from the notebook:
 
 `Another copy of Batch process of Modularised code for GPU parallel computing of aberrated probes.ipynb`
