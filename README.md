@@ -36,7 +36,7 @@ For GPU acceleration, install the CuPy package that matches your CUDA version se
 python scripts/run_smoke_test.py
 ```
 
-The smoke test uses 150 targeted cases: one no-aberration baseline, ten `C3`-only combinations, and sixty-four `A1`-only combinations spanning multiple amplitudes and phases, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, and the two requested C1-offset conditions.
+The smoke test uses 222 targeted cases: one no-aberration baseline, ten `C3`-only combinations, sixty-four `A1`-only combinations, and thirty-six `A2`-only combinations spanning multiple amplitudes and phases, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, 3-fold astigmatism, and the two requested C1-offset conditions.
 
 This writes:
 
@@ -73,4 +73,4 @@ python scripts/check_backend.py
 
 ## Notes
 
-The smoke test follows the original notebook sampling: `pix_dim=(256, 256)`, `real_dim=(1280, 1280)`, `eV=0.8e3`, `app=30 mrad`, Gaussian blurring with `Sigma=2`, and line-profile sampling with radius `r=80` over 36 angular directions. Increase the coefficient sequences in `scripts/run_smoke_test.py` only after this run succeeds.
+The smoke test follows the original notebook sampling: `pix_dim=(256, 256)`, `real_dim=(1280, 1280)`, `eV=0.8e3`, `app=30 mrad`, Gaussian blurring with `Sigma=2`, and line-profile sampling with radius `r=80` over 36 angular directions. `Sigma` is the Gaussian standard deviation in image pixels; with this sampling it corresponds to about `1.0 nm`. Increase the coefficient sequences in `scripts/run_smoke_test.py` only after this run succeeds.

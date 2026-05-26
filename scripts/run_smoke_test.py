@@ -46,6 +46,13 @@ def smoke_parameter_grid():
             params["A1_phase"] = a1_phase
             base_cases.append(params)
 
+    for a2_amp in [0.01, 0.02, 0.05, 0.1, 0.2, 0.5]:
+        for a2_phase in [0, 30, 60, 90, 120, 150]:
+            params = dict(BASELINE_PARAMETERS)
+            params["A2_amp"] = a2_amp
+            params["A2_phase"] = a2_phase
+            base_cases.append(params)
+
     parameters = []
     for base_case in base_cases:
         for c1_offset in C1_OFFSETS:
