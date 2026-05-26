@@ -27,24 +27,31 @@ BASELINE_PARAMETERS = {
     "A2_phase": 0,
     "A3_phase": 0,
 }
+C1_OFFSETS = [-909, 909]
 
 
 def smoke_parameter_grid():
-    """Build targeted smoke cases with isolated C3 and A1 aberrations."""
-    parameters = [dict(BASELINE_PARAMETERS)]
+    """Build targeted smoke cases paired at two C1 offset values."""
+    base_cases = [dict(BASELINE_PARAMETERS)]
 
     for c3 in [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 1.8, 2.0]:
         params = dict(BASELINE_PARAMETERS)
         params["C3"] = c3
-        parameters.append(params)
+        base_cases.append(params)
 
     for a1_amp in [2, 5, 10, 15, 20, 30, 40, 60]:
         for a1_phase in [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5]:
             params = dict(BASELINE_PARAMETERS)
             params["A1_amp"] = a1_amp
             params["A1_phase"] = a1_phase
-            parameters.append(params)
+            base_cases.append(params)
 
+    parameters = []
+    for base_case in base_cases:
+        for c1_offset in C1_OFFSETS:
+            params = dict(base_case)
+            params["C1_offset"] = c1_offset
+            parameters.append(params)
     return parameters
 
 

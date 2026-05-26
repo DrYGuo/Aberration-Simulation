@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Generate line-profile plots from the smoke-test simulation."""
+"""Generate paired C1-offset line-profile plots from the smoke test."""
 
 from pathlib import Path
 import sys
@@ -17,6 +17,19 @@ from aberration_simulation.backend import asnumpy
 from aberration_simulation.line_profiles import extract_line_profiles_from_stack
 
 
+C1_OFFSETS = (-909, 909)
+COMBINATION_FIELDS = (
+    "C1",
+    "A1_amp",
+    "A1_phase",
+    "A2_amp",
+    "A2_phase",
+    "A3_amp",
+    "A3_phase",
+    "C3",
+)
+
+
 def load_smoke_outputs(path):
     data = np.load(path, allow_pickle=True)
     names = [str(name) for name in data["parameter_names"]]
@@ -28,68 +41,40 @@ def load_smoke_outputs(path):
     return data["probe_images"], parameters
 
 
-def title_for(params):
+def _fmt(value):
+    return "{:g}".format(value)
+
+
+def combination_key(params):
+    return tuple(params[field] for field in COMBINATION_FIELDS)
+
+
+def combination_title(params):
     parts = [
-        "C1={C1:g}".format(**params),
-        "C1_offset={C1_offset:g}".format(**params),
-        "A1={A1_amp:g}@{A1_phase:g}".format(**params),
-        "A2={A2_amp:g}@{A2_phase:g}".format(**params),
-        "A3={A3_amp:g}@{A3_phase:g}".format(**params),
-        "C3={C3:g}",
+        "C1={}".format(_fmt(params["C1"])),
+        "A1={}@{}".format(_fmt(params["A1_amp"]), _fmt(params["A1_phase"])),
+        "A2={}@{}".format(_fmt(params["A2_amp"]), _fmt(params["A2_phase"])),
+        "A3={}@{}".format(_fmt(params["A3_amp"]), _fmt(params["A3_phase"])),
+        "C3={}".format(_fmt(params["C3"])),
     ]
-    return ", ".join(parts).format(**params)
+    return ", ".join(parts)
 
 
-def _find_case(parameters, predicate):
+def select_c1_offset_pairs(parameters):
+    pairs = {}
+    representatives = {}
     for index, params in enumerate(parameters):
-        if predicate(params):
-            return index
-    raise ValueError("Could not find requested line-profile case.")
+        key = combination_key(params)
+        representatives.setdefault(key, params)
+        offset_map = pairs.setdefault(key, {})
+        for c1_offset in C1_OFFSETS:
+            if np.isclose(params["C1_offset"], c1_offset):
+                offset_map[c1_offset] = index
 
-
-def select_profile_indices(parameters):
-    """Select deterministic baseline, C3-only, and A1-only profile cases."""
-    selected = [
-        _find_case(
-            parameters,
-            lambda params: all(
-                np.isclose(params[key], 0)
-                for key in ("A1_amp", "A2_amp", "A3_amp", "C1", "C1_offset", "C3")
-            ),
-        )
-    ]
-
-    for c3 in (0.3, 1.2, 2.0):
-        selected.append(
-            _find_case(
-                parameters,
-                lambda params, c3=c3: (
-                    np.isclose(params["C3"], c3)
-                    and np.isclose(params["A1_amp"], 0)
-                    and np.isclose(params["A2_amp"], 0)
-                    and np.isclose(params["A3_amp"], 0)
-                    and np.isclose(params["C1"], 0)
-                    and np.isclose(params["C1_offset"], 0)
-                ),
-            )
-        )
-
-    for a1_amp, a1_phase in ((10, 0), (20, 45), (60, 90)):
-        selected.append(
-            _find_case(
-                parameters,
-                lambda params, a1_amp=a1_amp, a1_phase=a1_phase: (
-                    np.isclose(params["A1_amp"], a1_amp)
-                    and np.isclose(params["A1_phase"], a1_phase)
-                    and np.isclose(params["C3"], 0)
-                    and np.isclose(params["A2_amp"], 0)
-                    and np.isclose(params["A3_amp"], 0)
-                    and np.isclose(params["C1"], 0)
-                    and np.isclose(params["C1_offset"], 0)
-                ),
-            )
-        )
-
+    selected = []
+    for key, offset_map in pairs.items():
+        if all(c1_offset in offset_map for c1_offset in C1_OFFSETS):
+            selected.append((representatives[key], [offset_map[c1_offset] for c1_offset in C1_OFFSETS]))
     return selected
 
 
@@ -108,46 +93,57 @@ def main():
         old_plot.unlink()
 
     probe_images, parameters = load_smoke_outputs(npz_path)
-    indices = select_profile_indices(parameters)
-    stack = probe_images[:, :, indices]
-    selected_params = [parameters[index] for index in indices]
-    profiles, coords = extract_line_profiles_from_stack(stack, num_lines=9, radius=24)
-    profiles_np = asnumpy(profiles)
+    pairs = select_c1_offset_pairs(parameters)
 
-    print("selected profile cases:")
-    for output_index, source_index in enumerate(indices):
-        print("  plot {:02d}: source index {}, {}".format(
-            output_index,
-            source_index,
-            title_for(parameters[source_index]),
-        ))
+    print("selected C1_offset paired profile cases:", len(pairs))
 
-    for local_index, params in enumerate(selected_params):
-        image = stack[:, :, local_index]
-        fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    for plot_index, (representative_params, source_indices) in enumerate(pairs):
+        stack = probe_images[:, :, source_indices]
+        profiles, coords = extract_line_profiles_from_stack(stack, num_lines=9, radius=24)
+        profiles_np = asnumpy(profiles)
 
-        axes[0].imshow(image, cmap="magma")
-        axes[0].set_title("Probe image")
-        axes[0].set_axis_off()
+        fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+        for local_index, c1_offset in enumerate(C1_OFFSETS):
+            axes[local_index].imshow(stack[:, :, local_index], cmap="magma")
+            axes[local_index].set_title("C1_offset={} nm".format(c1_offset))
+            axes[local_index].set_axis_off()
 
-        for angle_index, angle in enumerate(coords["angles_deg"]):
-            axes[1].plot(
-                profiles_np[angle_index, :, local_index],
-                label="{:.0f} deg".format(angle),
+        # Keep the comparison legible: use the cardinal/diagonal angles.
+        angle_indices = [
+            index for index, angle in enumerate(coords["angles_deg"])
+            if np.isclose(angle % 45, 0)
+        ]
+        for angle_index in angle_indices:
+            angle = coords["angles_deg"][angle_index]
+            axes[2].plot(
+                profiles_np[angle_index, :, 0],
+                linestyle="-",
+                label="-909 nm, {:.0f} deg".format(angle),
             )
-        axes[1].set_title("Line profiles")
-        axes[1].set_xlabel("pixel along line")
-        axes[1].set_ylabel("intensity")
-        axes[1].legend(ncol=2, fontsize=8)
-        fig.suptitle(title_for(params), fontsize=10)
+            axes[2].plot(
+                profiles_np[angle_index, :, 1],
+                linestyle="--",
+                label="+909 nm, {:.0f} deg".format(angle),
+            )
+        axes[2].set_title("Line profiles")
+        axes[2].set_xlabel("pixel along line")
+        axes[2].set_ylabel("intensity")
+        axes[2].legend(ncol=2, fontsize=7)
+
+        fig.suptitle(combination_title(representative_params), fontsize=10)
         fig.tight_layout()
 
-        plot_path = plot_dir / "line_profiles_{:02d}.png".format(local_index)
+        plot_path = plot_dir / "line_profiles_{:03d}.png".format(plot_index)
         fig.savefig(plot_path, dpi=160)
         plt.close(fig)
-        print("saved:", plot_path)
 
-    print("generated plots:", len(indices))
+        print("saved: {} | source indices {} | {}".format(
+            plot_path,
+            source_indices,
+            combination_title(representative_params),
+        ))
+
+    print("generated paired plots:", len(pairs))
 
 
 if __name__ == "__main__":

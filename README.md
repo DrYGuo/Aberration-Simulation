@@ -36,7 +36,7 @@ For GPU acceleration, install the CuPy package that matches your CUDA version se
 python scripts/run_smoke_test.py
 ```
 
-The smoke test uses 75 targeted combinations: one no-aberration baseline, ten `C3`-only cases, and sixty-four `A1`-only cases spanning multiple amplitudes and phases. This keeps the test interpretable while covering isolated spherical aberration and 2-fold astigmatism behavior.
+The smoke test uses 150 targeted cases: one no-aberration baseline, ten `C3`-only combinations, and sixty-four `A1`-only combinations spanning multiple amplitudes and phases, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, and the two requested C1-offset conditions.
 
 This writes:
 
@@ -50,6 +50,8 @@ python scripts/plot_line_profiles.py
 ```
 
 This writes PNG files under `outputs/plots/`.
+
+Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for the same underlying aberration combination in one figure.
 
 ## Run on Colab GPU
 
