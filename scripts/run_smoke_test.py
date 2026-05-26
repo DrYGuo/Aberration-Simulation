@@ -11,24 +11,22 @@ sys.path.insert(0, str(ROOT / "src"))
 from aberration_simulation.backend import HAS_CUPY, asnumpy
 from aberration_simulation.optics import (
     SimulationConfig,
-    build_parameter_grid,
-    run_simulation,
+    run_simulation_from_sequences,
     save_npz,
 )
 
 
-def smoke_parameter_grid():
-    return build_parameter_grid(
-        C1_offset_sequence=[0],
-        A3_amp_sequence=[0, 20],
-        A2_amp_sequence=[0, 2],
-        C1_sequence=[0],
-        C3_sequence=[0, 0.3],
-        A1_amp_sequence=[0, 20],
-        A1_phase_sequence=[0],
-        A2_phase_sequence=[0, 60],
-        A3_phase_sequence=[0, 90],
-    )
+SMOKE_SEQUENCES = {
+    "C1_offset_sequence": [0],
+    "A3_amp_sequence": [0, 20],
+    "A2_amp_sequence": [0, 2],
+    "C1_sequence": [0],
+    "C3_sequence": [0, 0.3],
+    "A1_amp_sequence": [0, 20],
+    "A1_phase_sequence": [0],
+    "A2_phase_sequence": [0, 60],
+    "A3_phase_sequence": [0, 90],
+}
 
 
 def write_parameter_csv(path, parameters):
@@ -49,8 +47,7 @@ def main():
         app=30,
         sigma=1,
     )
-    parameters = smoke_parameter_grid()
-    probe_images, selected = run_simulation(config, parameters)
+    probe_images, selected = run_simulation_from_sequences(config, **SMOKE_SEQUENCES)
 
     npz_path = output_dir / "smoke_probe_images.npz"
     csv_path = output_dir / "smoke_parameters.csv"

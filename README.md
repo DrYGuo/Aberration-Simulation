@@ -10,13 +10,17 @@ The original notebook mixed module generation, GPU execution, feature extraction
 
 ## What is included
 
-- `src/aberration_simulation/optics.py` - aberration model, contrast transfer function generation, and probe image computation.
+- `src/aberration_simulation/optics.py` - compatibility import that selects the GPU implementation when CuPy is available, otherwise the CPU implementation.
+- `src/aberration_simulation/gpu_optics.py` - CuPy-only implementation with CTF generation vectorized across aberration coefficient combinations in each batch.
+- `src/aberration_simulation/cpu_optics.py` - NumPy/SciPy implementation for local development and CPU fallback.
 - `src/aberration_simulation/line_profiles.py` - reusable line-profile extraction for image stacks.
 - `scripts/run_smoke_test.py` - small CPU/GPU-friendly simulation over a reduced aberration grid.
 - `scripts/plot_line_profiles.py` - generates probe and radial line-profile plots for selected nonzero aberration coefficients.
 - `outputs/` - generated smoke-test data and plots.
 
-The code uses CuPy automatically when it is installed. If CuPy is unavailable, it falls back to NumPy/SciPy, which is useful for small tests and GitHub/CI environments.
+The original notebook used CuPy arrays but still looped over aberration coefficient combinations when constructing the CTF tensor. The refactored GPU path keeps the CuPy code explicit (`import cupy as cp`) and vectorizes the CTF phase calculation across all coefficient combinations in the selected batch. If CuPy is unavailable, the public `aberration_simulation.optics` module falls back to the CPU implementation.
+
+The vectorized GPU path can use more memory than the old per-combination loop, so use the existing `batch_size` argument to split large parameter grids into manageable chunks.
 
 ## Setup
 
