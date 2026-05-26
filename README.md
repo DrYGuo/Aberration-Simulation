@@ -51,7 +51,7 @@ python scripts/plot_line_profiles.py
 
 This writes PNG files under `outputs/plots/`.
 
-Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for the same underlying aberration combination in one figure.
+Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for the same underlying aberration combination in one figure. Plot filenames include the aberration family and values, for example `line_profiles_001_a2_amp0p01_phase0.png`; A2 plots are ordered immediately after the baseline plot.
 
 ## Run on Colab GPU
 

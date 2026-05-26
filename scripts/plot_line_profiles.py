@@ -18,6 +18,14 @@ from aberration_simulation.line_profiles import extract_line_profiles_from_stack
 
 
 C1_OFFSETS = (-909, 909)
+FAMILY_ORDER = {
+    "baseline": 0,
+    "a2": 1,
+    "c3": 2,
+    "a1": 3,
+    "a3": 4,
+    "c1": 5,
+}
 COMBINATION_FIELDS = (
     "C1",
     "A1_amp",
@@ -60,6 +68,45 @@ def combination_title(params):
     return ", ".join(parts)
 
 
+def aberration_family(params):
+    """Return the isolated nonzero aberration family for naming and grouping."""
+    if not np.isclose(params["A2_amp"], 0):
+        return "a2"
+    if not np.isclose(params["A1_amp"], 0):
+        return "a1"
+    if not np.isclose(params["C3"], 0):
+        return "c3"
+    if not np.isclose(params["A3_amp"], 0):
+        return "a3"
+    if not np.isclose(params["C1"], 0):
+        return "c1"
+    return "baseline"
+
+
+def _slug(value):
+    text = _fmt(value).replace("-", "m").replace(".", "p")
+    return text
+
+
+def plot_filename(plot_index, params):
+    family = aberration_family(params)
+    if family in ("a1", "a2", "a3"):
+        amp_key = "{}_amp".format(family.upper())
+        phase_key = "{}_phase".format(family.upper())
+        suffix = "{}_amp{}_phase{}".format(
+            family,
+            _slug(params[amp_key]),
+            _slug(params[phase_key]),
+        )
+    elif family == "c3":
+        suffix = "c3_{}".format(_slug(params["C3"]))
+    elif family == "c1":
+        suffix = "c1_{}".format(_slug(params["C1"]))
+    else:
+        suffix = "baseline"
+    return "line_profiles_{:03d}_{}.png".format(plot_index, suffix)
+
+
 def select_c1_offset_pairs(parameters):
     pairs = {}
     representatives = {}
@@ -75,6 +122,16 @@ def select_c1_offset_pairs(parameters):
     for key, offset_map in pairs.items():
         if all(c1_offset in offset_map for c1_offset in C1_OFFSETS):
             selected.append((representatives[key], [offset_map[c1_offset] for c1_offset in C1_OFFSETS]))
+    selected.sort(
+        key=lambda item: (
+            FAMILY_ORDER.get(aberration_family(item[0]), 99),
+            item[0]["A2_amp"],
+            item[0]["A2_phase"],
+            item[0]["C3"],
+            item[0]["A1_amp"],
+            item[0]["A1_phase"],
+        )
+    )
     return selected
 
 
@@ -96,6 +153,11 @@ def main():
     pairs = select_c1_offset_pairs(parameters)
 
     print("selected C1_offset paired profile cases:", len(pairs))
+    family_counts = {}
+    for representative_params, _ in pairs:
+        family = aberration_family(representative_params)
+        family_counts[family] = family_counts.get(family, 0) + 1
+    print("profile case families:", family_counts)
 
     for plot_index, (representative_params, source_indices) in enumerate(pairs):
         stack = probe_images[:, :, source_indices]
@@ -132,7 +194,7 @@ def main():
         fig.suptitle(combination_title(representative_params), fontsize=10)
         fig.tight_layout()
 
-        plot_path = plot_dir / "line_profiles_{:03d}.png".format(plot_index)
+        plot_path = plot_dir / plot_filename(plot_index, representative_params)
         fig.savefig(plot_path, dpi=160)
         plt.close(fig)
 
