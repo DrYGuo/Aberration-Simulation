@@ -68,8 +68,8 @@ def main():
     output_dir.mkdir(exist_ok=True)
 
     config = SimulationConfig(
-        pix_dim=(64, 64),
-        real_dim=(320, 320),
+        pix_dim=(256, 256),
+        real_dim=(1280, 1280),
         app=30,
         sigma=1,
     )

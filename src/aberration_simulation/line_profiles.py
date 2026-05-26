@@ -34,7 +34,7 @@ def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, cen
     if radius is None:
         radius = int(min(height, width) // 2 - 1)
     if center is None:
-        center = ((width - 1) / 2.0, (height - 1) / 2.0)
+        center = (width / 2.0, height / 2.0)
 
     x_center, y_center = center
     angles = xp.linspace(0, 180, num_lines)[:-1]

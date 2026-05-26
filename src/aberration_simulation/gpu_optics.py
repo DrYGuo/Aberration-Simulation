@@ -44,8 +44,8 @@ class Aberration:
 
 @dataclass
 class SimulationConfig:
-    pix_dim: tuple = (64, 64)
-    real_dim: tuple = (320, 320)
+    pix_dim: tuple = (256, 256)
+    real_dim: tuple = (1280, 1280)
     eV: float = 0.8e3
     app: float = 30.0
     optic_axis: tuple = (0.0, 0.0)

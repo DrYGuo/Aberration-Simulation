@@ -73,4 +73,4 @@ python scripts/check_backend.py
 
 ## Notes
 
-The default smoke-test grid intentionally uses small image dimensions and a small set of aberration coefficient combinations. Increase `pix_dim`, `real_dim`, or the coefficient sequences in `scripts/run_smoke_test.py` only after the small run succeeds.
+The smoke test follows the original notebook sampling: `pix_dim=(256, 256)`, `real_dim=(1280, 1280)`, `eV=0.8e3`, `app=30 mrad`, and line-profile sampling with radius `r=80` over 36 angular directions. Increase the coefficient sequences in `scripts/run_smoke_test.py` only after this run succeeds.

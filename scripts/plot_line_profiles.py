@@ -99,7 +99,7 @@ def main():
 
     for plot_index, (representative_params, source_indices) in enumerate(pairs):
         stack = probe_images[:, :, source_indices]
-        profiles, coords = extract_line_profiles_from_stack(stack, num_lines=9, radius=24)
+        profiles, coords = extract_line_profiles_from_stack(stack, num_lines=37, radius=80)
         profiles_np = asnumpy(profiles)
 
         fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
@@ -108,7 +108,8 @@ def main():
             axes[local_index].set_title("C1_offset={} nm".format(c1_offset))
             axes[local_index].set_axis_off()
 
-        # Keep the comparison legible: use the cardinal/diagonal angles.
+        # The original notebook samples 36 angles; plot cardinal/diagonal
+        # directions to keep each paired comparison readable.
         angle_indices = [
             index for index, angle in enumerate(coords["angles_deg"])
             if np.isclose(angle % 45, 0)
