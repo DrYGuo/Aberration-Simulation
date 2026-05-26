@@ -73,4 +73,4 @@ python scripts/check_backend.py
 
 ## Notes
 
-The smoke test follows the original notebook sampling: `pix_dim=(256, 256)`, `real_dim=(1280, 1280)`, `eV=0.8e3`, `app=30 mrad`, and line-profile sampling with radius `r=80` over 36 angular directions. Increase the coefficient sequences in `scripts/run_smoke_test.py` only after this run succeeds.
+The smoke test follows the original notebook sampling: `pix_dim=(256, 256)`, `real_dim=(1280, 1280)`, `eV=0.8e3`, `app=30 mrad`, Gaussian blurring with `Sigma=2`, and line-profile sampling with radius `r=80` over 36 angular directions. Increase the coefficient sequences in `scripts/run_smoke_test.py` only after this run succeeds.

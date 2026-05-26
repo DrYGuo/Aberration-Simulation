@@ -33,7 +33,7 @@ class SimulationConfig:
     tilt_units: str = "mrad"
     df: float = 0.0
     app_units: str = "mrad"
-    sigma: float = 1.0
+    sigma: float = 2.0
 
 
 def wavev(E):
@@ -197,7 +197,7 @@ def make_contrast_transfer_function(
     return ctf_tensor, selected
 
 
-def compute_probe_image(ctf_tensor, sigma=1.0):
+def compute_probe_image(ctf_tensor, sigma=2.0):
     """Compute smoothed probe intensities from a CTF tensor."""
     ctf_real = np.fft.ifft2(ctf_tensor, axes=(0, 1))
     shifted = np.fft.fftshift(ctf_real, axes=(0, 1))

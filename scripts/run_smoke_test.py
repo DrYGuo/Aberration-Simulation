@@ -71,7 +71,7 @@ def main():
         pix_dim=(256, 256),
         real_dim=(1280, 1280),
         app=30,
-        sigma=1,
+        sigma=2,
     )
     parameters = smoke_parameter_grid()
     probe_images, selected = run_simulation(config, parameters)

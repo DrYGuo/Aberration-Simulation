@@ -102,34 +102,32 @@ def main():
         profiles, coords = extract_line_profiles_from_stack(stack, num_lines=37, radius=80)
         profiles_np = asnumpy(profiles)
 
-        fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 8))
         for local_index, c1_offset in enumerate(C1_OFFSETS):
-            axes[local_index].imshow(stack[:, :, local_index], cmap="magma")
-            axes[local_index].set_title("C1_offset={} nm".format(c1_offset))
-            axes[local_index].set_axis_off()
+            image_axis = axes[local_index, 0]
+
+            image_axis.imshow(stack[:, :, local_index], cmap="magma")
+            image_axis.set_title("Probe image: C1_offset={} nm".format(c1_offset))
+            image_axis.set_axis_off()
 
         # The original notebook samples 36 angles; plot cardinal/diagonal
-        # directions to keep each paired comparison readable.
+        # directions to keep each offset row readable.
         angle_indices = [
             index for index, angle in enumerate(coords["angles_deg"])
             if np.isclose(angle % 45, 0)
         ]
-        for angle_index in angle_indices:
-            angle = coords["angles_deg"][angle_index]
-            axes[2].plot(
-                profiles_np[angle_index, :, 0],
-                linestyle="-",
-                label="-909 nm, {:.0f} deg".format(angle),
-            )
-            axes[2].plot(
-                profiles_np[angle_index, :, 1],
-                linestyle="--",
-                label="+909 nm, {:.0f} deg".format(angle),
-            )
-        axes[2].set_title("Line profiles")
-        axes[2].set_xlabel("pixel along line")
-        axes[2].set_ylabel("intensity")
-        axes[2].legend(ncol=2, fontsize=7)
+        for local_index, c1_offset in enumerate(C1_OFFSETS):
+            profile_axis = axes[local_index, 1]
+            for angle_index in angle_indices:
+                angle = coords["angles_deg"][angle_index]
+                profile_axis.plot(
+                    profiles_np[angle_index, :, local_index],
+                    label="{:.0f} deg".format(angle),
+                )
+            profile_axis.set_title("Line profiles: C1_offset={} nm".format(c1_offset))
+            profile_axis.set_xlabel("pixel along line")
+            profile_axis.set_ylabel("intensity")
+            profile_axis.legend(ncol=4, fontsize=7)
 
         fig.suptitle(combination_title(representative_params), fontsize=10)
         fig.tight_layout()
