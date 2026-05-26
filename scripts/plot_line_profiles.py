@@ -14,10 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from aberration_simulation.backend import asnumpy
-from aberration_simulation.line_profiles import (
-    choose_nonzero_parameter_indices,
-    extract_line_profiles_from_stack,
-)
+from aberration_simulation.line_profiles import extract_line_profiles_from_stack
 
 
 def load_smoke_outputs(path):
@@ -41,6 +38,59 @@ def title_for(params):
     return ", ".join(parts).format(**params)
 
 
+def _find_case(parameters, predicate):
+    for index, params in enumerate(parameters):
+        if predicate(params):
+            return index
+    raise ValueError("Could not find requested line-profile case.")
+
+
+def select_profile_indices(parameters):
+    """Select deterministic baseline, C3-only, and A1-only profile cases."""
+    selected = [
+        _find_case(
+            parameters,
+            lambda params: all(
+                np.isclose(params[key], 0)
+                for key in ("A1_amp", "A2_amp", "A3_amp", "C1", "C1_offset", "C3")
+            ),
+        )
+    ]
+
+    for c3 in (0.3, 1.2, 2.0):
+        selected.append(
+            _find_case(
+                parameters,
+                lambda params, c3=c3: (
+                    np.isclose(params["C3"], c3)
+                    and np.isclose(params["A1_amp"], 0)
+                    and np.isclose(params["A2_amp"], 0)
+                    and np.isclose(params["A3_amp"], 0)
+                    and np.isclose(params["C1"], 0)
+                    and np.isclose(params["C1_offset"], 0)
+                ),
+            )
+        )
+
+    for a1_amp, a1_phase in ((10, 0), (20, 45), (60, 90)):
+        selected.append(
+            _find_case(
+                parameters,
+                lambda params, a1_amp=a1_amp, a1_phase=a1_phase: (
+                    np.isclose(params["A1_amp"], a1_amp)
+                    and np.isclose(params["A1_phase"], a1_phase)
+                    and np.isclose(params["C3"], 0)
+                    and np.isclose(params["A2_amp"], 0)
+                    and np.isclose(params["A3_amp"], 0)
+                    and np.isclose(params["C1"], 0)
+                    and np.isclose(params["C1_offset"], 0)
+                ),
+            )
+        )
+
+    return selected
+
+
 def main():
     output_dir = ROOT / "outputs"
     plot_dir = output_dir / "plots"
@@ -52,12 +102,23 @@ def main():
             "Missing smoke-test output. Run scripts/run_smoke_test.py first."
         )
 
+    for old_plot in plot_dir.glob("line_profiles_*.png"):
+        old_plot.unlink()
+
     probe_images, parameters = load_smoke_outputs(npz_path)
-    indices = choose_nonzero_parameter_indices(parameters, limit=4)
+    indices = select_profile_indices(parameters)
     stack = probe_images[:, :, indices]
     selected_params = [parameters[index] for index in indices]
     profiles, coords = extract_line_profiles_from_stack(stack, num_lines=9, radius=24)
     profiles_np = asnumpy(profiles)
+
+    print("selected profile cases:")
+    for output_index, source_index in enumerate(indices):
+        print("  plot {:02d}: source index {}, {}".format(
+            output_index,
+            source_index,
+            title_for(parameters[source_index]),
+        ))
 
     for local_index, params in enumerate(selected_params):
         image = stack[:, :, local_index]
@@ -83,6 +144,8 @@ def main():
         fig.savefig(plot_path, dpi=160)
         plt.close(fig)
         print("saved:", plot_path)
+
+    print("generated plots:", len(indices))
 
 
 if __name__ == "__main__":
