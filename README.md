@@ -36,6 +36,8 @@ For GPU acceleration, install the CuPy package that matches your CUDA version se
 python scripts/run_smoke_test.py
 ```
 
+The smoke test uses 75 targeted combinations: one no-aberration baseline, ten `C3`-only cases, and sixty-four `A1`-only cases spanning multiple amplitudes and phases. This keeps the test interpretable while covering isolated spherical aberration and 2-fold astigmatism behavior.
+
 This writes:
 
 - `outputs/smoke_probe_images.npz`

@@ -67,14 +67,45 @@ def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, cen
 
 
 def choose_nonzero_parameter_indices(parameters, limit=4):
-    """Pick representative simulations with at least one nonzero aberration."""
-    scored = []
+    """Pick representative simulations with diverse nonzero aberrations."""
+    groups = [
+        [
+            index for index, params in enumerate(parameters)
+            if abs(params["C3"]) > 0 and abs(params["A1_amp"]) == 0
+        ],
+        [
+            index for index, params in enumerate(parameters)
+            if abs(params["A1_amp"]) > 0 and abs(params["C3"]) == 0
+        ],
+        [
+            index for index, params in enumerate(parameters)
+            if any(abs(params[key]) > 0 for key in ("A2_amp", "A3_amp", "C1", "C1_offset"))
+        ],
+        [
+            index for index, params in enumerate(parameters)
+            if sum(
+                abs(params[key]) > 0
+                for key in ("A1_amp", "A2_amp", "A3_amp", "C1", "C3", "C1_offset")
+            ) > 1
+        ],
+    ]
+
+    selected = []
+    offset = 0
+    while len(selected) < limit and any(offset < len(group) for group in groups):
+        for group in groups:
+            if offset < len(group) and group[offset] not in selected:
+                selected.append(group[offset])
+            if len(selected) >= limit:
+                return selected
+        offset += 1
+
     for index, params in enumerate(parameters):
-        nonzero = sum(
-            abs(params[key]) > 0
-            for key in ("A1_amp", "A2_amp", "A3_amp", "C1", "C3", "C1_offset")
-        )
-        if nonzero:
-            scored.append((nonzero, index))
-    scored.sort(reverse=True)
-    return [index for _, index in scored[:limit]]
+        if index in selected:
+            continue
+        if any(abs(params[key]) > 0 for key in ("A1_amp", "A2_amp", "A3_amp", "C1", "C3", "C1_offset")):
+            selected.append(index)
+        if len(selected) >= limit:
+            break
+
+    return selected

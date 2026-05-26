@@ -11,22 +11,41 @@ sys.path.insert(0, str(ROOT / "src"))
 from aberration_simulation.backend import HAS_CUPY, asnumpy
 from aberration_simulation.optics import (
     SimulationConfig,
-    run_simulation_from_sequences,
+    run_simulation,
     save_npz,
 )
 
 
-SMOKE_SEQUENCES = {
-    "C1_offset_sequence": [0],
-    "A3_amp_sequence": [0, 20],
-    "A2_amp_sequence": [0, 2],
-    "C1_sequence": [0],
-    "C3_sequence": [0, 0.3],
-    "A1_amp_sequence": [0, 20],
-    "A1_phase_sequence": [0],
-    "A2_phase_sequence": [0, 60],
-    "A3_phase_sequence": [0, 90],
+BASELINE_PARAMETERS = {
+    "C1_offset": 0,
+    "A3_amp": 0,
+    "A2_amp": 0,
+    "C1": 0,
+    "C3": 0,
+    "A1_amp": 0,
+    "A1_phase": 0,
+    "A2_phase": 0,
+    "A3_phase": 0,
 }
+
+
+def smoke_parameter_grid():
+    """Build targeted smoke cases with isolated C3 and A1 aberrations."""
+    parameters = [dict(BASELINE_PARAMETERS)]
+
+    for c3 in [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 1.8, 2.0]:
+        params = dict(BASELINE_PARAMETERS)
+        params["C3"] = c3
+        parameters.append(params)
+
+    for a1_amp in [2, 5, 10, 15, 20, 30, 40, 60]:
+        for a1_phase in [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5]:
+            params = dict(BASELINE_PARAMETERS)
+            params["A1_amp"] = a1_amp
+            params["A1_phase"] = a1_phase
+            parameters.append(params)
+
+    return parameters
 
 
 def write_parameter_csv(path, parameters):
@@ -47,7 +66,8 @@ def main():
         app=30,
         sigma=1,
     )
-    probe_images, selected = run_simulation_from_sequences(config, **SMOKE_SEQUENCES)
+    parameters = smoke_parameter_grid()
+    probe_images, selected = run_simulation(config, parameters)
 
     npz_path = output_dir / "smoke_probe_images.npz"
     csv_path = output_dir / "smoke_parameters.csv"
