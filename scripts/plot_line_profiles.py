@@ -30,6 +30,8 @@ def load_smoke_outputs(path):
 
 def title_for(params):
     parts = [
+        "C1={C1:g}".format(**params),
+        "C1_offset={C1_offset:g}".format(**params),
         "A1={A1_amp:g}@{A1_phase:g}".format(**params),
         "A2={A2_amp:g}@{A2_phase:g}".format(**params),
         "A3={A3_amp:g}@{A3_phase:g}".format(**params),
