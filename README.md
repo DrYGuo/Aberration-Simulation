@@ -36,7 +36,7 @@ For GPU acceleration, install the CuPy package that matches your CUDA version se
 python scripts/run_smoke_test.py
 ```
 
-The smoke test uses 200 targeted cases: one no-aberration baseline, ten `C3`-only combinations, sixty-four `A1`-only combinations, and twenty-five `A2`-only combinations spanning the original notebook's larger A2 amplitude steps and phases, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, 3-fold astigmatism, and the two requested C1-offset conditions.
+The smoke test uses 326 targeted cases: one no-aberration baseline, ten `C3`-only combinations, sixty-four `A1`-only combinations, twenty-five `A2`-only combinations spanning the original notebook's larger A2 amplitude steps and phases, and sixty-three pure `B2/C21` combinations with amplitude `0..3` in `0.5` steps and phase `0..360` degrees in `45` degree steps, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, 3-fold astigmatism, axial coma, and the two requested C1-offset conditions.
 
 This writes:
 
@@ -51,7 +51,7 @@ python scripts/plot_line_profiles.py
 
 This writes PNG files under `outputs/plots/`.
 
-Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for the same underlying aberration combination in one figure. Plot filenames include the aberration family and values, for example `line_profiles_001_a2_amp1_phase0.png`; A2 plots are ordered immediately after the baseline plot. The probe images are overlaid with the sampled line directions, using the same colors as the line-profile curves. The script also writes two A2 summary grids, one for each C1 offset, so the A2 sweep is visible near the top of the notebook output.
+Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for the same underlying aberration combination in one figure. Plot filenames include the aberration family and values, for example `line_profiles_001_a2_amp1_phase0.png` or `line_profiles_0xx_b2_amp0p5_phase0.png`; A2 and B2/C21 plots are ordered immediately after the baseline plot. The probe images are overlaid with the sampled line directions, using the same colors as the line-profile curves. The script also writes A2 and B2/C21 summary grids, one for each C1 offset, so those sweeps are visible near the top of the notebook output.
 
 ## Run on Colab GPU
 

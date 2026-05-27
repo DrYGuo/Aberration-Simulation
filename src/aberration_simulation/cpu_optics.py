@@ -101,29 +101,35 @@ def build_parameter_grid(
     A1_phase_sequence,
     A2_phase_sequence,
     A3_phase_sequence,
+    B2_amp_sequence=(0,),
+    B2_phase_sequence=(0,),
 ):
     """Build a flat list of parameter dictionaries in notebook meshgrid order."""
     names = [
         "C1_offset",
         "A3_amp",
         "A2_amp",
+        "B2_amp",
         "C1",
         "C3",
         "A1_amp",
         "A1_phase",
         "A2_phase",
         "A3_phase",
+        "B2_phase",
     ]
     arrays = [
         _as_array(C1_offset_sequence),
         _as_array(A3_amp_sequence),
         _as_array(A2_amp_sequence),
+        _as_array(B2_amp_sequence),
         _as_array(C1_sequence),
         _as_array(C3_sequence),
         _as_array(A1_amp_sequence),
         _as_array(A1_phase_sequence),
         _as_array(A2_phase_sequence),
         _as_array(A3_phase_sequence),
+        _as_array(B2_phase_sequence),
     ]
     mesh = np.meshgrid(*arrays, indexing="ij")
     flat = [m.ravel() for m in mesh]
@@ -139,6 +145,7 @@ def aberrations_from_parameters(params):
         Aberration("C1", "C1", "Defocus", 10 * params["C1"] + 10 * params["C1_offset"], 0, 1, 0),
         Aberration("A1", "A1", "2-Fold Astigmatism", 10 * params["A1_amp"], -np.radians(params["A1_phase"]), 1, 2),
         Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], -np.radians(params["A2_phase"]), 2, 3),
+        Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), -np.radians(params.get("B2_phase", 0)), 2, 1),
         Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], -np.radians(params["A3_phase"]), 3, 4),
         Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
     ]

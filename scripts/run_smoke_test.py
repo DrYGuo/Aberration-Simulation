@@ -20,17 +20,21 @@ BASELINE_PARAMETERS = {
     "C1_offset": 0,
     "A3_amp": 0,
     "A2_amp": 0,
+    "B2_amp": 0,
     "C1": 0,
     "C3": 0,
     "A1_amp": 0,
     "A1_phase": 0,
     "A2_phase": 0,
     "A3_phase": 0,
+    "B2_phase": 0,
 }
 C1_OFFSETS = [-909, 909]
 
 
 def aberration_family(params):
+    if params["B2_amp"] != 0 or params["B2_phase"] != 0:
+        return "b2"
     if params["A2_amp"] != 0:
         return "a2"
     if params["A1_amp"] != 0:
@@ -73,6 +77,13 @@ def smoke_parameter_grid():
             params = dict(BASELINE_PARAMETERS)
             params["A2_amp"] = a2_amp
             params["A2_phase"] = a2_phase
+            base_cases.append(params)
+
+    for b2_amp in [0, 0.5, 1, 1.5, 2, 2.5, 3]:
+        for b2_phase in [0, 45, 90, 135, 180, 225, 270, 315, 360]:
+            params = dict(BASELINE_PARAMETERS)
+            params["B2_amp"] = b2_amp
+            params["B2_phase"] = b2_phase
             base_cases.append(params)
 
     parameters = []

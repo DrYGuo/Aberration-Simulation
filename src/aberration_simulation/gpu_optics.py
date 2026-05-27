@@ -18,12 +18,14 @@ PARAMETER_NAMES = [
     "C1_offset",
     "A3_amp",
     "A2_amp",
+    "B2_amp",
     "C1",
     "C3",
     "A1_amp",
     "A1_phase",
     "A2_phase",
     "A3_phase",
+    "B2_phase",
 ]
 
 
@@ -106,18 +108,22 @@ def build_parameter_table(
     A1_phase_sequence,
     A2_phase_sequence,
     A3_phase_sequence,
+    B2_amp_sequence=(0,),
+    B2_phase_sequence=(0,),
 ):
     """Build a flat CuPy parameter table in notebook meshgrid order."""
     arrays = [
         _as_array(C1_offset_sequence),
         _as_array(A3_amp_sequence),
         _as_array(A2_amp_sequence),
+        _as_array(B2_amp_sequence),
         _as_array(C1_sequence),
         _as_array(C3_sequence),
         _as_array(A1_amp_sequence),
         _as_array(A1_phase_sequence),
         _as_array(A2_phase_sequence),
         _as_array(A3_phase_sequence),
+        _as_array(B2_phase_sequence),
     ]
     mesh = cp.meshgrid(*arrays, indexing="ij")
     return {
@@ -149,6 +155,8 @@ def build_parameter_grid(
     A1_phase_sequence,
     A2_phase_sequence,
     A3_phase_sequence,
+    B2_amp_sequence=(0,),
+    B2_phase_sequence=(0,),
 ):
     """Build a list of parameter dictionaries for API compatibility."""
     table = build_parameter_table(
@@ -161,6 +169,8 @@ def build_parameter_grid(
         A1_phase_sequence,
         A2_phase_sequence,
         A3_phase_sequence,
+        B2_amp_sequence,
+        B2_phase_sequence,
     )
     return parameter_table_to_records(table)
 
@@ -168,7 +178,7 @@ def build_parameter_grid(
 def parameter_records_to_table(parameters):
     """Convert list-of-dict parameters into a CuPy parameter table."""
     return {
-        name: cp.asarray([params[name] for params in parameters], dtype=float)
+        name: cp.asarray([params.get(name, 0) for params in parameters], dtype=float)
         for name in PARAMETER_NAMES
     }
 
@@ -207,6 +217,7 @@ def aberrations_from_parameters(params):
         Aberration("C1", "C1", "Defocus", 10 * params["C1"] + 10 * params["C1_offset"], 0, 1, 0),
         Aberration("A1", "A1", "2-Fold Astigmatism", 10 * params["A1_amp"], -cp.radians(params["A1_phase"]), 1, 2),
         Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], -cp.radians(params["A2_phase"]), 2, 3),
+        Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), -cp.radians(params.get("B2_phase", 0)), 2, 1),
         Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], -cp.radians(params["A3_phase"]), 3, 4),
         Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
     ]
@@ -219,11 +230,13 @@ def _phase_for_parameter_table(q_mask, qphi_mask, lam, df, parameter_table):
     C1_amp = 10 * parameter_table["C1"][None, :] + 10 * parameter_table["C1_offset"][None, :]
     A1_amp = 10 * parameter_table["A1_amp"][None, :]
     A2_amp = 1e4 * parameter_table["A2_amp"][None, :]
+    B2_amp = 1e4 * parameter_table["B2_amp"][None, :]
     A3_amp = 1e4 * parameter_table["A3_amp"][None, :]
     C3_amp = 1e7 * parameter_table["C3"][None, :]
 
     A1_angle = -cp.radians(parameter_table["A1_phase"])[None, :]
     A2_angle = -cp.radians(parameter_table["A2_phase"])[None, :]
+    B2_angle = -cp.radians(parameter_table["B2_phase"])[None, :]
     A3_angle = -cp.radians(parameter_table["A3_phase"])[None, :]
     qphi = qphi_mask[:, None]
 
@@ -231,6 +244,7 @@ def _phase_for_parameter_table(q_mask, qphi_mask, lam, df, parameter_table):
     phase = phase + qlam ** 2 * C1_amp / 2
     phase = phase + qlam ** 2 * A1_amp / 2 * cp.cos(2 * (qphi - A1_angle))
     phase = phase + qlam ** 3 * A2_amp / 3 * cp.cos(3 * (qphi - A2_angle))
+    phase = phase + qlam ** 3 * B2_amp / 3 * cp.cos(qphi - B2_angle)
     phase = phase + qlam ** 4 * A3_amp / 4 * cp.cos(4 * (qphi - A3_angle))
     phase = phase + qlam ** 4 * C3_amp / 4
     return 2 * cp.pi * phase / lam
