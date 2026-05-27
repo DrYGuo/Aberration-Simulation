@@ -107,6 +107,52 @@ def plot_filename(plot_index, params):
     return "line_profiles_{:03d}_{}.png".format(plot_index, suffix)
 
 
+def save_a2_probe_summaries(probe_images, pairs, plot_dir):
+    a2_pairs = [
+        (params, source_indices)
+        for params, source_indices in pairs
+        if aberration_family(params) == "a2"
+    ]
+    if not a2_pairs:
+        print("warning: no A2 profile cases found in smoke-test output")
+        return
+
+    a2_amps = sorted({params["A2_amp"] for params, _ in a2_pairs})
+    a2_phases = sorted({params["A2_phase"] for params, _ in a2_pairs})
+    pair_lookup = {
+        (params["A2_amp"], params["A2_phase"]): source_indices
+        for params, source_indices in a2_pairs
+    }
+
+    for local_index, c1_offset in enumerate(C1_OFFSETS):
+        fig, axes = plt.subplots(
+            len(a2_amps),
+            len(a2_phases),
+            figsize=(1.7 * len(a2_phases), 1.7 * len(a2_amps)),
+            squeeze=False,
+        )
+        for row, a2_amp in enumerate(a2_amps):
+            for col, a2_phase in enumerate(a2_phases):
+                axis = axes[row, col]
+                source_indices = pair_lookup[(a2_amp, a2_phase)]
+                image_index = source_indices[local_index]
+                axis.imshow(probe_images[:, :, image_index], cmap="magma")
+                axis.set_xticks([])
+                axis.set_yticks([])
+                if row == 0:
+                    axis.set_title("phase {}".format(_fmt(a2_phase)), fontsize=7)
+                if col == 0:
+                    axis.set_ylabel("amp {}".format(_fmt(a2_amp)), fontsize=7)
+
+        fig.suptitle("A2 probe summary, C1_offset={} nm".format(c1_offset), fontsize=12)
+        fig.tight_layout()
+        offset_slug = "m{}".format(abs(c1_offset)) if c1_offset < 0 else "p{}".format(c1_offset)
+        plot_path = plot_dir / "line_profiles_000_a2_summary_c1_{}.png".format(offset_slug)
+        fig.savefig(plot_path, dpi=180)
+        plt.close(fig)
+        print("saved A2 summary:", plot_path)
+
+
 def select_c1_offset_pairs(parameters):
     pairs = {}
     representatives = {}
@@ -158,6 +204,7 @@ def main():
         family = aberration_family(representative_params)
         family_counts[family] = family_counts.get(family, 0) + 1
     print("profile case families:", family_counts)
+    save_a2_probe_summaries(probe_images, pairs, plot_dir)
 
     for plot_index, (representative_params, source_indices) in enumerate(pairs):
         stack = probe_images[:, :, source_indices]

@@ -30,6 +30,28 @@ BASELINE_PARAMETERS = {
 C1_OFFSETS = [-909, 909]
 
 
+def aberration_family(params):
+    if params["A2_amp"] != 0:
+        return "a2"
+    if params["A1_amp"] != 0:
+        return "a1"
+    if params["C3"] != 0:
+        return "c3"
+    if params["A3_amp"] != 0:
+        return "a3"
+    if params["C1"] != 0:
+        return "c1"
+    return "baseline"
+
+
+def family_counts(parameters):
+    counts = {}
+    for params in parameters:
+        family = aberration_family(params)
+        counts[family] = counts.get(family, 0) + 1
+    return counts
+
+
 def smoke_parameter_grid():
     """Build targeted smoke cases paired at two C1 offset values."""
     base_cases = [dict(BASELINE_PARAMETERS)]
@@ -91,6 +113,7 @@ def main():
     probe_np = asnumpy(probe_images)
     print("backend:", "cupy" if HAS_CUPY else "numpy/scipy")
     print("parameter combinations:", len(selected))
+    print("parameter families:", family_counts(selected))
     print("probe image shape:", probe_np.shape)
     print("intensity range:", float(probe_np.min()), float(probe_np.max()))
     print("saved:", npz_path)
