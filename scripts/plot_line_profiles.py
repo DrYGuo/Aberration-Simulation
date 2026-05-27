@@ -107,6 +107,36 @@ def plot_filename(plot_index, params):
     return "line_profiles_{:03d}_{}.png".format(plot_index, suffix)
 
 
+def cardinal_diagonal_angle_indices(coords):
+    return [
+        index for index, angle in enumerate(coords["angles_deg"])
+        if np.isclose(angle % 45, 0)
+    ]
+
+
+def profile_line_colors(count):
+    cmap = plt.get_cmap("tab10")
+    return [cmap(index % cmap.N) for index in range(count)]
+
+
+def overlay_profile_lines(axis, coords, angle_indices, colors):
+    for color, angle_index in zip(colors, angle_indices):
+        angle = coords["angles_deg"][angle_index]
+        x = coords["x"][angle_index]
+        y = coords["y"][angle_index]
+        axis.plot(x, y, color=color, linewidth=0.9, alpha=0.85)
+        axis.text(
+            x[-1],
+            y[-1],
+            "{:.0f}".format(angle),
+            color=color,
+            fontsize=6,
+            ha="center",
+            va="center",
+            bbox={"facecolor": "black", "alpha": 0.35, "edgecolor": "none", "pad": 1},
+        )
+
+
 def save_a2_probe_summaries(probe_images, pairs, plot_dir):
     a2_pairs = [
         (params, source_indices)
@@ -210,27 +240,27 @@ def main():
         stack = probe_images[:, :, source_indices]
         profiles, coords = extract_line_profiles_from_stack(stack, num_lines=37, radius=80)
         profiles_np = asnumpy(profiles)
+        angle_indices = cardinal_diagonal_angle_indices(coords)
+        colors = profile_line_colors(len(angle_indices))
 
         fig, axes = plt.subplots(2, 2, figsize=(12, 8))
         for local_index, c1_offset in enumerate(C1_OFFSETS):
             image_axis = axes[local_index, 0]
 
             image_axis.imshow(stack[:, :, local_index], cmap="magma")
+            overlay_profile_lines(image_axis, coords, angle_indices, colors)
             image_axis.set_title("Probe image: C1_offset={} nm".format(c1_offset))
             image_axis.set_axis_off()
 
         # The original notebook samples 36 angles; plot cardinal/diagonal
         # directions to keep each offset row readable.
-        angle_indices = [
-            index for index, angle in enumerate(coords["angles_deg"])
-            if np.isclose(angle % 45, 0)
-        ]
         for local_index, c1_offset in enumerate(C1_OFFSETS):
             profile_axis = axes[local_index, 1]
-            for angle_index in angle_indices:
+            for color, angle_index in zip(colors, angle_indices):
                 angle = coords["angles_deg"][angle_index]
                 profile_axis.plot(
                     profiles_np[angle_index, :, local_index],
+                    color=color,
                     label="{:.0f} deg".format(angle),
                 )
             profile_axis.set_title("Line profiles: C1_offset={} nm".format(c1_offset))
