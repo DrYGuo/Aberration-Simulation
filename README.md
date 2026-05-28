@@ -65,6 +65,8 @@ https://colab.research.google.com/github/DrYGuo/Aberration-Simulation/blob/main/
 
 For a Jupyter/VS Code notebook smoke test, run `notebooks/gpu_smoke_test.ipynb`. It uses the same project modules, prints whether CuPy is active, runs the reduced coefficient grid, and displays probe images plus line profiles inline.
 
+For the Uno et al. 2005 digitized-aberration workflow, run `notebooks/uno_et_al_2005_optik.ipynb`. It follows the Colab GPU smoke-test setup, extracts line profiles every `10` degrees, computes the profile quantities `Xigma`, `Mu`, and `Rho` from formulas `(45)-(47)`, then computes `Cdf_value`, `A1_value`, `B2_value`, `A2_value`, `Cs_value`, `S3_value`, and `A3_value` from formulas `(38)-(44)`.
+
 You can also check the active backend from a terminal:
 
 ```bash
