@@ -221,15 +221,20 @@ def chi(q, qphi, lam, df=0.0, aberrations=None):
     return 2 * cp.pi * phase / lam
 
 
+def aberration_angle_from_input_phase(phase_deg):
+    """Convert user-facing phase degrees to the internal aberration angle."""
+    return -cp.radians(phase_deg)
+
+
 def aberrations_from_parameters(params):
     """Convert notebook-style coefficient values into Aberration objects."""
     return [
         Aberration("C1", "C1", "Defocus", 10 * params["C1"] + 10 * params["C1_offset"], 0, 1, 0),
-        Aberration("A1", "A1", "2-Fold Astigmatism", 10 * params["A1_amp"], -cp.radians(params["A1_phase"]), 1, 2),
-        Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], -cp.radians(params["A2_phase"]), 2, 3),
-        Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), -cp.radians(params.get("B2_phase", 0)), 2, 1),
-        Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], -cp.radians(params["A3_phase"]), 3, 4),
-        Aberration("C32", "S3", "Axial Star Aberration", 1e4 * params.get("S3_amp", 0), -cp.radians(params.get("S3_phase", 0)), 3, 2),
+        Aberration("A1", "A1", "2-Fold Astigmatism", 10 * params["A1_amp"], aberration_angle_from_input_phase(params["A1_phase"]), 1, 2),
+        Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], aberration_angle_from_input_phase(params["A2_phase"]), 2, 3),
+        Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), aberration_angle_from_input_phase(params.get("B2_phase", 0)), 2, 1),
+        Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], aberration_angle_from_input_phase(params["A3_phase"]), 3, 4),
+        Aberration("C32", "S3", "Axial Star Aberration", 1e4 * params.get("S3_amp", 0), aberration_angle_from_input_phase(params.get("S3_phase", 0)), 3, 2),
         Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
     ]
 
@@ -246,11 +251,11 @@ def _phase_for_parameter_table(q_mask, qphi_mask, lam, df, parameter_table):
     S3_amp = 1e4 * parameter_table["S3_amp"][None, :]
     C3_amp = 1e7 * parameter_table["C3"][None, :]
 
-    A1_angle = -cp.radians(parameter_table["A1_phase"])[None, :]
-    A2_angle = -cp.radians(parameter_table["A2_phase"])[None, :]
-    B2_angle = -cp.radians(parameter_table["B2_phase"])[None, :]
-    A3_angle = -cp.radians(parameter_table["A3_phase"])[None, :]
-    S3_angle = -cp.radians(parameter_table["S3_phase"])[None, :]
+    A1_angle = aberration_angle_from_input_phase(parameter_table["A1_phase"])[None, :]
+    A2_angle = aberration_angle_from_input_phase(parameter_table["A2_phase"])[None, :]
+    B2_angle = aberration_angle_from_input_phase(parameter_table["B2_phase"])[None, :]
+    A3_angle = aberration_angle_from_input_phase(parameter_table["A3_phase"])[None, :]
+    S3_angle = aberration_angle_from_input_phase(parameter_table["S3_phase"])[None, :]
     qphi = qphi_mask[:, None]
 
     phase = qlam ** 2 / 2 * df
