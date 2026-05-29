@@ -36,7 +36,7 @@ For GPU acceleration, install the CuPy package that matches your CUDA version se
 python scripts/run_smoke_test.py
 ```
 
-The smoke test uses 326 targeted cases: one no-aberration baseline, ten `C3`-only combinations, sixty-four `A1`-only combinations, twenty-five `A2`-only combinations spanning the original notebook's larger A2 amplitude steps and phases, and sixty-three pure `B2/C21` combinations with amplitude `0..3` in `0.5` steps and phase `0..360` degrees in `45` degree steps, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, 3-fold astigmatism, axial coma, and the two requested C1-offset conditions.
+The smoke test uses 486 targeted cases: one no-aberration baseline, ten `C3`-only combinations, sixty-four `A1`-only combinations, twenty-five `A2`-only combinations spanning the original notebook's larger A2 amplitude steps and phases, sixty-three pure `B2/C21` combinations with amplitude `0..3` in `0.5` steps and phase `0..360` degrees in `45` degree steps, forty `A3` combinations, and forty `S3/C32` combinations, each evaluated at `C1_offset=-909 nm` and `C1_offset=+909 nm`. This keeps the test interpretable while covering isolated spherical aberration, 2-fold astigmatism, 3-fold astigmatism, axial coma, four-fold astigmatism, axial star aberration, and the two requested C1-offset conditions.
 
 This writes:
 
@@ -66,6 +66,18 @@ https://colab.research.google.com/github/DrYGuo/Aberration-Simulation/blob/main/
 For a Jupyter/VS Code notebook smoke test, run `notebooks/gpu_smoke_test.ipynb`. It uses the same project modules, prints whether CuPy is active, runs the reduced coefficient grid, and displays probe images plus line profiles inline.
 
 For the Uno et al. 2005 digitized-aberration workflow, run `notebooks/uno_et_al_2005_optik.ipynb`. It follows the Colab GPU smoke-test setup, extracts line profiles every `10` counter-clockwise degrees, computes the profile quantities `Xigma`, `Mu`, and `Rho` from formulas `(45)-(47)`, then computes `Cdf_value`, `A1_value`, `B2_value`, `A2_value`, `Cs_value`, `S3_value`, and `A3_value` from formulas `(38)-(44)`.
+
+The fitted Uno harmonic phase convention is based on `notebooks/uno_et_al_2005_optik_auto_convention_search.ipynb`, using the Colab-downloaded result `uno_auto_convention_results.zip`. The primary reported phase is computed as `sign * raw_complex_phase / harmonic_order + offset`, wrapped to the coefficient period. The current fitted summary is:
+
+| coefficient | sign | offset | period | mean abs error |
+| --- | ---: | ---: | ---: | ---: |
+| `A1_value` | `+1` | `90 deg` | `180 deg` | `0.023 deg` |
+| `B2_value` / `C21` | `+1` | `0 deg` | `360 deg` | `<1e-12 deg` |
+| `A2_value` | `+1` | `0 deg` | `120 deg` | `<1e-12 deg` |
+| `A3_value` | `+1` | `45 deg` | `90 deg` | `<1e-12 deg` |
+| `S3_value` / `C32` | `+1` | `0 deg` | `180 deg` | `0.034 deg` |
+
+The auto-search JSON reported `180 deg` for `S3_value`, which is equivalent to `0 deg` because the S3/C32 phase period is `180 deg`.
 
 You can also check the active backend from a terminal:
 
