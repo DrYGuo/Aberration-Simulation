@@ -72,6 +72,23 @@ def q_space_array(pixels, gridsize):
     ]
 
 
+def _normalization_for_axes(array, axes):
+    normalization = 1
+    for axis in axes:
+        normalization *= array.shape[axis]
+    return normalization
+
+
+def fft2_em(real_space_wave, axes=(0, 1)):
+    """EM/crystallography forward transform: real space to reciprocal space."""
+    return np.fft.ifft2(real_space_wave, axes=axes) * _normalization_for_axes(real_space_wave, axes)
+
+
+def ifft2_em(reciprocal_space_wave, axes=(0, 1)):
+    """EM/crystallography inverse transform: reciprocal space to real space."""
+    return np.fft.fft2(reciprocal_space_wave, axes=axes) / _normalization_for_axes(reciprocal_space_wave, axes)
+
+
 def chi(q, qphi, lam, df=0.0, aberrations=None):
     """Aberration phase function."""
     aberrations = aberrations or []
@@ -253,8 +270,8 @@ def make_contrast_transfer_function(
 
 def compute_probe_image(ctf_tensor, sigma=2.0):
     """Compute smoothed probe intensities from a CTF tensor."""
-    ctf_real = np.fft.ifft2(ctf_tensor, axes=(0, 1))
-    shifted = np.fft.fftshift(ctf_real, axes=(0, 1))
+    probe_wave = ifft2_em(ctf_tensor, axes=(0, 1))
+    shifted = np.fft.fftshift(probe_wave, axes=(0, 1))
     probe_image = np.abs(shifted * np.conj(shifted))
     smooth_sigma = (sigma, sigma) + (0,) * (probe_image.ndim - 2)
     probe_image_final = gaussian_filter(probe_image, sigma=smooth_sigma, mode="constant")

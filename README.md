@@ -57,19 +57,19 @@ Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for t
 
 The probe simulation follows a Nion-style aberration convention adapted to the project phase-sign choice. Aberration input phases are stored directly as internal angles, then evaluated as `cos(m * (qphi - angle))`. For example, an input phase `A1_phase` is stored internally as `A1_angle = radians(A1_phase)`. The same convention is implemented in the compatibility `Aberration`/`chi()` path and in the vectorized GPU path, but those paths are alternatives; the phase sign is not applied twice in one calculation.
 
-The reciprocal-space phase is inserted into the CTF as `exp(+1j * chi)`. This removes the previous paired signs `angle = -input_phase` and `CTF = exp(-i chi)`. The probe wave is then computed from the CTF with NumPy/CuPy `ifft2`, whose inverse-DFT convention uses the positive exponential sign. In short, the current implemented simulation convention is:
+The reciprocal-space phase is inserted into the CTF as `exp(+1j * chi)`. This removes the previous paired signs `angle = -input_phase` and `CTF = exp(-i chi)`. The probe wave is then computed from the CTF with the project EM inverse FFT wrapper, whose reciprocal-to-real convention uses the negative exponential sign. In short, the current implemented simulation convention is:
 
 ```text
 angle = input_phase
 chi term = amplitude * cos(m * (qphi - angle))
 CTF = exp(+i chi)
-probe wave = NumPy/CuPy IFFT2(CTF)
+probe wave = ifft2_em(CTF)
 probe intensity = abs(probe wave)^2
 ```
 
 Changing both of the previous signs is not generally an algebraic no-op for a fixed input phase. The old angular mapping gave `cos(m * (qphi + input_phase))`, while the current one gives `cos(m * (qphi - input_phase))`; the CTF sign change then complex-conjugates the phase factor. Depending on symmetry, this can appear as a reflected or conjugated probe, but directional aberration phase reporting should be refit after changing the convention.
 
-Fourier-transform sign convention remains a separate point to check. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the EM-style wrappers corresponding to that convention would be `fft2_em(f) = np.fft.ifft2(f) * f.size` and `ifft2_em(F) = np.fft.fft2(F) / F.size`. The current code has not yet been changed to those wrappers.
+Fourier-transform sign convention is handled explicitly. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the project uses wrappers in both CPU and GPU code: `fft2_em(f) = np.fft.ifft2(f) * N_axes` and `ifft2_em(F) = np.fft.fft2(F) / N_axes`, with the same expressions implemented through CuPy for the GPU path. Here `N_axes` is the product of the transformed axes only, so stacked probe batches are normalized by image size, not by the number of coefficient combinations. Probe formation uses `ifft2_em`.
 
 Displayed line-profile angles increase counter-clockwise: `0 deg` points right and `90 deg` points up. This is implemented by sampling `x = x_center + cos(theta) * offset` and `y = y_center - sin(theta) * offset`, because image row coordinates increase downward.
 
