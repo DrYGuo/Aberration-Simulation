@@ -79,6 +79,8 @@ The fitted Uno harmonic phase convention is based on `notebooks/uno_et_al_2005_o
 
 The auto-search JSON reported `180 deg` for `S3_value`, which is equivalent to `0 deg` because the S3/C32 phase period is `180 deg`.
 
+This convention bridge compares Uno's digitized probe-profile coefficients with the Nion-style convention used by Hamish Brown's PyMS probe code and by this simulator. In the simulation, the aberration angle is stored as the negative of the input phase before evaluating `cos(m * (qphi - angle))`, and the CTF uses `exp(-1j * chi)`. Those two signs belong to the simulator's reciprocal-space phase convention. The fitted Uno offsets are separate: they convert the raw complex Uno values onto the simulation convention. In this mapping, Uno `A1_value` and `A3_value` differ from the Nion/Hamish/PyMS convention by a complex factor of `-1`; after dividing by harmonic order, that becomes the reported `90 deg` offset for A1/order 2 and `45 deg` offset for A3/order 4. `B2/C21`, `A2`, and `S3/C32` need no additional offset.
+
 You can also check the active backend from a terminal:
 
 ```bash
