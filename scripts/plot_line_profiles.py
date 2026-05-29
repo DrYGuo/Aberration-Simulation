@@ -271,6 +271,8 @@ def main():
     print("profile case families:", family_counts)
     save_probe_summary(probe_images, pairs, plot_dir, "a2")
     save_probe_summary(probe_images, pairs, plot_dir, "b2")
+    save_probe_summary(probe_images, pairs, plot_dir, "a3")
+    save_probe_summary(probe_images, pairs, plot_dir, "s3")
 
     for plot_index, (representative_params, source_indices) in enumerate(pairs):
         stack = probe_images[:, :, source_indices]
