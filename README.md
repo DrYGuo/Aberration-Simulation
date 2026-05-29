@@ -55,21 +55,23 @@ Each plot compares the `C1_offset=-909 nm` and `C1_offset=+909 nm` results for t
 
 ## Conventions
 
-The probe simulation follows the Nion-style aberration convention used by Hamish Brown's PyMS probe code. Aberration input phases are converted to internal angles with a minus sign, then evaluated as `cos(m * (qphi - angle))`. For example, an input phase `A1_phase` is stored internally as `A1_angle = -radians(A1_phase)`. The same convention is implemented in the compatibility `Aberration`/`chi()` path and in the vectorized GPU path, but those paths are alternatives; the minus sign is not applied twice in one calculation.
+The probe simulation follows a Nion-style aberration convention adapted to the project phase-sign choice. Aberration input phases are stored directly as internal angles, then evaluated as `cos(m * (qphi - angle))`. For example, an input phase `A1_phase` is stored internally as `A1_angle = radians(A1_phase)`. The same convention is implemented in the compatibility `Aberration`/`chi()` path and in the vectorized GPU path, but those paths are alternatives; the phase sign is not applied twice in one calculation.
 
-The reciprocal-space phase is inserted into the CTF as `exp(-1j * chi)`. The probe wave is then computed from the CTF with `ifft2`, whose inverse-DFT convention uses the positive exponential sign. In short, the current simulation convention is:
+The reciprocal-space phase is inserted into the CTF as `exp(+1j * chi)`. This removes the previous paired signs `angle = -input_phase` and `CTF = exp(-i chi)`. The probe wave is then computed from the CTF with NumPy/CuPy `ifft2`, whose inverse-DFT convention uses the positive exponential sign. In short, the current implemented simulation convention is:
 
 ```text
-angle = -input_phase
+angle = input_phase
 chi term = amplitude * cos(m * (qphi - angle))
-CTF = exp(-i chi)
-probe wave = IFFT2(CTF)
+CTF = exp(+i chi)
+probe wave = NumPy/CuPy IFFT2(CTF)
 probe intensity = abs(probe wave)^2
 ```
 
+Fourier-transform sign convention remains a separate point to check. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the EM-style wrappers corresponding to that convention would be `fft2_em(f) = np.fft.ifft2(f) * f.size` and `ifft2_em(F) = np.fft.fft2(F) / F.size`. The current code has not yet been changed to those wrappers.
+
 Displayed line-profile angles increase counter-clockwise: `0 deg` points right and `90 deg` points up. This is implemented by sampling `x = x_center + cos(theta) * offset` and `y = y_center - sin(theta) * offset`, because image row coordinates increase downward.
 
-For the Uno et al. 2005 digitized-aberration workflow, the fitted harmonic phase convention maps Uno's raw complex profile coefficients onto the Nion/Hamish/PyMS simulation convention. The primary reported Uno phase is computed as `sign * raw_complex_phase / harmonic_order + offset`, wrapped to the coefficient period. The current fitted summary from `notebooks/uno_et_al_2005_optik_auto_convention_search.ipynb` and the Colab-downloaded result `uno_auto_convention_results.zip` is:
+For the Uno et al. 2005 digitized-aberration workflow, the fitted harmonic phase convention maps Uno's raw complex profile coefficients onto the simulation convention. The primary reported Uno phase is computed as `sign * raw_complex_phase / harmonic_order + offset`, wrapped to the coefficient period. The most recent fitted summary from `notebooks/uno_et_al_2005_optik_auto_convention_search.ipynb` and the Colab-downloaded result `uno_auto_convention_results.zip` was:
 
 | coefficient | sign | offset | period | mean abs error |
 | --- | ---: | ---: | ---: | ---: |
@@ -79,7 +81,7 @@ For the Uno et al. 2005 digitized-aberration workflow, the fitted harmonic phase
 | `A3_value` | `+1` | `45 deg` | `90 deg` | `<1e-12 deg` |
 | `S3_value` / `C32` | `+1` | `0 deg` | `180 deg` | `0.034 deg` |
 
-The auto-search JSON reported `180 deg` for `S3_value`, which is equivalent to `0 deg` because the S3/C32 phase period is `180 deg`. Uno `A1_value` and `A3_value` differ from the Nion/Hamish/PyMS convention by a complex factor of `-1`; after dividing by harmonic order, that becomes the reported `90 deg` offset for A1/order 2 and `45 deg` offset for A3/order 4. `B2/C21`, `A2`, and `S3/C32` need no additional offset. These offsets are convention conversions applied during phase reporting, not changes to Uno formulas `(38)-(44)`.
+The auto-search JSON reported `180 deg` for `S3_value`, which is equivalent to `0 deg` because the S3/C32 phase period is `180 deg`. Uno `A1_value` and `A3_value` differed from the previous Nion/Hamish/PyMS mapping by a complex factor of `-1`; after dividing by harmonic order, that became the reported `90 deg` offset for A1/order 2 and `45 deg` offset for A3/order 4. Because the simulation phase signs have now changed to `angle = input_phase` and `CTF = exp(+i chi)`, this Uno phase table should be regenerated with `notebooks/uno_et_al_2005_optik_auto_convention_search.ipynb` before treating the offsets as final for new simulations.
 
 ## Run on Colab GPU
 

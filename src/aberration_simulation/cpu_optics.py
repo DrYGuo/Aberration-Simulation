@@ -6,6 +6,9 @@ import gc
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
+ABERRATION_INPUT_PHASE_SIGN = 1.0
+CTF_PHASE_SIGN = 1.0
+
 
 @dataclass
 class Aberration:
@@ -149,11 +152,51 @@ def aberrations_from_parameters(params):
     """Convert notebook-style coefficient values into Aberration objects."""
     return [
         Aberration("C1", "C1", "Defocus", 10 * params["C1"] + 10 * params["C1_offset"], 0, 1, 0),
-        Aberration("A1", "A1", "2-Fold Astigmatism", 10 * params["A1_amp"], -np.radians(params["A1_phase"]), 1, 2),
-        Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], -np.radians(params["A2_phase"]), 2, 3),
-        Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), -np.radians(params.get("B2_phase", 0)), 2, 1),
-        Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], -np.radians(params["A3_phase"]), 3, 4),
-        Aberration("C32", "S3", "Axial Star Aberration", 1e4 * params.get("S3_amp", 0), -np.radians(params.get("S3_phase", 0)), 3, 2),
+        Aberration(
+            "A1",
+            "A1",
+            "2-Fold Astigmatism",
+            10 * params["A1_amp"],
+            ABERRATION_INPUT_PHASE_SIGN * np.radians(params["A1_phase"]),
+            1,
+            2,
+        ),
+        Aberration(
+            "A2",
+            "A2",
+            "3-Fold Astigmatism",
+            1e4 * params["A2_amp"],
+            ABERRATION_INPUT_PHASE_SIGN * np.radians(params["A2_phase"]),
+            2,
+            3,
+        ),
+        Aberration(
+            "B2",
+            "C21",
+            "Axial Coma",
+            1e4 * params.get("B2_amp", 0),
+            ABERRATION_INPUT_PHASE_SIGN * np.radians(params.get("B2_phase", 0)),
+            2,
+            1,
+        ),
+        Aberration(
+            "A3",
+            "A3",
+            "4-Fold Astigmatism",
+            1e4 * params["A3_amp"],
+            ABERRATION_INPUT_PHASE_SIGN * np.radians(params["A3_phase"]),
+            3,
+            4,
+        ),
+        Aberration(
+            "C32",
+            "S3",
+            "Axial Star Aberration",
+            1e4 * params.get("S3_amp", 0),
+            ABERRATION_INPUT_PHASE_SIGN * np.radians(params.get("S3_phase", 0)),
+            3,
+            2,
+        ),
         Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
     ]
 
@@ -205,7 +248,7 @@ def make_contrast_transfer_function(
         phase = np.zeros(pix_dim, dtype=float)
         aberrations = aberrations_from_parameters(params)
         phase[mask] = chi(qarray1[mask], qphi[mask], lam, config.df, aberrations)
-        ctf_tensor[:, :, output_index][mask] = np.exp(-1j * phase[mask])
+        ctf_tensor[:, :, output_index][mask] = np.exp(CTF_PHASE_SIGN * 1j * phase[mask])
 
     gc.collect()
     return ctf_tensor, selected
