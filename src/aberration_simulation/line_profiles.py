@@ -8,6 +8,9 @@ from .backend import asnumpy, map_coordinates, xp
 def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, center=None):
     """Extract radial line profiles from a stack of images.
 
+    Positive angles are counter-clockwise in displayed image coordinates:
+    0 degrees points right and 90 degrees points up.
+
     Parameters
     ----------
     image_stack:
@@ -42,7 +45,7 @@ def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, cen
     offsets = xp.linspace(-radius, radius, 2 * radius + 1).reshape(1, -1)
 
     x_base = x_center + xp.cos(theta) * offsets
-    y_base = y_center + xp.sin(theta) * offsets
+    y_base = y_center - xp.sin(theta) * offsets
 
     profiles = []
     for image_index in range(num_images):
@@ -62,6 +65,7 @@ def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, cen
         "y": asnumpy(y_base),
         "radius": radius,
         "center": np.array(center, dtype=float),
+        "angle_direction": "counterclockwise",
     }
     return line_profiles, coordinates
 

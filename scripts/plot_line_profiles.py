@@ -297,7 +297,7 @@ def main():
                 profile_axis.plot(
                     profiles_np[angle_index, :, local_index],
                     color=color,
-                    label="{:.0f} deg".format(angle),
+                    label="{:.0f} deg CCW".format(angle),
                 )
             profile_axis.set_title("Line profiles: C1_offset={} nm".format(c1_offset))
             profile_axis.set_xlabel("pixel along line")
