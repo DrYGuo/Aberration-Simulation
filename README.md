@@ -77,13 +77,13 @@ For the Uno et al. 2005 digitized-aberration workflow, the fitted harmonic phase
 
 | coefficient | sign | offset | period | mean abs error |
 | --- | ---: | ---: | ---: | ---: |
-| `A1_value` | `+1` | `90 deg` | `180 deg` | `0.023 deg` |
-| `B2_value` / `C21` | `+1` | `0 deg` | `360 deg` | `<1e-12 deg` |
-| `A2_value` | `+1` | `0 deg` | `120 deg` | `<1e-12 deg` |
-| `A3_value` | `+1` | `45 deg` | `90 deg` | `<1e-12 deg` |
-| `S3_value` / `C32` | `+1` | `0 deg` | `180 deg` | `0.034 deg` |
+| `A1_value` | `-1` | `90 deg` | `180 deg` | `0.023 deg` |
+| `B2_value` / `C21` | `-1` | `0 deg` | `360 deg` | `<1e-12 deg` |
+| `A2_value` | `-1` | `0 deg` | `120 deg` | `<1e-12 deg` |
+| `A3_value` | `-1` | `45 deg` | `90 deg` | `<1e-12 deg` |
+| `S3_value` / `C32` | `-1` | `0 deg` | `180 deg` | `0.034 deg` |
 
-The auto-search JSON reported `180 deg` for `S3_value`, which is equivalent to `0 deg` because the S3/C32 phase period is `180 deg`. Uno `A1_value` and `A3_value` differed from the previous Nion/Hamish/PyMS mapping by a complex factor of `-1`; after dividing by harmonic order, that became the reported `90 deg` offset for A1/order 2 and `45 deg` offset for A3/order 4. Because the simulation phase signs have now changed to `angle = input_phase` and `CTF = exp(+i chi)`, this Uno phase table should be regenerated with `notebooks/uno_et_al_2005_optik_auto_convention_search.ipynb` before treating the offsets as final for new simulations.
+The downloaded auto-search JSON reported `360 deg` for `B2_value`, which is equivalent to `0 deg` because B2/C21 has a `360 deg` phase period. The raw Colab result also exposed an A2 tie-breaking issue: sorting candidate conventions by median error first chose `sign=+1`, producing a mean A2 error of `24 deg` and max error of `60 deg`. The notebook now chooses the convention by mean error first, then max and median error, which selects the correct `A2_value` convention `sign=-1, offset=0 deg`.
 
 ## Run on Colab GPU
 
