@@ -67,6 +67,8 @@ probe wave = NumPy/CuPy IFFT2(CTF)
 probe intensity = abs(probe wave)^2
 ```
 
+Changing both of the previous signs is not generally an algebraic no-op for a fixed input phase. The old angular mapping gave `cos(m * (qphi + input_phase))`, while the current one gives `cos(m * (qphi - input_phase))`; the CTF sign change then complex-conjugates the phase factor. Depending on symmetry, this can appear as a reflected or conjugated probe, but directional aberration phase reporting should be refit after changing the convention.
+
 Fourier-transform sign convention remains a separate point to check. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the EM-style wrappers corresponding to that convention would be `fft2_em(f) = np.fft.ifft2(f) * f.size` and `ifft2_em(F) = np.fft.fft2(F) / F.size`. The current code has not yet been changed to those wrappers.
 
 Displayed line-profile angles increase counter-clockwise: `0 deg` points right and `90 deg` points up. This is implemented by sampling `x = x_center + cos(theta) * offset` and `y = y_center - sin(theta) * offset`, because image row coordinates increase downward.

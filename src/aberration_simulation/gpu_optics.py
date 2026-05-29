@@ -30,9 +30,6 @@ PARAMETER_NAMES = [
     "B2_phase",
 ]
 
-ABERRATION_INPUT_PHASE_SIGN = 1.0
-CTF_PHASE_SIGN = 1.0
-
 
 @dataclass
 class Aberration:
@@ -233,7 +230,7 @@ def aberrations_from_parameters(params):
             "A1",
             "2-Fold Astigmatism",
             10 * params["A1_amp"],
-            ABERRATION_INPUT_PHASE_SIGN * cp.radians(params["A1_phase"]),
+            cp.radians(params["A1_phase"]),
             1,
             2,
         ),
@@ -242,7 +239,7 @@ def aberrations_from_parameters(params):
             "A2",
             "3-Fold Astigmatism",
             1e4 * params["A2_amp"],
-            ABERRATION_INPUT_PHASE_SIGN * cp.radians(params["A2_phase"]),
+            cp.radians(params["A2_phase"]),
             2,
             3,
         ),
@@ -251,7 +248,7 @@ def aberrations_from_parameters(params):
             "C21",
             "Axial Coma",
             1e4 * params.get("B2_amp", 0),
-            ABERRATION_INPUT_PHASE_SIGN * cp.radians(params.get("B2_phase", 0)),
+            cp.radians(params.get("B2_phase", 0)),
             2,
             1,
         ),
@@ -260,7 +257,7 @@ def aberrations_from_parameters(params):
             "A3",
             "4-Fold Astigmatism",
             1e4 * params["A3_amp"],
-            ABERRATION_INPUT_PHASE_SIGN * cp.radians(params["A3_phase"]),
+            cp.radians(params["A3_phase"]),
             3,
             4,
         ),
@@ -269,7 +266,7 @@ def aberrations_from_parameters(params):
             "S3",
             "Axial Star Aberration",
             1e4 * params.get("S3_amp", 0),
-            ABERRATION_INPUT_PHASE_SIGN * cp.radians(params.get("S3_phase", 0)),
+            cp.radians(params.get("S3_phase", 0)),
             3,
             2,
         ),
@@ -289,11 +286,11 @@ def _phase_for_parameter_table(q_mask, qphi_mask, lam, df, parameter_table):
     S3_amp = 1e4 * parameter_table["S3_amp"][None, :]
     C3_amp = 1e7 * parameter_table["C3"][None, :]
 
-    A1_angle = ABERRATION_INPUT_PHASE_SIGN * cp.radians(parameter_table["A1_phase"])[None, :]
-    A2_angle = ABERRATION_INPUT_PHASE_SIGN * cp.radians(parameter_table["A2_phase"])[None, :]
-    B2_angle = ABERRATION_INPUT_PHASE_SIGN * cp.radians(parameter_table["B2_phase"])[None, :]
-    A3_angle = ABERRATION_INPUT_PHASE_SIGN * cp.radians(parameter_table["A3_phase"])[None, :]
-    S3_angle = ABERRATION_INPUT_PHASE_SIGN * cp.radians(parameter_table["S3_phase"])[None, :]
+    A1_angle = cp.radians(parameter_table["A1_phase"])[None, :]
+    A2_angle = cp.radians(parameter_table["A2_phase"])[None, :]
+    B2_angle = cp.radians(parameter_table["B2_phase"])[None, :]
+    A3_angle = cp.radians(parameter_table["A3_phase"])[None, :]
+    S3_angle = cp.radians(parameter_table["S3_phase"])[None, :]
     qphi = qphi_mask[:, None]
 
     phase = qlam ** 2 / 2 * df
@@ -360,7 +357,7 @@ def make_contrast_transfer_function(
             selected_table,
         )
         ctf_flat = ctf_tensor.reshape((-1, len(selected)))
-        ctf_flat[mask.ravel(), :] = cp.exp(CTF_PHASE_SIGN * 1j * chi_mask)
+        ctf_flat[mask.ravel(), :] = cp.exp(1j * chi_mask)
 
     cp.get_default_memory_pool().free_all_blocks()
     gc.collect()
