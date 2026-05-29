@@ -79,13 +79,13 @@ def choose_nonzero_parameter_indices(parameters, limit=4):
         ],
         [
             index for index, params in enumerate(parameters)
-            if any(abs(params.get(key, 0)) > 0 for key in ("A2_amp", "B2_amp", "A3_amp", "C1", "C1_offset"))
+            if any(abs(params.get(key, 0)) > 0 for key in ("A2_amp", "B2_amp", "A3_amp", "S3_amp", "C1", "C1_offset"))
         ],
         [
             index for index, params in enumerate(parameters)
             if sum(
                 abs(params.get(key, 0)) > 0
-                for key in ("A1_amp", "A2_amp", "B2_amp", "A3_amp", "C1", "C3", "C1_offset")
+                for key in ("A1_amp", "A2_amp", "B2_amp", "A3_amp", "S3_amp", "C1", "C3", "C1_offset")
             ) > 1
         ],
     ]
@@ -103,7 +103,7 @@ def choose_nonzero_parameter_indices(parameters, limit=4):
     for index, params in enumerate(parameters):
         if index in selected:
             continue
-        if any(abs(params.get(key, 0)) > 0 for key in ("A1_amp", "A2_amp", "B2_amp", "A3_amp", "C1", "C3", "C1_offset")):
+        if any(abs(params.get(key, 0)) > 0 for key in ("A1_amp", "A2_amp", "B2_amp", "A3_amp", "S3_amp", "C1", "C3", "C1_offset")):
             selected.append(index)
         if len(selected) >= limit:
             break

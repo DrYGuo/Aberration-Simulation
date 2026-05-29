@@ -25,7 +25,8 @@ FAMILY_ORDER = {
     "c3": 3,
     "a1": 4,
     "a3": 5,
-    "c1": 6,
+    "s3": 6,
+    "c1": 7,
 }
 COMBINATION_FIELDS = (
     "C1",
@@ -37,6 +38,8 @@ COMBINATION_FIELDS = (
     "B2_phase",
     "A3_amp",
     "A3_phase",
+    "S3_amp",
+    "S3_phase",
     "C3",
 )
 
@@ -52,6 +55,8 @@ def load_smoke_outputs(path):
     for params in parameters:
         params.setdefault("B2_amp", 0.0)
         params.setdefault("B2_phase", 0.0)
+        params.setdefault("S3_amp", 0.0)
+        params.setdefault("S3_phase", 0.0)
     return data["probe_images"], parameters
 
 
@@ -70,6 +75,7 @@ def combination_title(params):
         "A2={}@{}".format(_fmt(params["A2_amp"]), _fmt(params["A2_phase"])),
         "B2/C21={}@{}".format(_fmt(params["B2_amp"]), _fmt(params["B2_phase"])),
         "A3={}@{}".format(_fmt(params["A3_amp"]), _fmt(params["A3_phase"])),
+        "S3/C32={}@{}".format(_fmt(params["S3_amp"]), _fmt(params["S3_phase"])),
         "C3={}".format(_fmt(params["C3"])),
     ]
     return ", ".join(parts)
@@ -85,6 +91,8 @@ def aberration_family(params):
         return "a1"
     if not np.isclose(params["C3"], 0):
         return "c3"
+    if not np.isclose(params["S3_amp"], 0):
+        return "s3"
     if not np.isclose(params["A3_amp"], 0):
         return "a3"
     if not np.isclose(params["C1"], 0):
@@ -99,7 +107,7 @@ def _slug(value):
 
 def plot_filename(plot_index, params):
     family = aberration_family(params)
-    if family in ("a1", "a2", "b2", "a3"):
+    if family in ("a1", "a2", "b2", "a3", "s3"):
         amp_key = "{}_amp".format(family.upper())
         phase_key = "{}_phase".format(family.upper())
         suffix = "{}_amp{}_phase{}".format(

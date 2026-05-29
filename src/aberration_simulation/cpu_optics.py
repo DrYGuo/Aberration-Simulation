@@ -103,11 +103,14 @@ def build_parameter_grid(
     A3_phase_sequence,
     B2_amp_sequence=(0,),
     B2_phase_sequence=(0,),
+    S3_amp_sequence=(0,),
+    S3_phase_sequence=(0,),
 ):
     """Build a flat list of parameter dictionaries in notebook meshgrid order."""
     names = [
         "C1_offset",
         "A3_amp",
+        "S3_amp",
         "A2_amp",
         "B2_amp",
         "C1",
@@ -116,11 +119,13 @@ def build_parameter_grid(
         "A1_phase",
         "A2_phase",
         "A3_phase",
+        "S3_phase",
         "B2_phase",
     ]
     arrays = [
         _as_array(C1_offset_sequence),
         _as_array(A3_amp_sequence),
+        _as_array(S3_amp_sequence),
         _as_array(A2_amp_sequence),
         _as_array(B2_amp_sequence),
         _as_array(C1_sequence),
@@ -129,6 +134,7 @@ def build_parameter_grid(
         _as_array(A1_phase_sequence),
         _as_array(A2_phase_sequence),
         _as_array(A3_phase_sequence),
+        _as_array(S3_phase_sequence),
         _as_array(B2_phase_sequence),
     ]
     mesh = np.meshgrid(*arrays, indexing="ij")
@@ -147,6 +153,7 @@ def aberrations_from_parameters(params):
         Aberration("A2", "A2", "3-Fold Astigmatism", 1e4 * params["A2_amp"], -np.radians(params["A2_phase"]), 2, 3),
         Aberration("B2", "C21", "Axial Coma", 1e4 * params.get("B2_amp", 0), -np.radians(params.get("B2_phase", 0)), 2, 1),
         Aberration("A3", "A3", "4-Fold Astigmatism", 1e4 * params["A3_amp"], -np.radians(params["A3_phase"]), 3, 4),
+        Aberration("C32", "S3", "Axial Star Aberration", 1e4 * params.get("S3_amp", 0), -np.radians(params.get("S3_phase", 0)), 3, 2),
         Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
     ]
 

@@ -19,6 +19,7 @@ from aberration_simulation.optics import (
 BASELINE_PARAMETERS = {
     "C1_offset": 0,
     "A3_amp": 0,
+    "S3_amp": 0,
     "A2_amp": 0,
     "B2_amp": 0,
     "C1": 0,
@@ -27,6 +28,7 @@ BASELINE_PARAMETERS = {
     "A1_phase": 0,
     "A2_phase": 0,
     "A3_phase": 0,
+    "S3_phase": 0,
     "B2_phase": 0,
 }
 C1_OFFSETS = [-909, 909]
@@ -41,6 +43,8 @@ def aberration_family(params):
         return "a1"
     if params["C3"] != 0:
         return "c3"
+    if params["S3_amp"] != 0:
+        return "s3"
     if params["A3_amp"] != 0:
         return "a3"
     if params["C1"] != 0:
