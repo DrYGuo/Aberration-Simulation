@@ -81,12 +81,23 @@ def _normalization_for_axes(array, axes):
 
 def fft2_em(real_space_wave, axes=(0, 1)):
     """EM/crystallography forward transform: real space to reciprocal space."""
-    return np.fft.ifft2(real_space_wave, axes=axes) * _normalization_for_axes(real_space_wave, axes)
+    return np.fft.ifft2(real_space_wave, axes=axes) * _normalization_for_axes(
+        real_space_wave,
+        axes,
+    )
 
 
 def ifft2_em(reciprocal_space_wave, axes=(0, 1)):
     """EM/crystallography inverse transform: reciprocal space to real space."""
-    return np.fft.fft2(reciprocal_space_wave, axes=axes) / _normalization_for_axes(reciprocal_space_wave, axes)
+    return np.fft.fft2(reciprocal_space_wave, axes=axes) / _normalization_for_axes(
+        reciprocal_space_wave,
+        axes,
+    )
+
+
+def ifft2_em_unnormalized(reciprocal_space_wave, axes=(0, 1)):
+    """EM-sign inverse transform without scalar normalization."""
+    return np.fft.fft2(reciprocal_space_wave, axes=axes)
 
 
 def chi(q, qphi, lam, df=0.0, aberrations=None):
@@ -163,55 +174,33 @@ def build_parameter_grid(
 
 
 def aberrations_from_parameters(params):
-    """Convert notebook-style coefficient values into Aberration objects."""
+    """Convert notebook-style coefficient values into Aberration objects.
+
+    Phase inputs are degrees in the current simulation convention: they are
+    converted directly to internal radians before `cos(m * (qphi - angle))`.
+    """
+    c1 = 10 * (params["C1"] + params["C1_offset"])
+    a1 = 10 * params["A1_amp"]
+    a2 = 1e4 * params["A2_amp"]
+    b2 = 1e4 * params.get("B2_amp", 0)
+    a3 = 1e4 * params["A3_amp"]
+    s3 = 1e4 * params.get("S3_amp", 0)
+    c3 = 1e7 * params["C3"]
+
+    a1_phase = np.radians(params["A1_phase"])
+    a2_phase = np.radians(params["A2_phase"])
+    b2_phase = np.radians(params.get("B2_phase", 0))
+    a3_phase = np.radians(params["A3_phase"])
+    s3_phase = np.radians(params.get("S3_phase", 0))
+
     return [
-        Aberration("C1", "C1", "Defocus", 10 * params["C1"] + 10 * params["C1_offset"], 0, 1, 0),
-        Aberration(
-            "A1",
-            "A1",
-            "2-Fold Astigmatism",
-            10 * params["A1_amp"],
-            np.radians(params["A1_phase"]),
-            1,
-            2,
-        ),
-        Aberration(
-            "A2",
-            "A2",
-            "3-Fold Astigmatism",
-            1e4 * params["A2_amp"],
-            np.radians(params["A2_phase"]),
-            2,
-            3,
-        ),
-        Aberration(
-            "B2",
-            "C21",
-            "Axial Coma",
-            1e4 * params.get("B2_amp", 0),
-            np.radians(params.get("B2_phase", 0)),
-            2,
-            1,
-        ),
-        Aberration(
-            "A3",
-            "A3",
-            "4-Fold Astigmatism",
-            1e4 * params["A3_amp"],
-            np.radians(params["A3_phase"]),
-            3,
-            4,
-        ),
-        Aberration(
-            "C32",
-            "S3",
-            "Axial Star Aberration",
-            1e4 * params.get("S3_amp", 0),
-            np.radians(params.get("S3_phase", 0)),
-            3,
-            2,
-        ),
-        Aberration("C3", "C3", "Spherical Aberration", 1e7 * params["C3"], 0, 3, 0),
+        Aberration("C1", "C1", "Defocus", c1, 0, 1, 0),
+        Aberration("A1", "A1", "2-Fold Astigmatism", a1, a1_phase, 1, 2),
+        Aberration("A2", "A2", "3-Fold Astigmatism", a2, a2_phase, 2, 3),
+        Aberration("B2", "C21", "Axial Coma", b2, b2_phase, 2, 1),
+        Aberration("A3", "A3", "4-Fold Astigmatism", a3, a3_phase, 3, 4),
+        Aberration("C32", "S3", "Axial Star Aberration", s3, s3_phase, 3, 2),
+        Aberration("C3", "C3", "Spherical Aberration", c3, 0, 3, 0),
     ]
 
 
@@ -270,11 +259,13 @@ def make_contrast_transfer_function(
 
 def compute_probe_image(ctf_tensor, sigma=2.0):
     """Compute smoothed probe intensities from a CTF tensor."""
-    probe_wave = ifft2_em(ctf_tensor, axes=(0, 1))
+    probe_wave = ifft2_em_unnormalized(ctf_tensor, axes=(0, 1))
     shifted = np.fft.fftshift(probe_wave, axes=(0, 1))
     probe_image = np.abs(shifted * np.conj(shifted))
     smooth_sigma = (sigma, sigma) + (0,) * (probe_image.ndim - 2)
     probe_image_final = gaussian_filter(probe_image, sigma=smooth_sigma, mode="constant")
+    probe_sum = np.sum(probe_image_final, axis=(0, 1), keepdims=True)
+    probe_image_final = probe_image_final / np.where(probe_sum == 0, 1, probe_sum)
     gc.collect()
     return probe_image_final
 

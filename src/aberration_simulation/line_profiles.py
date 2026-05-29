@@ -47,18 +47,15 @@ def extract_line_profiles_from_stack(image_stack, num_lines=37, radius=None, cen
     x_base = x_center + xp.cos(theta) * offsets
     y_base = y_center - xp.sin(theta) * offsets
 
-    profiles = []
-    for image_index in range(num_images):
-        coords = xp.vstack((y_base.reshape(1, -1), x_base.reshape(1, -1)))
-        sampled = map_coordinates(
-            stack[:, :, image_index],
-            coords,
-            order=1,
-            mode="nearest",
-        )
-        profiles.append(sampled.reshape(num_lines - 1, 2 * radius + 1))
-
-    line_profiles = xp.stack(profiles, axis=2)
+    profile_shape = (num_lines - 1, 2 * radius + 1, num_images)
+    x_coords = xp.broadcast_to(x_base[:, :, None], profile_shape)
+    y_coords = xp.broadcast_to(y_base[:, :, None], profile_shape)
+    image_coords = xp.broadcast_to(
+        xp.arange(num_images, dtype=float).reshape(1, 1, -1),
+        profile_shape,
+    )
+    coords = xp.stack((y_coords, x_coords, image_coords))
+    line_profiles = map_coordinates(stack, coords, order=1, mode="nearest")
     coordinates = {
         "angles_deg": asnumpy(angles),
         "x": asnumpy(x_base),
