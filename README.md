@@ -100,6 +100,8 @@ For a Jupyter/VS Code notebook smoke test, run `notebooks/gpu_smoke_test.ipynb`.
 
 For the Uno et al. 2005 digitized-aberration workflow, run `notebooks/uno_et_al_2005_optik.ipynb`. It follows the Colab GPU smoke-test setup, extracts line profiles every `10` counter-clockwise degrees, computes the profile quantities `Xigma`, `Mu`, and `Rho` from formulas `(45)-(47)`, then computes `Cdf_value`, `A1_value`, `B2_value`, `A2_value`, `Cs_value`, `S3_value`, and `A3_value` from formulas `(38)-(44)`.
 
+For one-coefficient-at-a-time calibration plots, run `notebooks/uno_coefficient_relationships.ipynb`. It sweeps A1, B2/C21, A2, A3, and S3/C32 separately over several amplitudes and phases, computes the corresponding Uno values from paired under/over-focus line profiles, and saves amplitude/phase relationship plots plus a CSV under `outputs/uno_relationships/`.
+
 You can also check the active backend from a terminal:
 
 ```bash
