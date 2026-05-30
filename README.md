@@ -64,13 +64,13 @@ The reciprocal-space phase is inserted into the CTF as `exp(+1j * chi)`. This re
 angle = input_phase
 chi term = amplitude * cos(m * (qphi - angle))
 CTF = exp(+i chi)
-probe wave = ifft2_em_unnormalized(CTF)
+probe wave = fft2(CTF)  # EM convention: ifft is forward, fft is inverse
 probe intensity = normalized(abs(probe wave)^2)
 ```
 
 Changing both of the previous signs is not generally an algebraic no-op for a fixed input phase. The old angular mapping gave `cos(m * (qphi + input_phase))`, while the current one gives `cos(m * (qphi - input_phase))`; the CTF sign change then complex-conjugates the phase factor. Depending on symmetry, this can appear as a reflected or conjugated probe, but directional aberration phase reporting should be refit after changing the convention.
 
-Fourier-transform sign convention is handled explicitly. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the project uses wrappers in both CPU and GPU code: `fft2_em(f) = np.fft.ifft2(f) * N_axes` and `ifft2_em(F) = np.fft.fft2(F) / N_axes`, with the same expressions implemented through CuPy for the GPU path. Here `N_axes` is the product of the transformed axes only, so stacked probe batches are normalized by image size, not by the number of coefficient combinations. Probe formation uses the same EM inverse sign through `ifft2_em_unnormalized`, then normalizes each smoothed probe image to unit summed intensity. This avoids an unnecessary scalar division before the explicit probe-image normalization.
+Fourier-transform sign convention is handled explicitly. Electron microscopy and crystallography often define the real-to-reciprocal transform with a positive exponential and the reciprocal-to-real inverse with a negative exponential. NumPy/CuPy use the opposite signs: `fft2` has the negative exponential and `ifft2` has the positive exponential plus normalization. Therefore, the project keeps exact wrappers in both CPU and GPU code: `fft2_em(f) = np.fft.ifft2(f) * N_axes` and `ifft2_em(F) = np.fft.fft2(F) / N_axes`, with the same expressions implemented through CuPy for the GPU path. Here `N_axes` is the product of the transformed axes only, so stacked probe batches are normalized by image size, not by the number of coefficient combinations. The hot probe-formation path calls `np.fft.fft2` / `cp.fft.fft2` directly with an inline EM-convention comment, then normalizes each smoothed probe image to unit summed intensity. This avoids the wrapper call and scalar division in the performance-critical path.
 
 Displayed line-profile angles increase counter-clockwise: `0 deg` points right and `90 deg` points up. This is implemented by sampling `x = x_center + cos(theta) * offset` and `y = y_center - sin(theta) * offset`, because image row coordinates increase downward.
 

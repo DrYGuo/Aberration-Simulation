@@ -95,11 +95,6 @@ def ifft2_em(reciprocal_space_wave, axes=(0, 1)):
     )
 
 
-def ifft2_em_unnormalized(reciprocal_space_wave, axes=(0, 1)):
-    """EM-sign inverse transform without scalar normalization."""
-    return np.fft.fft2(reciprocal_space_wave, axes=axes)
-
-
 def chi(q, qphi, lam, df=0.0, aberrations=None):
     """Aberration phase function."""
     aberrations = aberrations or []
@@ -193,15 +188,15 @@ def aberrations_from_parameters(params):
     a3_phase = np.radians(params["A3_phase"])
     s3_phase = np.radians(params.get("S3_phase", 0))
 
-    return [
-        Aberration("C1", "C1", "Defocus", c1, 0, 1, 0),
-        Aberration("A1", "A1", "2-Fold Astigmatism", a1, a1_phase, 1, 2),
-        Aberration("A2", "A2", "3-Fold Astigmatism", a2, a2_phase, 2, 3),
-        Aberration("B2", "C21", "Axial Coma", b2, b2_phase, 2, 1),
-        Aberration("A3", "A3", "4-Fold Astigmatism", a3, a3_phase, 3, 4),
-        Aberration("C32", "S3", "Axial Star Aberration", s3, s3_phase, 3, 2),
-        Aberration("C3", "C3", "Spherical Aberration", c3, 0, 3, 0),
-    ]
+    aberrations = []
+    aberrations.append(Aberration("C1", "C1", "Defocus", c1, 0, 1, 0))
+    aberrations.append(Aberration("A1", "A1", "2-Fold Astigmatism", a1, a1_phase, 1, 2))
+    aberrations.append(Aberration("A2", "A2", "3-Fold Astigmatism", a2, a2_phase, 2, 3))
+    aberrations.append(Aberration("B2", "C21", "Axial Coma", b2, b2_phase, 2, 1))
+    aberrations.append(Aberration("A3", "A3", "4-Fold Astigmatism", a3, a3_phase, 3, 4))
+    aberrations.append(Aberration("C32", "S3", "Axial Star Aberration", s3, s3_phase, 3, 2))
+    aberrations.append(Aberration("C3", "C3", "Spherical Aberration", c3, 0, 3, 0))
+    return aberrations
 
 
 def make_contrast_transfer_function(
@@ -259,7 +254,7 @@ def make_contrast_transfer_function(
 
 def compute_probe_image(ctf_tensor, sigma=2.0):
     """Compute smoothed probe intensities from a CTF tensor."""
-    probe_wave = ifft2_em_unnormalized(ctf_tensor, axes=(0, 1))
+    probe_wave = np.fft.fft2(ctf_tensor, axes=(0, 1))  # EM convention: ifft is forward, fft is inverse.
     shifted = np.fft.fftshift(probe_wave, axes=(0, 1))
     probe_image = np.abs(shifted * np.conj(shifted))
     smooth_sigma = (sigma, sigma) + (0,) * (probe_image.ndim - 2)
