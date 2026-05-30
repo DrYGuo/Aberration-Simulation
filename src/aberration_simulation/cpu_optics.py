@@ -110,10 +110,6 @@ def chi(q, qphi, lam, df=0.0, aberrations=None):
     return 2 * np.pi * phase / lam
 
 
-def _as_array(values):
-    return np.asarray(list(values), dtype=float)
-
-
 def build_parameter_grid(
     C1_offset_sequence,
     A3_amp_sequence,
@@ -146,19 +142,19 @@ def build_parameter_grid(
         "B2_phase",
     ]
     arrays = [
-        _as_array(C1_offset_sequence),
-        _as_array(A3_amp_sequence),
-        _as_array(S3_amp_sequence),
-        _as_array(A2_amp_sequence),
-        _as_array(B2_amp_sequence),
-        _as_array(C1_sequence),
-        _as_array(C3_sequence),
-        _as_array(A1_amp_sequence),
-        _as_array(A1_phase_sequence),
-        _as_array(A2_phase_sequence),
-        _as_array(A3_phase_sequence),
-        _as_array(S3_phase_sequence),
-        _as_array(B2_phase_sequence),
+        np.asarray(list(C1_offset_sequence), dtype=float),
+        np.asarray(list(A3_amp_sequence), dtype=float),
+        np.asarray(list(S3_amp_sequence), dtype=float),
+        np.asarray(list(A2_amp_sequence), dtype=float),
+        np.asarray(list(B2_amp_sequence), dtype=float),
+        np.asarray(list(C1_sequence), dtype=float),
+        np.asarray(list(C3_sequence), dtype=float),
+        np.asarray(list(A1_amp_sequence), dtype=float),
+        np.asarray(list(A1_phase_sequence), dtype=float),
+        np.asarray(list(A2_phase_sequence), dtype=float),
+        np.asarray(list(A3_phase_sequence), dtype=float),
+        np.asarray(list(S3_phase_sequence), dtype=float),
+        np.asarray(list(B2_phase_sequence), dtype=float),
     ]
     mesh = np.meshgrid(*arrays, indexing="ij")
     flat = [m.ravel() for m in mesh]

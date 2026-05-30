@@ -119,10 +119,6 @@ def ifft2_em(reciprocal_space_wave, axes=(0, 1)):
     )
 
 
-def _as_array(values):
-    return cp.asarray(list(values), dtype=float)
-
-
 def build_parameter_table(
     C1_offset_sequence,
     A3_amp_sequence,
@@ -140,19 +136,19 @@ def build_parameter_table(
 ):
     """Build a flat CuPy parameter table in notebook meshgrid order."""
     arrays = [
-        _as_array(C1_offset_sequence),
-        _as_array(A3_amp_sequence),
-        _as_array(S3_amp_sequence),
-        _as_array(A2_amp_sequence),
-        _as_array(B2_amp_sequence),
-        _as_array(C1_sequence),
-        _as_array(C3_sequence),
-        _as_array(A1_amp_sequence),
-        _as_array(A1_phase_sequence),
-        _as_array(A2_phase_sequence),
-        _as_array(A3_phase_sequence),
-        _as_array(S3_phase_sequence),
-        _as_array(B2_phase_sequence),
+        cp.asarray(list(C1_offset_sequence), dtype=float),
+        cp.asarray(list(A3_amp_sequence), dtype=float),
+        cp.asarray(list(S3_amp_sequence), dtype=float),
+        cp.asarray(list(A2_amp_sequence), dtype=float),
+        cp.asarray(list(B2_amp_sequence), dtype=float),
+        cp.asarray(list(C1_sequence), dtype=float),
+        cp.asarray(list(C3_sequence), dtype=float),
+        cp.asarray(list(A1_amp_sequence), dtype=float),
+        cp.asarray(list(A1_phase_sequence), dtype=float),
+        cp.asarray(list(A2_phase_sequence), dtype=float),
+        cp.asarray(list(A3_phase_sequence), dtype=float),
+        cp.asarray(list(S3_phase_sequence), dtype=float),
+        cp.asarray(list(B2_phase_sequence), dtype=float),
     ]
     mesh = cp.meshgrid(*arrays, indexing="ij")
     return {
