@@ -106,6 +106,8 @@ The relationship notebook uses these value definitions, where `theta_k` are the 
 
 A shorter imported-code version is available at `notebooks/uno_coefficient_relationship_short.ipynb`. It imports the Uno value formulas from `src/aberration_simulation/uno_conventions.py`, relationship plots from `scripts/plots_uno_convention.py`, and probe galleries from `scripts/plot_probe_shapes.py`. The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100` to test whether `A3_value` and `S3_value` remain linear beyond the default sweep range, with matching wide-range probe-shape galleries.
 
+For the first feature-to-coefficient regression test, run `notebooks/uno_feature_regression.ipynb` after generating `outputs/uno_relationships/uno_coefficient_relationships.csv` with the short relationship notebook. It trains a hybrid linear-baseline plus residual-MLP model from feature values to aberration coefficient vectors and saves temporary outputs under `training_results/feature_regression/`, with optional Google Drive mirroring from Colab.
+
 You can also check the active backend from a terminal:
 
 ```bash

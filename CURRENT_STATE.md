@@ -22,12 +22,14 @@ Do not treat local Mac CUDA failures as project failures. The local Codex shell 
 
 - Main coefficient relationship notebook: `notebooks/uno_coefficient_relationships.ipynb`
 - Short imported-code relationship notebook: `notebooks/uno_coefficient_relationship_short.ipynb`
+- Feature-regression notebook: `notebooks/uno_feature_regression.ipynb`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
 - Uno value definitions and harmonic phase conventions: `src/aberration_simulation/uno_conventions.py`
 - Relationship plotting helpers: `scripts/plots_uno_convention.py`
 - Probe-shape plotting helpers: `scripts/plot_probe_shapes.py`
+- Hybrid feature-regression helper: `scripts/feature_regression_model.py`
 - Documentation: `README.md`
 
 ## Current Value Definitions
@@ -72,6 +74,8 @@ The relationship notebook documents and computes these values:
 `notebooks/uno_coefficient_relationship_short.ipynb` preserves the same workflow but imports the reusable formula and plotting code from Python files. Pairwise uniqueness diagnostics remain inline in the short notebook for active adjustment.
 
 The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png`, `relationship_S3_value_wide.png`, `probe_shapes_a3_wide.png`, and `probe_shapes_s3_c32_wide.png`.
+
+`notebooks/uno_feature_regression.ipynb` trains the first feature-to-coefficient hybrid model using `outputs/uno_relationships/uno_coefficient_relationships.csv`. It maps feature values to aberration coefficient vectors using real/imaginary complex representations and writes temporary results to `training_results/feature_regression/`. Colab can optionally mirror that folder to Google Drive.
 
 ## Recent Interpretation
 
