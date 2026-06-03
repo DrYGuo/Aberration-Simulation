@@ -73,7 +73,7 @@ The relationship notebook documents and computes these values:
 
 `notebooks/uno_coefficient_relationship_short.ipynb` preserves the same workflow but imports the reusable formula and plotting code from Python files. Pairwise uniqueness diagnostics remain inline in the short notebook for active adjustment.
 
-The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png`, `relationship_S3_value_wide.png`, `probe_shapes_a3_wide.png`, and `probe_shapes_s3_c32_wide.png`.
+The short notebook also includes wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png`, `relationship_S3_value_wide.png`, `probe_shapes_a3_wide.png`, and `probe_shapes_s3_c32_wide.png`. A3 phases are sampled in `[0, 90]`; S3/C32 phases are sampled in `[0, 180]`. Additional coupled C1/A1/C3 and A1/B2/S3 grids are included for regression training.
 
 `notebooks/uno_feature_regression.ipynb` trains the first feature-to-coefficient hybrid model using `outputs/uno_relationships/uno_coefficient_relationships.csv`. It maps feature values to aberration coefficient vectors using real/imaginary complex representations and writes temporary results to `training_results/feature_regression/`. Colab can optionally mirror that folder to Google Drive.
 

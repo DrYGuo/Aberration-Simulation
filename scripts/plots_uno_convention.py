@@ -323,17 +323,19 @@ def plot_wide_harmonic_amplitude_relationship_for_spec(rows, spec, output_dir):
     output_dir = Path(output_dir)
     value_name = spec["value_name"]
     amp_field = spec["amp_field"]
+    phase_field = spec["phase_field"]
     selected_rows = [row for row in rows if row["sweep_label"] == spec["label"]]
     if not selected_rows:
         raise ValueError(f"No rows found for {spec['label']}.")
 
     input_amp = np.asarray([row[amp_field] for row in selected_rows], dtype=float)
+    input_phase = np.asarray([row[phase_field] for row in selected_rows], dtype=float)
     output_amp = np.asarray([row[value_name + "_abs"] for row in selected_rows], dtype=float)
     slope = fitted_slope(input_amp, output_amp)
     residual = output_amp - slope * input_amp if np.isfinite(slope) else np.full_like(output_amp, np.nan)
 
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
-    axes[0].scatter(input_amp, output_amp, s=46, alpha=0.9)
+    amp_scatter = axes[0].scatter(input_amp, output_amp, c=input_phase, cmap="twilight", s=46, alpha=0.9)
     x_line = np.linspace(0, float(np.nanmax(input_amp)) * 1.05, 100)
     if np.isfinite(slope):
         axes[0].plot(x_line, slope * x_line, color="black", linestyle="--", linewidth=1, label=f"fit slope={slope:.4g}")
@@ -342,8 +344,9 @@ def plot_wide_harmonic_amplitude_relationship_for_spec(rows, spec, output_dir):
     axes[0].set_xlabel(amp_field)
     axes[0].set_ylabel(f"abs({value_name})")
     axes[0].grid(alpha=0.3)
+    fig.colorbar(amp_scatter, ax=axes[0], label=phase_field)
 
-    axes[1].scatter(input_amp, residual, s=46, alpha=0.9)
+    axes[1].scatter(input_amp, residual, c=input_phase, cmap="twilight", s=46, alpha=0.9)
     axes[1].axhline(0, color="black", linestyle="--", linewidth=1)
     axes[1].set_title("linear-fit residual")
     axes[1].set_xlabel(amp_field)

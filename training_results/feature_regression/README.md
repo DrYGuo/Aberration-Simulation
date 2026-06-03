@@ -12,6 +12,7 @@ Generated files may include:
 
 - `metrics.json`
 - `normalization.json`
+- `model_summary.txt`
 - `history.csv`
 - `predictions.csv`
 - `hybrid_feature_regressor.pt`

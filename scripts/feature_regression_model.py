@@ -137,6 +137,37 @@ def build_hybrid_model(input_dim, output_dim, hidden_dim=96):
     return HybridFeatureRegressor()
 
 
+def describe_hybrid_model(input_dim=None, output_dim=None, hidden_dim=96):
+    """Return the current hybrid regressor structure as plain text."""
+    input_dim = len(FEATURE_COLUMNS) if input_dim is None else input_dim
+    output_dim = len(TARGET_COLUMNS) if output_dim is None else output_dim
+    linear_params = input_dim * output_dim + output_dim
+    residual_params = (
+        input_dim * hidden_dim + hidden_dim
+        + hidden_dim * hidden_dim + hidden_dim
+        + hidden_dim * output_dim + output_dim
+    )
+    lines = [
+        "HybridFeatureRegressor",
+        f"  input_dim: {input_dim}",
+        f"  output_dim: {output_dim}",
+        "  forward(x): linear(x) + residual(x)",
+        "  linear:",
+        f"    Linear({input_dim}, {output_dim})",
+        "  residual:",
+        f"    Linear({input_dim}, {hidden_dim})",
+        "    SiLU()",
+        f"    Linear({hidden_dim}, {hidden_dim})",
+        "    SiLU()",
+        f"    Linear({hidden_dim}, {output_dim})",
+        "    final residual layer initialized to zero",
+        f"  linear_params: {linear_params}",
+        f"  residual_params: {residual_params}",
+        f"  total_params: {linear_params + residual_params}",
+    ]
+    return "\n".join(lines)
+
+
 def train_hybrid_regressor(
     csv_path,
     output_dir,
@@ -264,6 +295,9 @@ def save_training_outputs(
         json.dump(metrics, handle, indent=2)
     with (output_dir / "normalization.json").open("w") as handle:
         json.dump({"features": FEATURE_COLUMNS, "targets": TARGET_COLUMNS, "x": x_scaler.to_dict(), "y": y_scaler.to_dict()}, handle, indent=2)
+    (output_dir / "model_summary.txt").write_text(
+        describe_hybrid_model(len(FEATURE_COLUMNS), len(TARGET_COLUMNS)) + "\n"
+    )
     with (output_dir / "history.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=["epoch", "train_mse_scaled", "test_mse_scaled"])
         writer.writeheader()
