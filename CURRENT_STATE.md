@@ -4,7 +4,7 @@ Last updated: 2026-06-02
 
 ## Stable Commit
 
-- Current good commit: `5c301a4`
+- Current good helper-refactor commit: `2cb7e0e`
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
