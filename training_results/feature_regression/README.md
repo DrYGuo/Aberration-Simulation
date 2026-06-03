@@ -5,9 +5,11 @@ training results from `notebooks/uno_feature_regression.ipynb`.
 
 The first regression notebook generates training coefficient combinations,
 runs the GPU probe simulation, extracts Uno feature values, and then trains
-from the generated `training_features.csv`. The feature/target interface is
-table-based so later large combinatorial datasets can be saved as shards and
-loaded with a streaming data loader without changing the feature definitions.
+from the generated `training_features.csv`. The current generator keeps the
+deterministic anchor sweeps and adds 10,000 random coupled coefficient cases.
+The feature/target interface is table-based so later large combinatorial
+datasets can be saved as shards and loaded with a streaming data loader without
+changing the feature definitions.
 
 Generated files may include:
 

@@ -174,8 +174,10 @@ def train_hybrid_regressor(
     test_fraction=0.2,
     seed=7,
     epochs=2500,
-    learning_rate=2e-3,
-    residual_penalty=1e-3,
+    learning_rate=1e-3,
+    residual_penalty=1e-2,
+    hidden_dim=48,
+    weight_decay=1e-4,
 ):
     torch, nn = _import_torch()
     output_dir = Path(output_dir)
@@ -190,8 +192,8 @@ def train_hybrid_regressor(
     yn = y_scaler.transform(y).astype(np.float32)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = build_hybrid_model(Xn.shape[1], yn.shape[1]).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-5)
+    model = build_hybrid_model(Xn.shape[1], yn.shape[1], hidden_dim=hidden_dim).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     loss_fn = nn.MSELoss()
 
     x_train = torch.tensor(Xn[train_index], device=device)
@@ -200,6 +202,9 @@ def train_hybrid_regressor(
     y_test = torch.tensor(yn[test_index], device=device)
 
     history = []
+    best_test_loss = None
+    best_epoch = None
+    best_state = None
     for epoch in range(epochs):
         model.train()
         optimizer.zero_grad(set_to_none=True)
@@ -214,7 +219,22 @@ def train_hybrid_regressor(
             with torch.no_grad():
                 train_loss = float(loss_fn(model(x_train), y_train).detach().cpu())
                 test_loss = float(loss_fn(model(x_test), y_test).detach().cpu())
-            history.append({"epoch": epoch, "train_mse_scaled": train_loss, "test_mse_scaled": test_loss})
+            if best_test_loss is None or test_loss < best_test_loss:
+                best_test_loss = test_loss
+                best_epoch = epoch
+                best_state = {
+                    name: value.detach().cpu().clone()
+                    for name, value in model.state_dict().items()
+                }
+            history.append({
+                "epoch": epoch,
+                "train_mse_scaled": train_loss,
+                "test_mse_scaled": test_loss,
+                "best_test_mse_scaled": best_test_loss,
+            })
+
+    if best_state is not None:
+        model.load_state_dict({name: value.to(device) for name, value in best_state.items()})
 
     model.eval()
     with torch.no_grad():
@@ -222,6 +242,15 @@ def train_hybrid_regressor(
     pred = y_scaler.inverse_transform(pred_scaled)
 
     metrics = summarize_predictions(y, pred, labels, train_index, test_index)
+    metrics["training_config"] = {
+        "epochs": int(epochs),
+        "learning_rate": float(learning_rate),
+        "residual_penalty": float(residual_penalty),
+        "hidden_dim": int(hidden_dim),
+        "weight_decay": float(weight_decay),
+        "best_epoch": None if best_epoch is None else int(best_epoch),
+        "best_test_mse_scaled": None if best_test_loss is None else float(best_test_loss),
+    }
     save_training_outputs(
         output_dir=output_dir,
         model=model,
@@ -235,6 +264,7 @@ def train_hybrid_regressor(
         x_scaler=x_scaler,
         y_scaler=y_scaler,
         device=device,
+        hidden_dim=hidden_dim,
     )
     return metrics
 
@@ -287,6 +317,7 @@ def save_training_outputs(
     x_scaler,
     y_scaler,
     device,
+    hidden_dim,
 ):
     torch, _ = _import_torch()
     output_dir = Path(output_dir)
@@ -296,10 +327,10 @@ def save_training_outputs(
     with (output_dir / "normalization.json").open("w") as handle:
         json.dump({"features": FEATURE_COLUMNS, "targets": TARGET_COLUMNS, "x": x_scaler.to_dict(), "y": y_scaler.to_dict()}, handle, indent=2)
     (output_dir / "model_summary.txt").write_text(
-        describe_hybrid_model(len(FEATURE_COLUMNS), len(TARGET_COLUMNS)) + "\n"
+        describe_hybrid_model(len(FEATURE_COLUMNS), len(TARGET_COLUMNS), hidden_dim=hidden_dim) + "\n"
     )
     with (output_dir / "history.csv").open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["epoch", "train_mse_scaled", "test_mse_scaled"])
+        writer = csv.DictWriter(handle, fieldnames=["epoch", "train_mse_scaled", "test_mse_scaled", "best_test_mse_scaled"])
         writer.writeheader()
         writer.writerows(history)
 
