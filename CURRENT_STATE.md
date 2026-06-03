@@ -71,6 +71,8 @@ The relationship notebook documents and computes these values:
 
 `notebooks/uno_coefficient_relationship_short.ipynb` preserves the same workflow but imports the reusable formula and plotting code from Python files. Pairwise uniqueness diagnostics remain inline in the short notebook for active adjustment.
 
+The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png` and `relationship_S3_value_wide.png`.
+
 ## Recent Interpretation
 
 - On the sampled C1/C3 grid, `(C1_value, C3_value)` uniquely identifies the sampled `(C1, C3)` pair, but this is not proof of global uniqueness over continuous coefficient space.
