@@ -104,6 +104,8 @@ For one-coefficient-at-a-time calibration plots, run `notebooks/uno_coefficient_
 
 The relationship notebook uses these value definitions, where `theta_k` are the sampled line-profile angles and `N` is the number of sampled angles: `Cdf_value = (1/N) sum_k (Xigma_under,k - Xigma_over,k)`, `C1_value = -Cdf_value`, `A1_value = (2/N) sum_k (Xigma_under,k - Xigma_over,k) exp(2 i theta_k)`, `B2_value = (2/N) sum_k (Mu_under,k + Mu_over,k) exp(i theta_k)`, `A2_value = (2/N) sum_k (Mu_under,k + Mu_over,k) exp(3 i theta_k)`, `Cs_value = (1/N) sum_k (Rho_under,k - Rho_over,k)`, `C3_value = -mean(Rho_over) = -(1/N) sum_k Rho_over,k`, `S3_value = (2/N) sum_k (Rho_under,k - Rho_over,k) exp(2 i theta_k)`, and `A3_value = (2/N) sum_k (Xigma_under,k - Xigma_over,k) exp(4 i theta_k)`.
 
+A shorter imported-code version is available at `notebooks/uno_coefficient_relationship_short.ipynb`. It imports the Uno value formulas from `src/aberration_simulation/uno_conventions.py`, relationship plots from `scripts/plots_uno_convention.py`, and probe galleries from `scripts/plot_probe_shapes.py`.
+
 You can also check the active backend from a terminal:
 
 ```bash

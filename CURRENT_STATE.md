@@ -1,10 +1,10 @@
 # Current Project State
 
-Last updated: 2026-06-01
+Last updated: 2026-06-02
 
 ## Stable Commit
 
-- Current good commit: `065bccf`
+- Current good commit: `5c301a4`
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
@@ -21,10 +21,13 @@ Do not treat local Mac CUDA failures as project failures. The local Codex shell 
 ## Main Files
 
 - Main coefficient relationship notebook: `notebooks/uno_coefficient_relationships.ipynb`
+- Short imported-code relationship notebook: `notebooks/uno_coefficient_relationship_short.ipynb`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
-- Harmonic phase conventions: `src/aberration_simulation/uno_conventions.py`
+- Uno value definitions and harmonic phase conventions: `src/aberration_simulation/uno_conventions.py`
+- Relationship plotting helpers: `scripts/plots_uno_convention.py`
+- Probe-shape plotting helpers: `scripts/plot_probe_shapes.py`
 - Documentation: `README.md`
 
 ## Current Value Definitions
@@ -47,6 +50,7 @@ The relationship notebook documents and computes these values:
 - The relationship notebook imports `UNO_HARMONIC_ORDERS`, `PRIMARY_PHASE_CONVENTIONS`, and `add_complex_columns()` from that module.
 - Probe simulation uses the EM Fourier-transform convention comments in the optics code.
 - Full vectorized GPU simulation is currently restored in `notebooks/uno_coefficient_relationships.ipynb`; batching was removed to keep GPU speed on higher-RAM Colab GPUs.
+- `extract_line_profiles_from_stack()` is vectorized through the active backend; with CuPy active, line-profile extraction runs on the GPU.
 
 ## Current Notebook Features
 
@@ -65,6 +69,8 @@ The relationship notebook documents and computes these values:
   - `uniqueness_a1_s3_complex.png`
 - A pre-download output check that raises an error if expected relationship outputs are missing.
 
+`notebooks/uno_coefficient_relationship_short.ipynb` preserves the same workflow but imports the reusable formula and plotting code from Python files. Pairwise uniqueness diagnostics remain inline in the short notebook for active adjustment.
+
 ## Recent Interpretation
 
 - On the sampled C1/C3 grid, `(C1_value, C3_value)` uniquely identifies the sampled `(C1, C3)` pair, but this is not proof of global uniqueness over continuous coefficient space.
@@ -81,4 +87,3 @@ At the time this note was created, these local items existed and should not be a
   - `notebooks/original_aberration_simulation.ipynb`
 - Untracked downloaded Colab outputs:
   - `Downloads from Colab/`
-

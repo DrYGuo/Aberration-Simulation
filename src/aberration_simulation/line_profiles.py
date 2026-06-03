@@ -1,4 +1,9 @@
-"""Line-profile extraction for probe image stacks."""
+"""Vectorized line-profile extraction for probe image stacks.
+
+The extraction uses the active backend from `aberration_simulation.backend`.
+With CuPy active, angles, line samples, image indices, and interpolation are
+computed as vectorized GPU operations across the full image stack.
+"""
 
 import numpy as np
 
