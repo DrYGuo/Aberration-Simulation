@@ -75,7 +75,7 @@ The relationship notebook documents and computes these values:
 
 The short notebook also includes wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png`, `relationship_S3_value_wide.png`, `probe_shapes_a3_wide.png`, and `probe_shapes_s3_c32_wide.png`. A3 phases are sampled in `[0, 90]`; S3/C32 phases are sampled in `[0, 180]`. Additional coupled C1/A1/C3 and A1/B2/S3 grids are included for regression training.
 
-`notebooks/uno_feature_regression.ipynb` is separate from the relationship notebooks. It generates its own training coefficient combinations, runs the GPU probe simulation, extracts Uno feature values, saves `training_results/feature_regression/training_features.csv`, and trains the first feature-to-coefficient hybrid model from that table. It maps feature values to aberration coefficient vectors using real/imaginary complex representations and writes temporary results to `training_results/feature_regression/`. Colab can optionally mirror that folder to Google Drive.
+`notebooks/uno_feature_regression.ipynb` is separate from the relationship notebooks. It generates its own training coefficient combinations, runs the GPU probe simulation, extracts Uno feature values in GPU batches, saves `training_results/feature_regression/training_features.csv`, and trains the first feature-to-coefficient hybrid model from that table. It maps feature values to aberration coefficient vectors using real/imaginary complex representations and writes temporary results to `training_results/feature_regression/`. Colab can optionally mirror that folder to Google Drive.
 
 ## Recent Interpretation
 
