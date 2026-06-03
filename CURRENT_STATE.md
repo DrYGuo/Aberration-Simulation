@@ -71,7 +71,7 @@ The relationship notebook documents and computes these values:
 
 `notebooks/uno_coefficient_relationship_short.ipynb` preserves the same workflow but imports the reusable formula and plotting code from Python files. Pairwise uniqueness diagnostics remain inline in the short notebook for active adjustment.
 
-The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png` and `relationship_S3_value_wide.png`.
+The short notebook also includes fixed-phase wide-amplitude A3 and S3/C32 sweeps up to `100`, producing `relationship_A3_value_wide.png`, `relationship_S3_value_wide.png`, `probe_shapes_a3_wide.png`, and `probe_shapes_s3_c32_wide.png`.
 
 ## Recent Interpretation
 
