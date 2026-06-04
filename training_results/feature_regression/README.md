@@ -14,6 +14,7 @@ changing the feature definitions.
 Generated files may include:
 
 - `metrics.json`
+- `run_manifest.json`
 - `training_features.csv`
 - `normalization.json`
 - `model_summary.txt`
@@ -23,6 +24,10 @@ Generated files may include:
 - `training_history.png`
 - `prediction_scatter.png`
 - `feature_regression_results.zip`
+
+Runs are stored in timestamped subfolders. The shared `model_registry.csv`
+tracks run names, dataset sizes, model dimensions, selected hyperparameters,
+best validation loss, and key test RMSE values across runs.
 
 Colab can also mirror this folder to Google Drive when Drive mounting is
 enabled in the notebook.

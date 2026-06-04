@@ -1,8 +1,14 @@
 """Hybrid regression from Uno feature values to aberration coefficients."""
 
+from collections import Counter
 import csv
+from datetime import datetime, timezone
+import hashlib
 import json
+import platform
 from pathlib import Path
+import subprocess
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -72,6 +78,29 @@ def target_from_row(row):
 def load_rows(csv_path):
     with Path(csv_path).open() as handle:
         return list(csv.DictReader(handle))
+
+
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def git_commit():
+    repo_root = Path(__file__).resolve().parents[1]
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+    return result.stdout.strip()
 
 
 def prepare_dataset(csv_path):
@@ -178,6 +207,8 @@ def train_hybrid_regressor(
     residual_penalty=1e-2,
     hidden_dim=48,
     weight_decay=1e-4,
+    run_name=None,
+    extra_config=None,
 ):
     torch, nn = _import_torch()
     output_dir = Path(output_dir)
@@ -253,10 +284,12 @@ def train_hybrid_regressor(
     }
     save_training_outputs(
         output_dir=output_dir,
+        csv_path=csv_path,
         model=model,
         history=history,
         metrics=metrics,
         rows=rows,
+        labels=labels,
         y_true=y,
         y_pred=pred,
         train_index=train_index,
@@ -265,6 +298,8 @@ def train_hybrid_regressor(
         y_scaler=y_scaler,
         device=device,
         hidden_dim=hidden_dim,
+        run_name=run_name,
+        extra_config=extra_config,
     )
     return metrics
 
@@ -306,10 +341,12 @@ def summarize_predictions(y_true, y_pred, labels, train_index, test_index):
 
 def save_training_outputs(
     output_dir,
+    csv_path,
     model,
     history,
     metrics,
     rows,
+    labels,
     y_true,
     y_pred,
     train_index,
@@ -318,6 +355,8 @@ def save_training_outputs(
     y_scaler,
     device,
     hidden_dim,
+    run_name,
+    extra_config,
 ):
     torch, _ = _import_torch()
     output_dir = Path(output_dir)
@@ -355,8 +394,100 @@ def save_training_outputs(
         },
         output_dir / "hybrid_feature_regressor.pt",
     )
+    write_run_tracking(
+        output_dir=output_dir,
+        csv_path=csv_path,
+        metrics=metrics,
+        rows=rows,
+        labels=labels,
+        train_index=train_index,
+        test_index=test_index,
+        hidden_dim=hidden_dim,
+        device=device,
+        run_name=run_name,
+        extra_config=extra_config,
+    )
     plot_training_history(history, output_dir)
     plot_prediction_scatter(y_true, y_pred, output_dir)
+
+
+def write_run_tracking(
+    output_dir,
+    csv_path,
+    metrics,
+    rows,
+    labels,
+    train_index,
+    test_index,
+    hidden_dim,
+    device,
+    run_name,
+    extra_config,
+):
+    output_dir = Path(output_dir)
+    created_utc = datetime.now(timezone.utc).isoformat()
+    run_name = run_name or output_dir.name
+    training_config = metrics.get("training_config", {})
+    manifest = {
+        "run_name": run_name,
+        "created_utc": created_utc,
+        "git_commit": git_commit(),
+        "python": sys.version,
+        "platform": platform.platform(),
+        "device": device,
+        "dataset": {
+            "csv_path": str(Path(csv_path)),
+            "csv_sha256": file_sha256(csv_path),
+            "n_rows": len(rows),
+            "n_train": len(train_index),
+            "n_test": len(test_index),
+            "label_counts": dict(Counter(labels.tolist() if hasattr(labels, "tolist") else labels)),
+        },
+        "model": {
+            "type": "HybridFeatureRegressor",
+            "input_dim": len(FEATURE_COLUMNS),
+            "output_dim": len(TARGET_COLUMNS),
+            "hidden_dim": hidden_dim,
+            "summary": describe_hybrid_model(len(FEATURE_COLUMNS), len(TARGET_COLUMNS), hidden_dim=hidden_dim),
+        },
+        "training": training_config,
+        "feature_columns": FEATURE_COLUMNS,
+        "target_columns": TARGET_COLUMNS,
+        "extra_config": extra_config or {},
+    }
+    manifest_path = output_dir / "run_manifest.json"
+    with manifest_path.open("w") as handle:
+        json.dump(manifest, handle, indent=2)
+
+    registry_path = output_dir.parent / "model_registry.csv"
+    row = {
+        "created_utc": created_utc,
+        "run_name": run_name,
+        "output_dir": str(output_dir),
+        "git_commit": manifest["git_commit"],
+        "n_rows": len(rows),
+        "n_train": len(train_index),
+        "n_test": len(test_index),
+        "input_dim": len(FEATURE_COLUMNS),
+        "hidden_dim": hidden_dim,
+        "epochs": training_config.get("epochs"),
+        "best_epoch": training_config.get("best_epoch"),
+        "best_test_mse_scaled": training_config.get("best_test_mse_scaled"),
+        "overall_mae": metrics.get("overall_mae"),
+        "overall_rmse": metrics.get("overall_rmse"),
+        "test_C1_rmse": metrics.get("test_targets", {}).get("C1", {}).get("rmse"),
+        "test_S3_x_rmse": metrics.get("test_targets", {}).get("S3_x", {}).get("rmse"),
+        "test_S3_y_rmse": metrics.get("test_targets", {}).get("S3_y", {}).get("rmse"),
+        "test_A3_x_rmse": metrics.get("test_targets", {}).get("A3_x", {}).get("rmse"),
+        "test_A3_y_rmse": metrics.get("test_targets", {}).get("A3_y", {}).get("rmse"),
+    }
+    fieldnames = list(row)
+    write_header = not registry_path.exists()
+    with registry_path.open("a", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def plot_training_history(history, output_dir):
