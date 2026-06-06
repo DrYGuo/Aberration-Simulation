@@ -16,10 +16,34 @@
     "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=17'); print('message=Codex advanced guarded live loop to step 17 after evaluating cycle 11'); print('utc', datetime.now(timezone.utc).isoformat())"
   ],
   "result_globs": [
-    "colab_worker_logs/*.json"
+    "colab_worker_logs/*.json",
+    "training_results/**/run_manifest*.json",
+    "training_results/**/metrics*.json",
+    "training_results/**/model_registry*.csv",
+    "training_results/**/*summary*.csv",
+    "training_results/**/amplitude_bin_metrics*.csv",
+    "training_results/**/feature_scale_summary*.csv",
+    "training_results/**/target_scale_summary*.csv",
+    "training_results/**/*.png"
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
+  "command_timeout_seconds": 3600,
+  "artifact_max_bytes": 1500000,
+  "artifact_blocked_suffixes": [
+    ".pt",
+    ".pth",
+    ".ckpt",
+    ".zip",
+    ".npy",
+    ".npz",
+    ".h5"
+  ],
+  "artifact_blocked_patterns": [
+    "training_features",
+    "predictions",
+    "checkpoint"
+  ],
   "push_every_n_cycles": 1,
   "push_on_final_cycle": true,
   "require_new_config_each_cycle": true,

@@ -73,17 +73,37 @@ def run_command(
     check: bool = True,
     log_path: Path | None = None,
     env: dict[str, str] | None = None,
+    timeout_seconds: int | None = None,
 ) -> subprocess.CompletedProcess[str]:
     display = " ".join(shlex.quote(part) for part in command)
     print(f"$ {display}", flush=True)
-    result = subprocess.run(
-        command,
-        cwd=cwd,
-        env=env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
+    try:
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            env=env,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode("utf-8", errors="replace")
+        timeout_message = f"\n[timeout after {timeout_seconds} seconds]\n"
+        if stdout:
+            print(stdout, end="" if stdout.endswith("\n") else "\n", flush=True)
+        print(timeout_message.strip(), flush=True)
+        if log_path is not None:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            with log_path.open("a") as handle:
+                handle.write(f"\n$ {display}\n")
+                handle.write(stdout)
+                handle.write(timeout_message)
+        if check:
+            raise
+        return subprocess.CompletedProcess(command, returncode=124, stdout=stdout + timeout_message)
     if result.stdout:
         print(result.stdout, end="" if result.stdout.endswith("\n") else "\n", flush=True)
     if log_path is not None:
@@ -191,6 +211,30 @@ def expand_globs(repo_root: Path, patterns: list[str]) -> list[Path]:
                     seen.add(rel)
                     paths.append(rel)
     return paths
+
+
+def artifact_allowed(path: Path, config: dict[str, Any]) -> bool:
+    max_bytes = int(config.get("artifact_max_bytes", 0))
+    if max_bytes > 0 and path.stat().st_size > max_bytes:
+        print(f"Skipping artifact over size limit: {path} ({path.stat().st_size} bytes)")
+        return False
+
+    blocked_suffixes = set(config.get("artifact_blocked_suffixes", []))
+    if path.suffix in blocked_suffixes:
+        print(f"Skipping blocked artifact suffix: {path}")
+        return False
+
+    blocked_patterns = list(config.get("artifact_blocked_patterns", []))
+    path_text = str(path)
+    for pattern in blocked_patterns:
+        if Path(path_text).match(pattern) or pattern in path_text:
+            print(f"Skipping blocked artifact pattern: {path}")
+            return False
+    return True
+
+
+def filter_artifacts(paths: list[Path], config: dict[str, Any]) -> list[Path]:
+    return [path for path in paths if artifact_allowed(path, config)]
 
 
 def display_path(path: Path, repo_root: Path) -> str:
@@ -396,12 +440,26 @@ def main() -> int:
                     print(f"cycle config label after wait: {active_label}")
                 print(f"cycle command after wait: {' '.join(shlex.quote(part) for part in command)}")
 
-            result = run_command(command, cwd=repo_root, check=False, log_path=worker_log_path)
+            command_timeout_seconds = config.get("command_timeout_seconds")
+            result = run_command(
+                command,
+                cwd=repo_root,
+                check=False,
+                log_path=worker_log_path,
+                timeout_seconds=(
+                    int(command_timeout_seconds)
+                    if command_timeout_seconds is not None
+                    else None
+                ),
+            )
             returncode = result.returncode
             if returncode and config.get("stop_on_command_failure", True):
                 print(f"Command failed with exit {returncode}; stopping worker.")
 
-            artifact_paths = expand_globs(repo_root, list(config.get("result_globs", [])))
+            artifact_paths = filter_artifacts(
+                expand_globs(repo_root, list(config.get("result_globs", []))),
+                config,
+            )
             finished = datetime.now(timezone.utc).isoformat()
             cycle_manifest = write_cycle_manifest(
                 repo_root,

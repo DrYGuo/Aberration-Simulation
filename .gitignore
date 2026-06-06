@@ -11,3 +11,14 @@ outputs/*.h5
 outputs/*.npy
 outputs/*.csv
 outputs/plots/*.png
+
+# Colab/model artifacts stay out of GitHub by default. Push compact summaries,
+# manifests, registry rows, and selected small plots only.
+training_results/
+training_data_cache/
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.npy
+*.npz
