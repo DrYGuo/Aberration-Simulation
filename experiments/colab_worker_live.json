@@ -1,5 +1,6 @@
 {
-  "description": "Live steering test with final-only artifact push. Codex set step 6 while monitoring GitHub.",
+  "description": "Live steering test with per-cycle artifact push and stale-config protection. Codex set step 6 while monitoring GitHub.",
+  "config_id": "live-steering-step-6",
   "cycles": 12,
   "sleep_seconds": 45,
   "branch": "main",
@@ -19,6 +20,9 @@
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
-  "push_every_n_cycles": 0,
-  "push_on_final_cycle": true
+  "push_every_n_cycles": 1,
+  "push_on_final_cycle": true,
+  "require_new_config_each_cycle": true,
+  "wait_for_new_config_poll_seconds": 30,
+  "wait_for_new_config_timeout_seconds": 7200
 }

@@ -8,6 +8,7 @@ selected result artifacts back to GitHub.
 from __future__ import annotations
 
 import argparse
+import hashlib
 from datetime import datetime, timezone
 import glob
 import json
@@ -30,6 +31,31 @@ def utc_stamp() -> str:
 def load_json(path: Path) -> dict[str, Any]:
     with path.open() as handle:
         return json.load(handle)
+
+
+def config_fingerprint(config: dict[str, Any]) -> str:
+    ignored = set(
+        config.get(
+            "config_fingerprint_ignore_keys",
+            [
+                "description",
+                "sleep_seconds",
+                "wait_for_new_config_poll_seconds",
+                "wait_for_new_config_timeout_seconds",
+            ],
+        )
+    )
+    stable_config = {key: value for key, value in config.items() if key not in ignored}
+    payload = json.dumps(stable_config, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def config_label(config: dict[str, Any]) -> str | None:
+    for key in ("config_id", "experiment_id", "model_id", "model_revision"):
+        value = config.get(key)
+        if value:
+            return str(value)
+    return None
 
 
 def find_token() -> str | None:
@@ -181,6 +207,9 @@ def write_cycle_manifest(
     cycle: int,
     cycles: int,
     config_path: Path,
+    config_commit: str | None,
+    config_fingerprint_value: str,
+    config_label_value: str | None,
     command: list[str],
     returncode: int | None,
     started_utc: str,
@@ -195,6 +224,9 @@ def write_cycle_manifest(
         "started_utc": started_utc,
         "finished_utc": finished_utc,
         "config_path": display_path(config_path, repo_root),
+        "config_commit": config_commit,
+        "config_fingerprint": config_fingerprint_value,
+        "config_label": config_label_value,
         "command": command,
         "returncode": returncode,
         "artifact_paths": [str(path) for path in artifact_paths],
@@ -230,6 +262,39 @@ def should_push_artifacts(config: dict[str, Any], cycle: int, cycles: int) -> bo
     return cycle % push_every == 0
 
 
+def wait_for_new_config(
+    repo_root: Path,
+    config_path: Path,
+    branch: str,
+    previous_fingerprint: str,
+    log_path: Path,
+    *,
+    timeout_seconds: int,
+    poll_seconds: int,
+) -> tuple[dict[str, Any], str]:
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        git_pull(repo_root, branch, log_path)
+        config = load_json(config_path)
+        fingerprint = config_fingerprint(config)
+        if fingerprint != previous_fingerprint:
+            print(
+                f"detected new config fingerprint {fingerprint} "
+                f"(previous {previous_fingerprint})"
+            )
+            return config, fingerprint
+        if time.monotonic() >= deadline:
+            raise TimeoutError(
+                "Timed out waiting for a new worker config. "
+                f"Fingerprint remained {previous_fingerprint}."
+            )
+        print(
+            f"waiting for new config; current fingerprint still {previous_fingerprint}. "
+            f"Sleeping {poll_seconds} seconds."
+        )
+        time.sleep(poll_seconds)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -262,6 +327,10 @@ def main() -> int:
     command = [str(part) for part in config.get("command", [])]
     if not command:
         raise RuntimeError("Worker config must define a non-empty command list.")
+    active_fingerprint = config_fingerprint(config)
+    active_label = config_label(config)
+    active_config_commit = current_commit(repo_root)
+    last_executed_fingerprint: str | None = None
 
     manifest_dir = repo_root / str(config.get("artifact_manifest_dir", "colab_worker_logs"))
     manifest_dir.mkdir(parents=True, exist_ok=True)
@@ -274,6 +343,9 @@ def main() -> int:
     print(f"config: {config_path}")
     print(f"cycles: {cycles}")
     print(f"branch: {branch}")
+    print(f"config_fingerprint: {active_fingerprint}")
+    if active_label:
+        print(f"config_label: {active_label}")
     print(f"command: {' '.join(shlex.quote(part) for part in command)}")
 
     for cycle in range(1, cycles + 1):
@@ -290,8 +362,39 @@ def main() -> int:
                     command = [str(part) for part in config.get("command", [])]
                     if not command:
                         raise RuntimeError("Worker config must define a non-empty command list.")
+                    active_fingerprint = config_fingerprint(config)
+                    active_label = config_label(config)
+                    active_config_commit = current_commit(repo_root)
                     print(f"reloaded config after pull: {config_path}")
+                    print(f"cycle config fingerprint: {active_fingerprint}")
+                    if active_label:
+                        print(f"cycle config label: {active_label}")
                     print(f"cycle command: {' '.join(shlex.quote(part) for part in command)}")
+
+            if (
+                config.get("require_new_config_each_cycle", False)
+                and last_executed_fingerprint is not None
+                and active_fingerprint == last_executed_fingerprint
+            ):
+                config, active_fingerprint = wait_for_new_config(
+                    repo_root,
+                    config_path,
+                    branch,
+                    last_executed_fingerprint,
+                    worker_log_path,
+                    timeout_seconds=int(config.get("wait_for_new_config_timeout_seconds", 3600)),
+                    poll_seconds=int(config.get("wait_for_new_config_poll_seconds", 30)),
+                )
+                branch = str(config.get("branch", branch))
+                command = [str(part) for part in config.get("command", [])]
+                if not command:
+                    raise RuntimeError("Worker config must define a non-empty command list.")
+                active_label = config_label(config)
+                active_config_commit = current_commit(repo_root)
+                print(f"cycle config fingerprint after wait: {active_fingerprint}")
+                if active_label:
+                    print(f"cycle config label after wait: {active_label}")
+                print(f"cycle command after wait: {' '.join(shlex.quote(part) for part in command)}")
 
             result = run_command(command, cwd=repo_root, check=False, log_path=worker_log_path)
             returncode = result.returncode
@@ -306,6 +409,9 @@ def main() -> int:
                 cycle=cycle,
                 cycles=cycles,
                 config_path=config_path,
+                config_commit=active_config_commit,
+                config_fingerprint_value=active_fingerprint,
+                config_label_value=active_label,
                 command=command,
                 returncode=returncode,
                 started_utc=started,
@@ -320,6 +426,8 @@ def main() -> int:
             else:
                 print("Artifact push skipped for this cycle by worker config.")
 
+            last_executed_fingerprint = active_fingerprint
+
             if returncode and config.get("stop_on_command_failure", True):
                 return returncode
 
@@ -331,6 +439,9 @@ def main() -> int:
                 cycle=cycle,
                 cycles=cycles,
                 config_path=config_path,
+                config_commit=active_config_commit,
+                config_fingerprint_value=active_fingerprint,
+                config_label_value=active_label,
                 command=command,
                 returncode=returncode,
                 started_utc=started,
