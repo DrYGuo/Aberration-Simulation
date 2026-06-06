@@ -1,5 +1,5 @@
 {
-  "description": "Live steering test with final-only artifact push. Codex set step 5 while monitoring GitHub.",
+  "description": "Live steering test with final-only artifact push. Codex set step 6 while monitoring GitHub.",
   "cycles": 12,
   "sleep_seconds": 45,
   "branch": "main",
@@ -12,7 +12,7 @@
   "command": [
     "python3",
     "-c",
-    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=5'); print('message=Codex actively steered final-push loop to step 5 while monitoring GitHub'); print('utc', datetime.now(timezone.utc).isoformat())"
+    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=6'); print('message=Codex actively steered final-push loop to step 6 while monitoring GitHub'); print('utc', datetime.now(timezone.utc).isoformat())"
   ],
   "result_globs": [
     "colab_worker_logs/*.json"
