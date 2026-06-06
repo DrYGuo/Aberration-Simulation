@@ -216,9 +216,11 @@ def four_way_benchmark_split(
     stress_labels = {
         "coupled_full_random",
         "coupled_sparse_random",
+        "coupled_C1_C3_random",
         "coupled_A1_B2_random",
         "coupled_A2_B2_random",
         "coupled_C3_B2_random",
+        "coupled_A1_S3_random",
         "coupled_C3_A3_S3_random",
         "S3",
         "A3",
