@@ -95,6 +95,35 @@ def git_pull(repo_root: Path, branch: str, log_path: Path) -> None:
     run_command(["git", "pull", "--ff-only", "origin", branch], cwd=repo_root, log_path=log_path)
 
 
+def ensure_git_identity(repo_root: Path, log_path: Path) -> None:
+    name = subprocess.run(
+        ["git", "config", "--get", "user.name"],
+        cwd=repo_root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).stdout.strip()
+    email = subprocess.run(
+        ["git", "config", "--get", "user.email"],
+        cwd=repo_root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).stdout.strip()
+    if not name:
+        run_command(
+            ["git", "config", "user.name", "Colab Regression Worker"],
+            cwd=repo_root,
+            log_path=log_path,
+        )
+    if not email:
+        run_command(
+            ["git", "config", "user.email", "colab-regression-worker@users.noreply.github.com"],
+            cwd=repo_root,
+            log_path=log_path,
+        )
+
+
 def git_commit_and_push(
     repo_root: Path,
     artifact_paths: list[Path],
@@ -107,6 +136,7 @@ def git_commit_and_push(
         print("No artifact paths exist; skipping git commit.")
         return False
 
+    ensure_git_identity(repo_root, log_path)
     run_command(["git", "add", "--force", "--", *[str(path) for path in existing_paths]], cwd=repo_root, log_path=log_path)
     status = run_command(["git", "status", "--short", "--", *[str(path) for path in existing_paths]], cwd=repo_root, check=False)
     if not status.stdout.strip():
