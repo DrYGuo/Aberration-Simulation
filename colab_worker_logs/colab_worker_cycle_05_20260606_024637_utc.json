@@ -1,0 +1,25 @@
+{
+  "cycle": 5,
+  "cycles": 5,
+  "started_utc": "2026-06-06T02:46:37.130531+00:00",
+  "finished_utc": "2026-06-06T02:46:37.710852+00:00",
+  "config_path": "experiments/colab_worker_5cycles.json",
+  "command": [
+    "python3",
+    "-c",
+    "from pathlib import Path; import sys; print('colab worker smoke ok'); print('python', sys.version.split()[0]); print('cwd', Path.cwd())"
+  ],
+  "returncode": 0,
+  "artifact_paths": [
+    "colab_worker_logs/colab_worker_cycle_05_20260606_023734_utc.json",
+    "colab_worker_logs/colab_worker_cycle_01_20260606_023529_utc.json",
+    "colab_worker_logs/colab_worker_cycle_04_20260606_024606_utc.json",
+    "colab_worker_logs/colab_worker_cycle_02_20260606_024503_utc.json",
+    "colab_worker_logs/colab_worker_cycle_03_20260606_024534_utc.json",
+    "colab_worker_logs/colab_worker_cycle_04_20260606_023703_utc.json",
+    "colab_worker_logs/colab_worker_cycle_02_20260606_023600_utc.json",
+    "colab_worker_logs/colab_worker_cycle_01_20260606_024431_utc.json",
+    "colab_worker_logs/colab_worker_cycle_03_20260606_023631_utc.json"
+  ],
+  "git_commit_after_cycle": "30995e3"
+}
