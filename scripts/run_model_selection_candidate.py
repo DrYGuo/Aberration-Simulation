@@ -90,16 +90,18 @@ def run_dataset_bootstrap(notebook: Path, timeout_seconds: int, output_dir: Path
         str(timeout_seconds),
     ]
     print("$", " ".join(command), flush=True)
-    result = subprocess.run(
+    process = subprocess.Popen(
         command,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    if result.stdout:
-        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
-    if result.returncode:
-        raise RuntimeError(f"dataset bootstrap failed with exit {result.returncode}")
+    assert process.stdout is not None
+    for line in process.stdout:
+        print(line, end="" if line.endswith("\n") else "\n", flush=True)
+    returncode = int(process.wait())
+    if returncode:
+        raise RuntimeError(f"dataset bootstrap failed with exit {returncode}")
 
 
 def ensure_csv_available(args: argparse.Namespace, filename: str) -> Path:
@@ -302,25 +304,57 @@ def plot_history(path: Path, history: list[dict[str, float]]) -> None:
     plt.close(fig)
 
 
-def plot_scatter(path: Path, y_true: np.ndarray, y_pred: np.ndarray, test_index: np.ndarray) -> None:
+def plot_scatter(
+    path: Path,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    labels: np.ndarray,
+    test_index: np.ndarray,
+) -> None:
     import matplotlib.pyplot as plt
 
     ncols = 4
     nrows = int(math.ceil(len(TARGET_COLUMNS) / ncols))
-    fig, axes = plt.subplots(nrows, ncols, figsize=(12, 8))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(14, 8))
     axes = axes.ravel()
+    test_labels = labels[test_index]
+    unique_labels = sorted(set(test_labels))
+    color_map = plt.get_cmap("tab20")
+    colors = {
+        label: color_map(i % color_map.N)
+        for i, label in enumerate(unique_labels)
+    }
     for i, name in enumerate(TARGET_COLUMNS):
         ax = axes[i]
         true = y_true[test_index, i]
         pred = y_pred[test_index, i]
-        ax.scatter(true, pred, s=5, alpha=0.5)
+        for label in unique_labels:
+            mask = test_labels == label
+            ax.scatter(
+                true[mask],
+                pred[mask],
+                s=6,
+                alpha=0.55,
+                color=colors[label],
+                label=label if i == 0 else None,
+            )
         low = float(min(true.min(), pred.min()))
         high = float(max(true.max(), pred.max()))
         ax.plot([low, high], [low, high], "k--", linewidth=0.8)
         ax.set_title(name, fontsize=9)
     for j in range(len(TARGET_COLUMNS), len(axes)):
         axes[j].axis("off")
-    fig.tight_layout()
+    handles, legend_labels = axes[0].get_legend_handles_labels()
+    if handles:
+        fig.legend(
+            handles,
+            legend_labels,
+            loc="center right",
+            fontsize=6,
+            markerscale=1.5,
+            frameon=True,
+        )
+    fig.tight_layout(rect=(0, 0, 0.84, 1))
     fig.savefig(path, dpi=120)
     plt.close(fig)
 
@@ -555,7 +589,7 @@ def main() -> int:
         ["epoch", "train_loss", "test_loss"],
     )
     plot_history(output_dir / "training_history_model_loop.png", history)
-    plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, test_index)
+    plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, labels, test_index)
 
     if args.save_model:
         torch.save(model.state_dict(), output_dir / "model_loop_candidate.pt")

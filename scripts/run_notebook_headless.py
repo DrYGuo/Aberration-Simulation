@@ -73,29 +73,33 @@ def main() -> int:
 
     print("$", " ".join(command), flush=True)
     started = datetime.now(timezone.utc).isoformat()
-    result = subprocess.run(
+    output_parts: list[str] = []
+    process = subprocess.Popen(
         command,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
+    assert process.stdout is not None
+    for line in process.stdout:
+        output_parts.append(line)
+        print(line, end="" if line.endswith("\n") else "\n", flush=True)
+    returncode = int(process.wait())
     finished = datetime.now(timezone.utc).isoformat()
-    if result.stdout:
-        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
 
     manifest = {
         "notebook": str(notebook),
         "executed_notebook": str(output_dir / output_name),
         "started_utc": started,
         "finished_utc": finished,
-        "returncode": result.returncode,
+        "returncode": returncode,
         "command": command,
     }
     with manifest_path.open("w") as handle:
         json.dump(manifest, handle, indent=2)
     print("manifest:", manifest_path)
 
-    return result.returncode
+    return returncode
 
 
 if __name__ == "__main__":

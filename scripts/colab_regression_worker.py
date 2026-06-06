@@ -77,15 +77,57 @@ def run_command(
 ) -> subprocess.CompletedProcess[str]:
     display = " ".join(shlex.quote(part) for part in command)
     print(f"$ {display}", flush=True)
+    if log_path is not None:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("a") as handle:
+            handle.write(f"\n$ {display}\n")
+    output_parts: list[str] = []
     try:
-        result = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=cwd,
             env=env,
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=timeout_seconds,
+        )
+        assert process.stdout is not None
+        started = time.monotonic()
+        while True:
+            line = process.stdout.readline()
+            if line:
+                output_parts.append(line)
+                print(line, end="" if line.endswith("\n") else "\n", flush=True)
+                if log_path is not None:
+                    log_path.parent.mkdir(parents=True, exist_ok=True)
+                    with log_path.open("a") as handle:
+                        handle.write(line)
+            if process.poll() is not None:
+                remainder = process.stdout.read()
+                if remainder:
+                    output_parts.append(remainder)
+                    print(remainder, end="" if remainder.endswith("\n") else "\n", flush=True)
+                    if log_path is not None:
+                        log_path.parent.mkdir(parents=True, exist_ok=True)
+                        with log_path.open("a") as handle:
+                            handle.write(remainder)
+                break
+            if timeout_seconds is not None and time.monotonic() - started > timeout_seconds:
+                process.kill()
+                timeout_message = f"\n[timeout after {timeout_seconds} seconds]\n"
+                output_parts.append(timeout_message)
+                print(timeout_message.strip(), flush=True)
+                if log_path is not None:
+                    log_path.parent.mkdir(parents=True, exist_ok=True)
+                    with log_path.open("a") as handle:
+                        handle.write(timeout_message)
+                if check:
+                    raise subprocess.TimeoutExpired(command, timeout_seconds, output="".join(output_parts))
+                return subprocess.CompletedProcess(command, returncode=124, stdout="".join(output_parts))
+        result = subprocess.CompletedProcess(
+            command,
+            returncode=int(process.returncode or 0),
+            stdout="".join(output_parts),
         )
     except subprocess.TimeoutExpired as exc:
         stdout = exc.stdout or ""
@@ -104,13 +146,9 @@ def run_command(
         if check:
             raise
         return subprocess.CompletedProcess(command, returncode=124, stdout=stdout + timeout_message)
-    if result.stdout:
-        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n", flush=True)
     if log_path is not None:
         log_path.parent.mkdir(parents=True, exist_ok=True)
         with log_path.open("a") as handle:
-            handle.write(f"\n$ {display}\n")
-            handle.write(result.stdout or "")
             if result.returncode:
                 handle.write(f"\n[exit {result.returncode}]\n")
     if check and result.returncode:
