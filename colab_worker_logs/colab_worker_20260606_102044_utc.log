@@ -1,0 +1,286 @@
+
+$ git fetch origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+
+$ git pull --ff-only origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+
+$ python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_width128_lr4e-4_dropout0.05 --search-root training_results --output-root training_results/model_selection_loop --hidden-dim 128 --dropout 0.05 --learning-rate 4e-4 --weight-decay 1e-4 --residual-penalty 3e-3 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.10 --bootstrap-if-missing --bootstrap-notebook notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --bootstrap-timeout 3600
+$ /usr/bin/python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600
+$ /usr/local/bin/jupyter nbconvert --to notebook --execute /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.ipynb --output-dir /content/Aberration-Simulation/colab_worker_logs --ExecutePreprocessor.timeout=3600
+[NbConvertApp] Converting notebook /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb to notebook
+/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  validate(nb)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+HEAD is now at ab8cc1a Bootstrap enhanced dataset for model loop
+[NbConvertApp] Writing 65836 bytes to /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.ipynb
+manifest: /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.json
+candidate: D66_width128_lr4e-4_dropout0.05
+family: enhanced
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260606_102054_utc/training_features_enhanced.csv
+features: 66
+output: training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc
+epoch     1 train=1.549879 test=1.528889
+epoch    25 train=1.059415 test=1.047729
+epoch    50 train=0.612459 test=0.611516
+epoch    75 train=0.388684 test=0.393351
+epoch   100 train=0.278727 test=0.283055
+epoch   125 train=0.225301 test=0.229176
+epoch   150 train=0.194779 test=0.198887
+epoch   175 train=0.173786 test=0.178528
+epoch   200 train=0.158259 test=0.163880
+epoch   225 train=0.145878 test=0.152341
+epoch   250 train=0.134952 test=0.142705
+epoch   275 train=0.125504 test=0.134264
+epoch   300 train=0.117280 test=0.127162
+epoch   325 train=0.110399 test=0.120907
+epoch   350 train=0.104593 test=0.115724
+epoch   375 train=0.099629 test=0.111602
+epoch   400 train=0.095231 test=0.107679
+epoch   425 train=0.091210 test=0.104048
+epoch   450 train=0.087572 test=0.101089
+epoch   475 train=0.084350 test=0.098415
+epoch   500 train=0.081423 test=0.096022
+epoch   525 train=0.078656 test=0.093818
+epoch   550 train=0.076069 test=0.091574
+epoch   575 train=0.073793 test=0.089692
+epoch   600 train=0.071842 test=0.087938
+epoch   625 train=0.069746 test=0.086490
+epoch   650 train=0.067884 test=0.085189
+epoch   675 train=0.066111 test=0.083684
+epoch   700 train=0.064374 test=0.082311
+epoch   725 train=0.062658 test=0.081005
+epoch   750 train=0.061117 test=0.079655
+epoch   775 train=0.059672 test=0.078614
+epoch   800 train=0.058422 test=0.077451
+epoch   825 train=0.056971 test=0.076494
+epoch   850 train=0.055920 test=0.075746
+epoch   875 train=0.054634 test=0.074691
+epoch   900 train=0.053399 test=0.073810
+epoch   925 train=0.052279 test=0.073043
+epoch   950 train=0.051276 test=0.072327
+epoch   975 train=0.050249 test=0.071527
+epoch  1000 train=0.049157 test=0.070759
+epoch  1025 train=0.048230 test=0.069968
+epoch  1050 train=0.047289 test=0.069467
+epoch  1075 train=0.046377 test=0.068940
+epoch  1100 train=0.045440 test=0.068131
+epoch  1125 train=0.044541 test=0.067557
+epoch  1150 train=0.043863 test=0.067235
+epoch  1175 train=0.043013 test=0.066727
+epoch  1200 train=0.042224 test=0.065900
+epoch  1225 train=0.041461 test=0.065299
+epoch  1250 train=0.040761 test=0.064936
+epoch  1275 train=0.040090 test=0.064539
+epoch  1300 train=0.039405 test=0.064191
+epoch  1325 train=0.038787 test=0.064013
+epoch  1350 train=0.038033 test=0.063244
+epoch  1375 train=0.037523 test=0.063083
+epoch  1400 train=0.036861 test=0.062555
+epoch  1425 train=0.036325 test=0.062232
+epoch  1450 train=0.035764 test=0.061800
+epoch  1475 train=0.035138 test=0.061453
+epoch  1500 train=0.034611 test=0.060948
+epoch  1525 train=0.034219 test=0.060683
+epoch  1550 train=0.033658 test=0.060547
+epoch  1575 train=0.033258 test=0.060372
+epoch  1600 train=0.032747 test=0.060083
+epoch  1625 train=0.032201 test=0.059731
+epoch  1650 train=0.031782 test=0.059438
+epoch  1675 train=0.031421 test=0.059079
+epoch  1700 train=0.030889 test=0.058963
+epoch  1725 train=0.030510 test=0.058832
+epoch  1750 train=0.030092 test=0.058317
+epoch  1775 train=0.029703 test=0.058181
+epoch  1800 train=0.029275 test=0.057998
+epoch  1825 train=0.029003 test=0.057734
+epoch  1850 train=0.028584 test=0.057716
+epoch  1875 train=0.028218 test=0.057418
+epoch  1900 train=0.027847 test=0.056845
+epoch  1925 train=0.027505 test=0.056974
+epoch  1950 train=0.027146 test=0.056576
+epoch  1975 train=0.026821 test=0.056324
+epoch  2000 train=0.026445 test=0.056000
+epoch  2025 train=0.026092 test=0.055847
+epoch  2050 train=0.025762 test=0.055851
+epoch  2075 train=0.025652 test=0.055744
+epoch  2100 train=0.025312 test=0.055525
+epoch  2125 train=0.024947 test=0.055354
+epoch  2150 train=0.024579 test=0.054775
+epoch  2175 train=0.024355 test=0.055003
+epoch  2200 train=0.024166 test=0.054854
+epoch  2225 train=0.023831 test=0.054531
+epoch  2250 train=0.023465 test=0.054431
+epoch  2275 train=0.023294 test=0.054170
+epoch  2300 train=0.023067 test=0.053938
+epoch  2325 train=0.022785 test=0.053918
+epoch  2350 train=0.022461 test=0.053618
+epoch  2375 train=0.022307 test=0.053321
+epoch  2400 train=0.021948 test=0.053464
+epoch  2425 train=0.021801 test=0.053102
+epoch  2450 train=0.021586 test=0.052958
+epoch  2475 train=0.021334 test=0.052651
+epoch  2500 train=0.021054 test=0.052668
+epoch  2525 train=0.020906 test=0.052368
+epoch  2550 train=0.020612 test=0.052247
+epoch  2575 train=0.020329 test=0.052020
+epoch  2600 train=0.020276 test=0.052033
+epoch  2625 train=0.020035 test=0.052013
+epoch  2650 train=0.019905 test=0.051706
+epoch  2675 train=0.019718 test=0.051718
+epoch  2700 train=0.019434 test=0.051362
+epoch  2725 train=0.019194 test=0.050901
+epoch  2750 train=0.019059 test=0.051178
+epoch  2775 train=0.018778 test=0.050811
+epoch  2800 train=0.018718 test=0.050770
+epoch  2825 train=0.018496 test=0.050754
+epoch  2850 train=0.018452 test=0.050498
+epoch  2875 train=0.018251 test=0.050424
+epoch  2900 train=0.017962 test=0.050176
+epoch  2925 train=0.017883 test=0.050017
+epoch  2950 train=0.017716 test=0.049824
+epoch  2975 train=0.017472 test=0.049833
+epoch  3000 train=0.017347 test=0.049633
+epoch  3025 train=0.017208 test=0.049630
+epoch  3050 train=0.017125 test=0.049532
+epoch  3075 train=0.017018 test=0.049259
+epoch  3100 train=0.016691 test=0.049181
+epoch  3125 train=0.016589 test=0.049128
+epoch  3150 train=0.016510 test=0.048880
+epoch  3175 train=0.016372 test=0.048756
+epoch  3200 train=0.016151 test=0.048487
+epoch  3225 train=0.016092 test=0.048559
+epoch  3250 train=0.015989 test=0.048457
+epoch  3275 train=0.015826 test=0.048374
+epoch  3300 train=0.015883 test=0.048242
+epoch  3325 train=0.015552 test=0.048189
+epoch  3350 train=0.015539 test=0.048030
+epoch  3375 train=0.015385 test=0.047790
+epoch  3400 train=0.015275 test=0.047929
+epoch  3425 train=0.015192 test=0.047812
+epoch  3450 train=0.015029 test=0.047648
+epoch  3475 train=0.014861 test=0.047328
+epoch  3500 train=0.014805 test=0.047277
+epoch  3525 train=0.014781 test=0.047371
+epoch  3550 train=0.014637 test=0.047215
+epoch  3575 train=0.014528 test=0.047141
+epoch  3600 train=0.014498 test=0.047083
+epoch  3625 train=0.014338 test=0.046919
+epoch  3650 train=0.014197 test=0.046831
+epoch  3675 train=0.014187 test=0.046936
+epoch  3700 train=0.014029 test=0.046519
+epoch  3725 train=0.013930 test=0.046558
+epoch  3750 train=0.013899 test=0.046649
+epoch  3775 train=0.013827 test=0.046380
+epoch  3800 train=0.013649 test=0.046311
+epoch  3825 train=0.013722 test=0.046330
+epoch  3850 train=0.013527 test=0.046135
+epoch  3875 train=0.013473 test=0.046120
+epoch  3900 train=0.013317 test=0.045859
+epoch  3925 train=0.013354 test=0.045974
+epoch  3950 train=0.013221 test=0.046053
+epoch  3975 train=0.013141 test=0.045852
+epoch  4000 train=0.012975 test=0.045639
+epoch  4025 train=0.012967 test=0.045730
+epoch  4050 train=0.012899 test=0.045666
+epoch  4075 train=0.012803 test=0.045364
+epoch  4100 train=0.012767 test=0.045437
+epoch  4125 train=0.012628 test=0.045341
+epoch  4150 train=0.012682 test=0.045314
+epoch  4175 train=0.012565 test=0.045257
+epoch  4200 train=0.012535 test=0.045243
+epoch  4225 train=0.012396 test=0.045215
+epoch  4250 train=0.012340 test=0.045190
+epoch  4275 train=0.012379 test=0.045067
+epoch  4300 train=0.012315 test=0.045123
+epoch  4325 train=0.012152 test=0.044998
+epoch  4350 train=0.012115 test=0.044710
+epoch  4375 train=0.012079 test=0.044698
+epoch  4400 train=0.012007 test=0.044720
+epoch  4425 train=0.011934 test=0.044597
+epoch  4450 train=0.011884 test=0.044522
+epoch  4475 train=0.011872 test=0.044492
+epoch  4500 train=0.011801 test=0.044405
+epoch  4525 train=0.011664 test=0.044424
+epoch  4550 train=0.011682 test=0.044304
+epoch  4575 train=0.011632 test=0.044199
+epoch  4600 train=0.011477 test=0.044102
+epoch  4625 train=0.011541 test=0.044297
+epoch  4650 train=0.011367 test=0.044201
+epoch  4675 train=0.011397 test=0.044227
+epoch  4700 train=0.011352 test=0.044174
+epoch  4725 train=0.011256 test=0.044024
+epoch  4750 train=0.011181 test=0.043855
+epoch  4775 train=0.011301 test=0.043964
+epoch  4800 train=0.011166 test=0.043877
+epoch  4825 train=0.011080 test=0.043731
+epoch  4850 train=0.011073 test=0.043739
+epoch  4875 train=0.011046 test=0.043600
+epoch  4900 train=0.011005 test=0.043903
+epoch  4925 train=0.010922 test=0.043572
+epoch  4950 train=0.010878 test=0.043442
+epoch  4975 train=0.010858 test=0.043593
+epoch  5000 train=0.010813 test=0.043378
+epoch  5025 train=0.010800 test=0.043376
+epoch  5050 train=0.010731 test=0.043243
+epoch  5075 train=0.010763 test=0.043468
+epoch  5100 train=0.010669 test=0.043032
+epoch  5125 train=0.010623 test=0.043162
+epoch  5150 train=0.010547 test=0.043231
+epoch  5175 train=0.010552 test=0.043193
+epoch  5200 train=0.010465 test=0.043085
+epoch  5225 train=0.010473 test=0.042892
+epoch  5250 train=0.010387 test=0.042765
+epoch  5275 train=0.010361 test=0.042993
+epoch  5300 train=0.010370 test=0.042868
+epoch  5325 train=0.010366 test=0.042971
+epoch  5350 train=0.010300 test=0.042810
+epoch  5375 train=0.010214 test=0.042760
+epoch  5400 train=0.010220 test=0.042743
+epoch  5425 train=0.010225 test=0.042549
+epoch  5450 train=0.010139 test=0.042632
+epoch  5475 train=0.010142 test=0.042761
+epoch  5500 train=0.010057 test=0.042675
+epoch  5525 train=0.009991 test=0.042401
+epoch  5550 train=0.010092 test=0.042695
+epoch  5575 train=0.010020 test=0.042608
+epoch  5600 train=0.010014 test=0.042610
+epoch  5625 train=0.009918 test=0.042390
+epoch  5650 train=0.009981 test=0.042446
+epoch  5675 train=0.009901 test=0.042520
+epoch  5700 train=0.009895 test=0.042347
+epoch  5725 train=0.009866 test=0.042106
+epoch  5750 train=0.009759 test=0.042237
+epoch  5775 train=0.009773 test=0.042191
+epoch  5800 train=0.009732 test=0.042219
+epoch  5825 train=0.009646 test=0.042190
+epoch  5850 train=0.009637 test=0.042145
+epoch  5875 train=0.009634 test=0.042159
+epoch  5900 train=0.009587 test=0.042037
+epoch  5925 train=0.009590 test=0.042008
+epoch  5950 train=0.009507 test=0.041892
+epoch  5975 train=0.009597 test=0.042052
+epoch  6000 train=0.009626 test=0.041873
+metrics: training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/metrics_model_loop.json
+selection: training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/selection_score.json
+weighted_score: 4.0120545566082
+rejected: False []
+
+$ git config user.name 'Colab Regression Worker'
+
+$ git config user.email colab-regression-worker@users.noreply.github.com
