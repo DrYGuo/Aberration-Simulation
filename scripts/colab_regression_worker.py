@@ -141,8 +141,12 @@ def git_pull(repo_root: Path, branch: str, log_path: Path) -> None:
     run_command(["git", "pull", "--ff-only", "origin", branch], cwd=repo_root, log_path=log_path)
 
 
-def git_pull_rebase(repo_root: Path, branch: str, log_path: Path) -> None:
-    run_command(["git", "pull", "--rebase", "origin", branch], cwd=repo_root, log_path=log_path)
+def git_pull_rebase(repo_root: Path, branch: str, log_path: Path | None) -> None:
+    run_command(
+        ["git", "pull", "--rebase", "--autostash", "origin", branch],
+        cwd=repo_root,
+        log_path=log_path,
+    )
 
 
 def ensure_git_identity(repo_root: Path, log_path: Path) -> None:
@@ -194,7 +198,9 @@ def git_commit_and_push(
         return False
 
     run_command(["git", "commit", "-m", message], cwd=repo_root, log_path=log_path)
-    git_pull_rebase(repo_root, branch, log_path)
+    # Do not append to the committed worker log immediately before rebasing.
+    # That creates a dirty worktree and can block `git pull --rebase`.
+    git_pull_rebase(repo_root, branch, log_path=None)
     run_command(["git", "push", "origin", branch], cwd=repo_root, log_path=log_path)
     return True
 
