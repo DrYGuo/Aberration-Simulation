@@ -1,0 +1,22 @@
+{
+  "description": "Live steering test. Keep this filename stable so Codex can update it while the Colab worker loop is running.",
+  "cycles": 12,
+  "sleep_seconds": 45,
+  "branch": "main",
+  "reload_config_each_cycle": true,
+  "configure_token_remote": true,
+  "repo_slug": "DrYGuo/Aberration-Simulation",
+  "git_pull_before_cycle": true,
+  "git_push_after_cycle": true,
+  "commit_message_prefix": "Add Colab live steering artifacts",
+  "command": [
+    "python3",
+    "-c",
+    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=1'); print('message=initial live config from GitHub'); print('utc', datetime.now(timezone.utc).isoformat())"
+  ],
+  "result_globs": [
+    "colab_worker_logs/*.json"
+  ],
+  "artifact_manifest_dir": "colab_worker_logs",
+  "stop_on_command_failure": true
+}
