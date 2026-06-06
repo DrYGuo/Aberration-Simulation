@@ -1,6 +1,6 @@
 {
   "description": "Real model-selection loop. Bootstraps the enhanced feature CSV once if missing, reuses cached feature CSVs for model candidates, and compares candidates against the tracked Architecture D baseline metrics.",
-  "config_id": "model-loop-rerun-best-d66-width128-lr8e-4-validation-protocol-symmetry-couplings",
+  "config_id": "model-loop-rerun-best-d66-width128-lr8e-4-validation-protocol-no-bootstrap",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -44,12 +44,7 @@
     "--baseline-metrics",
     "experiments/baselines/enhanced_v2_architecture_d_metrics.json",
     "--selection-config",
-    "experiments/model_selection_weights.json",
-    "--bootstrap-if-missing",
-    "--bootstrap-notebook",
-    "notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb",
-    "--bootstrap-timeout",
-    "3600"
+    "experiments/model_selection_weights.json"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
