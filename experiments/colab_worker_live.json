@@ -1,5 +1,5 @@
 {
-  "description": "Live steering test. Keep this filename stable so Codex can update it while the Colab worker loop is running.",
+  "description": "Live steering test. Codex updated this config while the Colab worker loop was running.",
   "cycles": 12,
   "sleep_seconds": 45,
   "branch": "main",
@@ -12,7 +12,7 @@
   "command": [
     "python3",
     "-c",
-    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=1'); print('message=initial live config from GitHub'); print('utc', datetime.now(timezone.utc).isoformat())"
+    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=2'); print('message=Codex updated live config during the running loop'); print('utc', datetime.now(timezone.utc).isoformat())"
   ],
   "result_globs": [
     "colab_worker_logs/*.json"
