@@ -51,6 +51,18 @@ DEFAULT_SCORE_WEIGHTS = {
 }
 
 
+DEFAULT_HARD_LABEL_WEIGHTS = {
+    "coupled_full_random": 1.35,
+    "coupled_sparse_random": 1.25,
+    "coupled_A1_B2_random": 1.0,
+    "coupled_A2_B2_random": 1.0,
+    "coupled_C3_B2_random": 1.0,
+    "coupled_C3_A3_S3_random": 1.2,
+    "S3": 1.15,
+    "A3": 1.15,
+}
+
+
 def load_json(path: Path) -> dict[str, Any]:
     with path.open() as handle:
         return json.load(handle)
@@ -144,6 +156,18 @@ def mean(values: list[float]) -> float:
     return sum(finite) / len(finite) if finite else 0.0
 
 
+def weighted_mean_by_label(values: list[tuple[str, float]], weights: dict[str, float]) -> float:
+    total = 0.0
+    weight_total = 0.0
+    for label, value in values:
+        if value != value or value in (float("inf"), float("-inf")):
+            continue
+        weight = float(weights.get(label, 1.0))
+        total += weight * value
+        weight_total += weight
+    return total / weight_total if weight_total else 0.0
+
+
 def relative_change(value: float, baseline: float) -> float:
     if baseline <= 0:
         return 0.0 if value <= baseline else float("inf")
@@ -172,9 +196,16 @@ def score_run(
     easy_targets = tuple(selection_config.get("easy_targets", EASY_TARGETS))
     target_scales = {**DEFAULT_TARGET_PHYSICAL_SCALES, **selection_config.get("target_physical_scales", {})}
     weights = {**DEFAULT_SCORE_WEIGHTS, **selection_config.get("score_weights", {})}
+    hard_label_weights = {**DEFAULT_HARD_LABEL_WEIGHTS, **selection_config.get("hard_label_weights", {})}
 
-    hard_label_norm_mae = mean([split_label_metric(metrics, split, label, "normalized_mae", target_scales) for label in hard_labels])
-    hard_label_norm_p95 = mean([split_label_metric(metrics, split, label, "normalized_p95_abs_error", target_scales) for label in hard_labels])
+    hard_label_norm_mae = weighted_mean_by_label(
+        [(label, split_label_metric(metrics, split, label, "normalized_mae", target_scales)) for label in hard_labels],
+        hard_label_weights,
+    )
+    hard_label_norm_p95 = weighted_mean_by_label(
+        [(label, split_label_metric(metrics, split, label, "normalized_p95_abs_error", target_scales)) for label in hard_labels],
+        hard_label_weights,
+    )
     hard_target_norm_mae = mean([split_target_metric(metrics, split, target, "normalized_mae", target_scales) for target in hard_targets])
     hard_target_norm_p95 = mean([split_target_metric(metrics, split, target, "normalized_p95_abs_error", target_scales) for target in hard_targets])
     overall_norm_mae = split_overall_metric(metrics, split, "overall_normalized_mae")
@@ -230,6 +261,7 @@ def score_run(
             "easy_target_normalized_mae_relative_change": easy_regression,
         },
         "selection_config": selection_config,
+        "hard_label_weights": hard_label_weights,
     }
 
 
@@ -266,6 +298,7 @@ def main() -> int:
     payload = {
         "selection_policy": {
             "hard_labels": (selection_config or {}).get("hard_labels", HARD_LABELS),
+            "hard_label_weights": (selection_config or {}).get("hard_label_weights", DEFAULT_HARD_LABEL_WEIGHTS),
             "hard_targets": (selection_config or {}).get("hard_targets", HARD_TARGETS),
             "easy_targets": (selection_config or {}).get("easy_targets", EASY_TARGETS),
             "easy_regression_limit": args.easy_regression_limit,
