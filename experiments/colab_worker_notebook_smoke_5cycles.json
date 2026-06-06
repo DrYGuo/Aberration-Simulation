@@ -1,0 +1,27 @@
+{
+  "description": "Verify headless notebook execution through the Colab worker.",
+  "cycles": 5,
+  "sleep_seconds": 30,
+  "branch": "main",
+  "reload_config_each_cycle": true,
+  "configure_token_remote": true,
+  "repo_slug": "DrYGuo/Aberration-Simulation",
+  "git_pull_before_cycle": true,
+  "git_push_after_cycle": true,
+  "commit_message_prefix": "Add Colab notebook smoke artifacts",
+  "command": [
+    "python3",
+    "scripts/run_notebook_headless.py",
+    "notebooks/colab_worker_notebook_smoke.ipynb",
+    "--output-dir",
+    "colab_worker_logs",
+    "--timeout",
+    "120"
+  ],
+  "result_globs": [
+    "colab_worker_logs/*.json",
+    "colab_worker_logs/*_executed_*.ipynb"
+  ],
+  "artifact_manifest_dir": "colab_worker_logs",
+  "stop_on_command_failure": true
+}
