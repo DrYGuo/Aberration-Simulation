@@ -1,0 +1,55 @@
+{
+  "description": "Weighted validation-selection policy for aberration coefficient regression. Lower score is better. Final blind and stress splits are reported separately and must not drive iterative model selection.",
+  "selection_split": "validation",
+  "hard_labels": [
+    "coupled_full_random",
+    "coupled_sparse_random",
+    "coupled_A1_B2_random",
+    "coupled_C3_A3_S3_random",
+    "S3",
+    "A3"
+  ],
+  "hard_targets": [
+    "C1",
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y"
+  ],
+  "easy_targets": [
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "A2_x",
+    "A2_y"
+  ],
+  "target_physical_scales": {
+    "C1": 100.0,
+    "C3": 2.0,
+    "A1_x": 60.0,
+    "A1_y": 60.0,
+    "B2_x": 3.0,
+    "B2_y": 3.0,
+    "A2_x": 16.0,
+    "A2_y": 16.0,
+    "S3_x": 100.0,
+    "S3_y": 100.0,
+    "A3_x": 100.0,
+    "A3_y": 100.0
+  },
+  "score_weights": {
+    "hard_label_normalized_mae": 0.30,
+    "hard_label_normalized_p95": 0.20,
+    "hard_target_normalized_mae": 0.25,
+    "hard_target_normalized_p95": 0.15,
+    "overall_normalized_mae": 0.05,
+    "overall_normalized_p95": 0.05
+  }
+}

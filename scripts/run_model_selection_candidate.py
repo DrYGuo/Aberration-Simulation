@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 from datetime import datetime, timezone
+import hashlib
 import json
 import math
 import platform
@@ -37,6 +38,22 @@ TARGET_WEIGHTS = {
     "S3_y": 1.5,
     "A3_x": 1.7,
     "A3_y": 1.7,
+}
+
+
+DEFAULT_TARGET_PHYSICAL_SCALES = {
+    "C1": 100.0,
+    "C3": 2.0,
+    "A1_x": 60.0,
+    "A1_y": 60.0,
+    "B2_x": 3.0,
+    "B2_y": 3.0,
+    "A2_x": 16.0,
+    "A2_y": 16.0,
+    "S3_x": 100.0,
+    "S3_y": 100.0,
+    "A3_x": 100.0,
+    "A3_y": 100.0,
 }
 
 
@@ -171,6 +188,67 @@ def stratified_train_test_split(labels: np.ndarray, test_fraction: float, seed: 
     return rng.permutation(train_index), rng.permutation(test_index)
 
 
+def stable_row_key(row: dict[str, str], index: int) -> str:
+    fields = ["sweep_label", *TARGET_COLUMNS]
+    payload = {"row_index_fallback": index}
+    for field in fields:
+        payload[field] = row.get(field, "")
+    if any(row.get(field, "") for field in fields):
+        payload.pop("row_index_fallback")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+
+def stable_unit_interval(text: str, seed: int, salt: str) -> float:
+    digest = hashlib.sha256(f"{seed}:{salt}:{text}".encode("utf-8")).hexdigest()
+    return int(digest[:16], 16) / float(16**16)
+
+
+def four_way_benchmark_split(
+    rows: list[dict[str, str]],
+    labels: np.ndarray,
+    y: np.ndarray,
+    *,
+    validation_fraction: float,
+    blind_fraction: float,
+    stress_fraction: float,
+    seed: int,
+) -> dict[str, np.ndarray]:
+    stress_labels = {
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "coupled_A1_B2_random",
+        "coupled_C3_A3_S3_random",
+        "S3",
+        "A3",
+    }
+    target_abs = np.abs(y)
+    scales = np.asarray([DEFAULT_TARGET_PHYSICAL_SCALES[name] for name in TARGET_COLUMNS], dtype=np.float32)
+    normalized_abs = target_abs / scales[None, :]
+    stress_threshold = float(np.quantile(np.max(normalized_abs, axis=1), 0.90))
+
+    splits: dict[str, list[int]] = {"train": [], "validation": [], "blind": [], "stress": []}
+    for index, row in enumerate(rows):
+        key = stable_row_key(row, index)
+        label = str(labels[index])
+        stress_candidate = label in stress_labels or float(np.max(normalized_abs[index])) >= stress_threshold
+        if stress_candidate and stable_unit_interval(key, seed, "stress") < stress_fraction:
+            splits["stress"].append(index)
+            continue
+
+        value = stable_unit_interval(key, seed, "selection")
+        if value < blind_fraction:
+            splits["blind"].append(index)
+        elif value < blind_fraction + validation_fraction:
+            splits["validation"].append(index)
+        else:
+            splits["train"].append(index)
+
+    for name, values in splits.items():
+        if not values:
+            raise RuntimeError(f"split {name!r} is empty; cannot run model selection safely")
+    return {name: np.asarray(values, dtype=np.int64) for name, values in splits.items()}
+
+
 def import_torch():
     import torch
     import torch.nn as nn
@@ -280,46 +358,99 @@ def summarize_predictions(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     labels: np.ndarray,
-    train_index: np.ndarray,
-    test_index: np.ndarray,
+    split_indices: dict[str, np.ndarray],
     training_config: dict[str, Any],
+    target_physical_scales: dict[str, float],
 ) -> dict[str, Any]:
     errors = y_pred - y_true
     abs_errors = np.abs(errors)
+    scale_array = np.asarray([target_physical_scales[name] for name in TARGET_COLUMNS], dtype=np.float32)
+    normalized_abs_errors = abs_errors / scale_array[None, :]
+
+    def split_summary(indices: np.ndarray) -> dict[str, Any]:
+        split_errors = errors[indices]
+        split_abs = abs_errors[indices]
+        split_norm_abs = normalized_abs_errors[indices]
+        data: dict[str, Any] = {
+            "n": int(len(indices)),
+            "overall_mae": float(split_abs.mean()),
+            "overall_rmse": float(np.sqrt(np.mean(split_errors**2))),
+            "overall_p95_abs_error": float(np.quantile(split_abs, 0.95)),
+            "overall_normalized_mae": float(split_norm_abs.mean()),
+            "overall_normalized_p95_abs_error": float(np.quantile(split_norm_abs, 0.95)),
+            "targets": {},
+            "labels": {},
+        }
+        for i, name in enumerate(TARGET_COLUMNS):
+            target_errors = split_errors[:, i]
+            target_abs = np.abs(target_errors)
+            data["targets"][name] = {
+                "mae": float(np.mean(target_abs)),
+                "rmse": float(np.sqrt(np.mean(target_errors**2))),
+                "p95_abs_error": float(np.quantile(target_abs, 0.95)),
+                "bias": float(np.mean(target_errors)),
+                "normalized_mae": float(np.mean(target_abs) / target_physical_scales[name]),
+                "normalized_p95_abs_error": float(np.quantile(target_abs, 0.95) / target_physical_scales[name]),
+            }
+        for label in sorted(set(labels[indices])):
+            mask_indices = indices[labels[indices] == label]
+            label_errors = errors[mask_indices]
+            label_abs = abs_errors[mask_indices]
+            label_norm_abs = normalized_abs_errors[mask_indices]
+            data["labels"][label] = {
+                "n": int(len(mask_indices)),
+                "mae": float(np.mean(label_abs)),
+                "rmse": float(np.sqrt(np.mean(label_errors**2))),
+                "p95_abs_error": float(np.quantile(label_abs, 0.95)),
+                "normalized_mae": float(np.mean(label_norm_abs)),
+                "normalized_p95_abs_error": float(np.quantile(label_norm_abs, 0.95)),
+            }
+        return data
+
     metrics: dict[str, Any] = {
         "n_samples": int(len(y_true)),
-        "n_train": int(len(train_index)),
-        "n_test": int(len(test_index)),
+        "n_train": int(len(split_indices["train"])),
+        "n_validation": int(len(split_indices["validation"])),
+        "n_blind": int(len(split_indices["blind"])),
+        "n_stress": int(len(split_indices["stress"])),
         "overall_mae": float(abs_errors.mean()),
         "overall_rmse": float(np.sqrt(np.mean(errors**2))),
+        "overall_normalized_mae": float(normalized_abs_errors.mean()),
+        "overall_normalized_p95_abs_error": float(np.quantile(normalized_abs_errors, 0.95)),
         "targets": {},
         "test_targets": {},
         "labels": {},
+        "splits": {},
         "training_config": training_config,
+        "target_physical_scales": target_physical_scales,
     }
     for i, name in enumerate(TARGET_COLUMNS):
         target_errors = errors[:, i]
-        test_errors = errors[test_index, i]
         metrics["targets"][name] = {
             "mae": float(np.mean(np.abs(target_errors))),
             "rmse": float(np.sqrt(np.mean(target_errors**2))),
             "p95_abs_error": float(np.quantile(np.abs(target_errors), 0.95)),
+            "bias": float(np.mean(target_errors)),
+            "normalized_mae": float(np.mean(np.abs(target_errors)) / target_physical_scales[name]),
+            "normalized_p95_abs_error": float(np.quantile(np.abs(target_errors), 0.95) / target_physical_scales[name]),
         }
-        metrics["test_targets"][name] = {
-            "mae": float(np.mean(np.abs(test_errors))),
-            "rmse": float(np.sqrt(np.mean(test_errors**2))),
-            "p95_abs_error": float(np.quantile(np.abs(test_errors), 0.95)),
-        }
+    for split_name, indices in split_indices.items():
+        metrics["splits"][split_name] = split_summary(indices)
+    metrics["test_targets"] = metrics["splits"]["validation"]["targets"]
     for label in sorted(set(labels)):
-        for split_name, indices in [("all", np.arange(len(labels))), ("test", test_index)]:
+        for split_name, indices in [("all", np.arange(len(labels))), ("test", split_indices["validation"])]:
             mask_indices = indices[labels[indices] == label]
             if len(mask_indices) == 0:
                 continue
             label_errors = errors[mask_indices]
+            label_norm_abs = normalized_abs_errors[mask_indices]
             metrics["labels"].setdefault(label, {})[split_name] = {
                 "n": int(len(mask_indices)),
                 "mae": float(np.mean(np.abs(label_errors))),
                 "rmse": float(np.sqrt(np.mean(label_errors**2))),
+                "p95_abs_error": float(np.quantile(np.abs(label_errors), 0.95)),
+                "normalized_mae": float(np.mean(label_norm_abs)),
+                "normalized_p95_abs_error": float(np.quantile(label_norm_abs, 0.95)),
             }
     return metrics
 
@@ -357,7 +488,8 @@ def plot_history(path: Path, history: list[dict[str, float]]) -> None:
 
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot([row["epoch"] for row in history], [row["train_loss"] for row in history], label="train")
-    ax.plot([row["epoch"] for row in history], [row["test_loss"] for row in history], label="test")
+    validation_key = "validation_loss" if "validation_loss" in history[0] else "test_loss"
+    ax.plot([row["epoch"] for row in history], [row[validation_key] for row in history], label="validation")
     ax.set_yscale("log")
     ax.set_xlabel("epoch")
     ax.set_ylabel("weighted scaled MSE")
@@ -443,6 +575,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--split-seed", type=int, default=7)
     parser.add_argument("--easy-regression-limit", type=float, default=0.10)
     parser.add_argument("--baseline-metrics", type=Path)
+    parser.add_argument("--selection-config", type=Path, default=Path("experiments/model_selection_weights.json"))
+    parser.add_argument("--validation-fraction", type=float, default=0.20)
+    parser.add_argument("--blind-fraction", type=float, default=0.10)
+    parser.add_argument("--stress-fraction", type=float, default=0.20)
     parser.add_argument("--save-model", action="store_true")
     parser.add_argument(
         "--bootstrap-if-missing",
@@ -550,7 +686,26 @@ def main() -> int:
     print("output:", output_dir)
 
     X, y, labels, rows = prepare_dataset(csv_path, feature_columns)
-    train_index, test_index = stratified_train_test_split(labels, args.test_fraction, args.split_seed)
+    selection_config = (
+        json.loads(args.selection_config.read_text())
+        if args.selection_config and args.selection_config.exists()
+        else {}
+    )
+    target_physical_scales = {
+        **DEFAULT_TARGET_PHYSICAL_SCALES,
+        **selection_config.get("target_physical_scales", {}),
+    }
+    split_indices = four_way_benchmark_split(
+        rows,
+        labels,
+        y,
+        validation_fraction=args.validation_fraction,
+        blind_fraction=args.blind_fraction,
+        stress_fraction=args.stress_fraction,
+        seed=args.split_seed,
+    )
+    train_index = split_indices["train"]
+    validation_index = split_indices["validation"]
 
     x_scaler = Standardizer().fit(X[train_index])
     y_scaler = Standardizer().fit(y[train_index])
@@ -569,13 +724,13 @@ def main() -> int:
 
     x_train = torch.tensor(Xn[train_index], device=device)
     y_train = torch.tensor(yn[train_index], device=device)
-    x_test = torch.tensor(Xn[test_index], device=device)
-    y_test = torch.tensor(yn[test_index], device=device)
+    x_validation = torch.tensor(Xn[validation_index], device=device)
+    y_validation = torch.tensor(yn[validation_index], device=device)
 
     history: list[dict[str, float]] = []
     best_state = None
     best_epoch = None
-    best_test_loss = float("inf")
+    best_validation_loss = float("inf")
     epochs_since_best = 0
 
     for epoch in range(1, args.max_epochs + 1):
@@ -591,11 +746,11 @@ def main() -> int:
             model.eval()
             with torch.no_grad():
                 train_loss = float(weighted_mse(model(x_train), y_train, target_weights).detach().cpu())
-                test_loss = float(weighted_mse(model(x_test), y_test, target_weights).detach().cpu())
-            history.append({"epoch": epoch, "train_loss": train_loss, "test_loss": test_loss})
-            print(f"epoch {epoch:5d} train={train_loss:.6f} test={test_loss:.6f}")
-            if test_loss < best_test_loss:
-                best_test_loss = test_loss
+                validation_loss = float(weighted_mse(model(x_validation), y_validation, target_weights).detach().cpu())
+            history.append({"epoch": epoch, "train_loss": train_loss, "validation_loss": validation_loss})
+            print(f"epoch {epoch:5d} train={train_loss:.6f} validation={validation_loss:.6f}")
+            if validation_loss < best_validation_loss:
+                best_validation_loss = validation_loss
                 best_epoch = epoch
                 best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
                 epochs_since_best = 0
@@ -625,14 +780,18 @@ def main() -> int:
         "residual_penalty": args.residual_penalty,
         "hidden_dim": args.hidden_dim,
         "dropout_probability": args.dropout,
-        "split_strategy": "stratified_by_sweep_label",
+        "split_strategy": "stable_hash_disjoint_benchmark_split",
+        "evaluation_protocol": "train_validation_blind_stress_disjoint",
         "split_seed": args.split_seed,
+        "validation_fraction": args.validation_fraction,
+        "blind_fraction": args.blind_fraction,
+        "stress_fraction": args.stress_fraction,
         "best_epoch": best_epoch,
-        "best_test_weighted_mse_scaled": best_test_loss,
+        "best_validation_weighted_mse_scaled": best_validation_loss,
         "feature_count": len(feature_columns),
         "scaler": "standard_train_split",
     }
-    metrics = summarize_predictions(y, y_pred, labels, train_index, test_index, training_config)
+    metrics = summarize_predictions(y, y_pred, labels, split_indices, training_config, target_physical_scales)
     metrics["run_name"] = run_name
     metrics_path = output_dir / "metrics_model_loop.json"
     metrics_path.write_text(json.dumps(metrics, indent=2) + "\n")
@@ -644,6 +803,7 @@ def main() -> int:
         metrics,
         baseline=baseline,
         easy_regression_limit=args.easy_regression_limit,
+        selection_config=selection_config,
     )
     (output_dir / "selection_score.json").write_text(json.dumps(selection, indent=2) + "\n")
 
@@ -652,10 +812,10 @@ def main() -> int:
     write_csv(
         output_dir / "training_history_summary.csv",
         history,
-        ["epoch", "train_loss", "test_loss"],
+        ["epoch", "train_loss", "validation_loss"],
     )
     plot_history(output_dir / "training_history_model_loop.png", history)
-    plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, labels, test_index)
+    plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, labels, validation_index)
 
     if args.save_model:
         torch.save(model.state_dict(), output_dir / "model_loop_candidate.pt")
@@ -669,13 +829,17 @@ def main() -> int:
         "device": device,
         "candidate": jsonable_args(args),
         "baseline_metrics_path": None if baseline_path is None else str(baseline_path),
+        "selection_config_path": None if args.selection_config is None else str(args.selection_config),
         "dataset": {
             "csv_path": str(csv_path),
             "csv_sha256": file_sha256(csv_path),
             "n_rows": int(len(rows)),
             "n_train": int(len(train_index)),
-            "n_test": int(len(test_index)),
+            "n_validation": int(len(split_indices["validation"])),
+            "n_blind": int(len(split_indices["blind"])),
+            "n_stress": int(len(split_indices["stress"])),
         },
+        "split_indices": {name: values.tolist() for name, values in split_indices.items()},
         "model": {
             "type": f"standardized_linear_plus_{args.architecture}",
             "input_dim": int(Xn.shape[1]),
@@ -702,9 +866,12 @@ def main() -> int:
         "dropout": args.dropout,
         "learning_rate": args.learning_rate,
         "best_epoch": best_epoch,
-        "best_test_weighted_mse_scaled": best_test_loss,
+        "best_validation_weighted_mse_scaled": best_validation_loss,
         "overall_mae": metrics["overall_mae"],
         "overall_rmse": metrics["overall_rmse"],
+        "validation_normalized_mae": metrics["splits"]["validation"]["overall_normalized_mae"],
+        "blind_normalized_mae": metrics["splits"]["blind"]["overall_normalized_mae"],
+        "stress_normalized_mae": metrics["splits"]["stress"]["overall_normalized_mae"],
         "selection_weighted_score": selection["weighted_score"],
         "selection_rejected": selection["rejected"],
         "source_csv_sha256": manifest["dataset"]["csv_sha256"],
