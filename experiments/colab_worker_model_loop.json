@@ -1,5 +1,5 @@
 {
-  "description": "Real model-selection loop. Uses existing cached feature CSVs only and waits for Codex to push a changed config between cycles.",
+  "description": "Real model-selection loop. Bootstraps the enhanced feature CSV once if missing, then reuses cached feature CSVs for model candidates and waits for Codex to push changed configs between cycles.",
   "config_id": "model-loop-d66-width128-lr4e-4-dropout0.05",
   "cycles": 8,
   "sleep_seconds": 30,
@@ -38,7 +38,12 @@
     "--patience-epochs",
     "1000",
     "--easy-regression-limit",
-    "0.10"
+    "0.10",
+    "--bootstrap-if-missing",
+    "--bootstrap-notebook",
+    "notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb",
+    "--bootstrap-timeout",
+    "3600"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",

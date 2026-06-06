@@ -79,6 +79,45 @@ def find_latest_csv(search_root: Path, filename: str) -> Path:
     return matches[-1]
 
 
+def run_dataset_bootstrap(notebook: Path, timeout_seconds: int, output_dir: Path) -> None:
+    command = [
+        sys.executable,
+        "scripts/run_notebook_headless.py",
+        str(notebook),
+        "--output-dir",
+        str(output_dir),
+        "--timeout",
+        str(timeout_seconds),
+    ]
+    print("$", " ".join(command), flush=True)
+    result = subprocess.run(
+        command,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    if result.returncode:
+        raise RuntimeError(f"dataset bootstrap failed with exit {result.returncode}")
+
+
+def ensure_csv_available(args: argparse.Namespace, filename: str) -> Path:
+    if args.csv_path:
+        return args.csv_path
+    try:
+        return find_latest_csv(args.search_root, filename)
+    except FileNotFoundError:
+        if not args.bootstrap_if_missing:
+            raise
+    run_dataset_bootstrap(
+        args.bootstrap_notebook,
+        args.bootstrap_timeout,
+        args.bootstrap_output_dir,
+    )
+    return find_latest_csv(args.search_root, filename)
+
+
 def find_feature_columns(csv_path: Path, family: str) -> list[str]:
     candidates = []
     if family == "enhanced":
@@ -306,6 +345,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--easy-regression-limit", type=float, default=0.10)
     parser.add_argument("--baseline-metrics", type=Path)
     parser.add_argument("--save-model", action="store_true")
+    parser.add_argument(
+        "--bootstrap-if-missing",
+        action="store_true",
+        help="Generate the cached feature CSV once if it is absent.",
+    )
+    parser.add_argument(
+        "--bootstrap-notebook",
+        type=Path,
+        default=Path("notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb"),
+        help="Dataset-only notebook used when --bootstrap-if-missing is set.",
+    )
+    parser.add_argument(
+        "--bootstrap-timeout",
+        type=int,
+        default=3600,
+        help="Timeout in seconds for dataset bootstrap notebook execution.",
+    )
+    parser.add_argument(
+        "--bootstrap-output-dir",
+        type=Path,
+        default=Path("colab_worker_logs"),
+        help="Where to write the executed bootstrap notebook manifest.",
+    )
     return parser.parse_args()
 
 
@@ -348,7 +410,7 @@ def main() -> int:
     repo_root = Path.cwd()
     filename = "training_features_enhanced.csv" if args.family == "enhanced" else "training_features_raw_angles.csv"
     try:
-        csv_path = args.csv_path or find_latest_csv(args.search_root, filename)
+        csv_path = ensure_csv_available(args, filename)
     except FileNotFoundError as exc:
         write_preflight_failure(
             args.output_root,
