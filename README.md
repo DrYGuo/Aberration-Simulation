@@ -108,6 +108,15 @@ A shorter imported-code version is available at `notebooks/uno_coefficient_relat
 
 For the first feature-to-coefficient regression test, run `notebooks/uno_feature_regression.ipynb`. This notebook is intentionally separate from `notebooks/uno_coefficient_relationship_short.ipynb`: it generates its own training coefficient combinations, runs the GPU probe simulation, extracts Uno feature values, and trains a hybrid linear-baseline plus residual-MLP model from feature values to aberration coefficient vectors. Feature extraction is batched across coefficient cases to keep GPU memory bounded while retaining vectorized CuPy computation inside each batch. The current training grid keeps the deterministic anchor sweeps and adds `10,000` random coupled coefficient cases, including targeted C1/C3/A2, C1/A1/C3/A2, A1/A2/B2, A1/B2/S3, A3/S3, full-random, and sparse-random mixtures. Architecture changes are tracked in `MODEL_EVOLUTION.md`. Each run saves into a timestamped folder under `training_results/feature_regression/`, writes `run_manifest.json`, and appends `model_registry.csv` so model parameters and metrics can be compared across runs. Optional Google Drive mirroring from Colab preserves the same run folder.
 
+For unattended Colab bring-up, run `notebooks/colab_regression_worker.ipynb`.
+Add a Colab secret named `GITHUB_TOKEN` with a fine-grained GitHub token that
+can push to this repository, then run the notebook cells once. The initial
+worker configuration in `experiments/colab_worker_5cycles.json` runs five safe
+smoke cycles, pulls latest `main` each cycle, writes worker manifests under
+`colab_worker_logs/`, and pushes those manifests back to GitHub. After this
+push/pull loop is verified, replace the config `command` with the regression
+experiment command to automate longer model-evolution runs.
+
 You can also check the active backend from a terminal:
 
 ```bash

@@ -1,0 +1,25 @@
+{
+  "description": "Small Colab worker loop for regression automation bring-up.",
+  "cycles": 5,
+  "sleep_seconds": 30,
+  "branch": "main",
+  "configure_token_remote": true,
+  "repo_slug": "DrYGuo/Aberration-Simulation",
+  "git_pull_before_cycle": true,
+  "git_push_after_cycle": true,
+  "commit_message_prefix": "Add Colab worker artifacts",
+  "command": [
+    "python3",
+    "-c",
+    "from pathlib import Path; import sys; print('colab worker smoke ok'); print('python', sys.version.split()[0]); print('cwd', Path.cwd())"
+  ],
+  "result_globs": [
+    "training_results/**/*.zip",
+    "training_results/**/metrics*.json",
+    "training_results/**/run_manifest*.json",
+    "training_results/**/model_registry*.csv",
+    "colab_worker_logs/*.json"
+  ],
+  "artifact_manifest_dir": "colab_worker_logs",
+  "stop_on_command_failure": true
+}
