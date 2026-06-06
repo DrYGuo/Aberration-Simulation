@@ -95,6 +95,10 @@ def git_pull(repo_root: Path, branch: str, log_path: Path) -> None:
     run_command(["git", "pull", "--ff-only", "origin", branch], cwd=repo_root, log_path=log_path)
 
 
+def git_pull_rebase(repo_root: Path, branch: str, log_path: Path) -> None:
+    run_command(["git", "pull", "--rebase", "origin", branch], cwd=repo_root, log_path=log_path)
+
+
 def ensure_git_identity(repo_root: Path, log_path: Path) -> None:
     name = subprocess.run(
         ["git", "config", "--get", "user.name"],
@@ -144,6 +148,7 @@ def git_commit_and_push(
         return False
 
     run_command(["git", "commit", "-m", message], cwd=repo_root, log_path=log_path)
+    git_pull_rebase(repo_root, branch, log_path)
     run_command(["git", "push", "origin", branch], cwd=repo_root, log_path=log_path)
     return True
 
@@ -162,12 +167,20 @@ def expand_globs(repo_root: Path, patterns: list[str]) -> list[Path]:
     return paths
 
 
+def display_path(path: Path, repo_root: Path) -> str:
+    try:
+        return str(path.relative_to(repo_root))
+    except ValueError:
+        return str(path)
+
+
 def write_cycle_manifest(
     repo_root: Path,
     manifest_dir: Path,
     *,
     cycle: int,
     cycles: int,
+    config_path: Path,
     command: list[str],
     returncode: int | None,
     started_utc: str,
@@ -181,6 +194,7 @@ def write_cycle_manifest(
         "cycles": cycles,
         "started_utc": started_utc,
         "finished_utc": finished_utc,
+        "config_path": display_path(config_path, repo_root),
         "command": command,
         "returncode": returncode,
         "artifact_paths": [str(path) for path in artifact_paths],
@@ -232,6 +246,7 @@ def main() -> int:
 
     cycles = int(args.cycles if args.cycles is not None else config.get("cycles", 1))
     branch = str(config.get("branch", "main"))
+    reload_config_each_cycle = bool(config.get("reload_config_each_cycle", True))
     command = [str(part) for part in config.get("command", [])]
     if not command:
         raise RuntimeError("Worker config must define a non-empty command list.")
@@ -257,6 +272,14 @@ def main() -> int:
         try:
             if config.get("git_pull_before_cycle", True) and not args.skip_git_pull:
                 git_pull(repo_root, branch, worker_log_path)
+                if reload_config_each_cycle:
+                    config = load_json(config_path)
+                    branch = str(config.get("branch", branch))
+                    command = [str(part) for part in config.get("command", [])]
+                    if not command:
+                        raise RuntimeError("Worker config must define a non-empty command list.")
+                    print(f"reloaded config after pull: {config_path}")
+                    print(f"cycle command: {' '.join(shlex.quote(part) for part in command)}")
 
             result = run_command(command, cwd=repo_root, check=False, log_path=worker_log_path)
             returncode = result.returncode
@@ -270,6 +293,7 @@ def main() -> int:
                 manifest_dir,
                 cycle=cycle,
                 cycles=cycles,
+                config_path=config_path,
                 command=command,
                 returncode=returncode,
                 started_utc=started,
@@ -292,6 +316,7 @@ def main() -> int:
                 manifest_dir,
                 cycle=cycle,
                 cycles=cycles,
+                config_path=config_path,
                 command=command,
                 returncode=returncode,
                 started_utc=started,
