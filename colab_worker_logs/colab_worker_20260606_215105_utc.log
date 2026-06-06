@@ -1,0 +1,288 @@
+
+$ git fetch origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+
+$ git pull --ff-only origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+
+$ python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol --architecture residual_mlp --search-root training_results --output-root training_results/model_selection_loop --hidden-dim 128 --dropout 0.05 --learning-rate 8e-4 --weight-decay 1e-4 --residual-penalty 3e-3 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.10 --baseline-metrics experiments/baselines/enhanced_v2_architecture_d_metrics.json --selection-config experiments/model_selection_weights.json --bootstrap-if-missing --bootstrap-notebook notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --bootstrap-timeout 3600
+$ /usr/bin/python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600
+$ /usr/local/bin/jupyter nbconvert --to notebook --execute /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.ipynb --output-dir /content/Aberration-Simulation/colab_worker_logs --ExecutePreprocessor.timeout=3600
+[NbConvertApp] Converting notebook /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb to notebook
+/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  validate(nb)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+HEAD is now at ec64b56 Add symmetry coupling selection weights
+[NbConvertApp] Writing 65836 bytes to /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.ipynb
+manifest: /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.json
+candidate: D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol
+family: enhanced
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260606_215115_utc/training_features_enhanced.csv
+features: 66
+output: training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc
+epoch     1 train=1.714356 validation=1.883763
+epoch    25 train=0.702425 validation=0.856335
+epoch    50 train=0.300584 validation=0.416562
+epoch    75 train=0.201799 validation=0.297901
+epoch   100 train=0.164352 validation=0.250922
+epoch   125 train=0.142517 validation=0.223797
+epoch   150 train=0.127784 validation=0.205815
+epoch   175 train=0.116537 validation=0.192022
+epoch   200 train=0.106582 validation=0.180229
+epoch   225 train=0.097223 validation=0.168864
+epoch   250 train=0.089163 validation=0.158539
+epoch   275 train=0.082290 validation=0.149651
+epoch   300 train=0.077033 validation=0.143130
+epoch   325 train=0.072425 validation=0.137557
+epoch   350 train=0.068334 validation=0.132480
+epoch   375 train=0.065007 validation=0.128296
+epoch   400 train=0.061702 validation=0.124871
+epoch   425 train=0.058990 validation=0.122044
+epoch   450 train=0.056239 validation=0.119112
+epoch   475 train=0.053881 validation=0.116523
+epoch   500 train=0.051576 validation=0.113921
+epoch   525 train=0.049591 validation=0.111909
+epoch   550 train=0.047520 validation=0.109576
+epoch   575 train=0.045708 validation=0.107592
+epoch   600 train=0.044179 validation=0.105767
+epoch   625 train=0.042419 validation=0.104632
+epoch   650 train=0.040851 validation=0.102792
+epoch   675 train=0.039547 validation=0.101395
+epoch   700 train=0.038084 validation=0.099696
+epoch   725 train=0.036925 validation=0.098862
+epoch   750 train=0.035716 validation=0.098221
+epoch   775 train=0.034451 validation=0.096787
+epoch   800 train=0.033391 validation=0.095485
+epoch   825 train=0.032487 validation=0.095109
+epoch   850 train=0.031406 validation=0.094010
+epoch   875 train=0.030762 validation=0.093606
+epoch   900 train=0.029830 validation=0.092627
+epoch   925 train=0.028917 validation=0.091981
+epoch   950 train=0.028036 validation=0.091220
+epoch   975 train=0.027344 validation=0.090929
+epoch  1000 train=0.026779 validation=0.090024
+epoch  1025 train=0.025995 validation=0.089475
+epoch  1050 train=0.025383 validation=0.089165
+epoch  1075 train=0.024803 validation=0.088719
+epoch  1100 train=0.024384 validation=0.088481
+epoch  1125 train=0.023692 validation=0.087971
+epoch  1150 train=0.023199 validation=0.087270
+epoch  1175 train=0.022621 validation=0.086818
+epoch  1200 train=0.022144 validation=0.086551
+epoch  1225 train=0.021541 validation=0.085861
+epoch  1250 train=0.021108 validation=0.085724
+epoch  1275 train=0.020781 validation=0.085071
+epoch  1300 train=0.020345 validation=0.084810
+epoch  1325 train=0.020118 validation=0.084789
+epoch  1350 train=0.019574 validation=0.083875
+epoch  1375 train=0.019113 validation=0.083742
+epoch  1400 train=0.018883 validation=0.083613
+epoch  1425 train=0.018496 validation=0.083184
+epoch  1450 train=0.018224 validation=0.082983
+epoch  1475 train=0.017836 validation=0.082242
+epoch  1500 train=0.017613 validation=0.082641
+epoch  1525 train=0.017333 validation=0.082417
+epoch  1550 train=0.016979 validation=0.082329
+epoch  1575 train=0.016703 validation=0.082043
+epoch  1600 train=0.016408 validation=0.080967
+epoch  1625 train=0.016162 validation=0.081430
+epoch  1650 train=0.015919 validation=0.081007
+epoch  1675 train=0.015598 validation=0.080697
+epoch  1700 train=0.015449 validation=0.081092
+epoch  1725 train=0.015156 validation=0.080971
+epoch  1750 train=0.014914 validation=0.080639
+epoch  1775 train=0.014667 validation=0.079965
+epoch  1800 train=0.014458 validation=0.079601
+epoch  1825 train=0.014270 validation=0.079697
+epoch  1850 train=0.014128 validation=0.079327
+epoch  1875 train=0.013929 validation=0.078758
+epoch  1900 train=0.013704 validation=0.079394
+epoch  1925 train=0.013524 validation=0.078741
+epoch  1950 train=0.013478 validation=0.079002
+epoch  1975 train=0.013283 validation=0.078811
+epoch  2000 train=0.013009 validation=0.078145
+epoch  2025 train=0.012755 validation=0.078199
+epoch  2050 train=0.012703 validation=0.078210
+epoch  2075 train=0.012550 validation=0.077885
+epoch  2100 train=0.012332 validation=0.077441
+epoch  2125 train=0.012216 validation=0.077616
+epoch  2150 train=0.012060 validation=0.077642
+epoch  2175 train=0.011907 validation=0.077018
+epoch  2200 train=0.011817 validation=0.077055
+epoch  2225 train=0.011677 validation=0.077099
+epoch  2250 train=0.011543 validation=0.077094
+epoch  2275 train=0.011332 validation=0.076864
+epoch  2300 train=0.011287 validation=0.076399
+epoch  2325 train=0.011195 validation=0.076499
+epoch  2350 train=0.011048 validation=0.076627
+epoch  2375 train=0.011026 validation=0.076086
+epoch  2400 train=0.010884 validation=0.076458
+epoch  2425 train=0.010736 validation=0.075904
+epoch  2450 train=0.010639 validation=0.075379
+epoch  2475 train=0.010609 validation=0.075470
+epoch  2500 train=0.010481 validation=0.075572
+epoch  2525 train=0.010399 validation=0.075229
+epoch  2550 train=0.010342 validation=0.075244
+epoch  2575 train=0.010119 validation=0.074941
+epoch  2600 train=0.010172 validation=0.075039
+epoch  2625 train=0.010074 validation=0.075012
+epoch  2650 train=0.009942 validation=0.073691
+epoch  2675 train=0.009883 validation=0.074038
+epoch  2700 train=0.009721 validation=0.073752
+epoch  2725 train=0.009686 validation=0.073896
+epoch  2750 train=0.009692 validation=0.073870
+epoch  2775 train=0.009578 validation=0.074308
+epoch  2800 train=0.009497 validation=0.073755
+epoch  2825 train=0.009420 validation=0.073628
+epoch  2850 train=0.009240 validation=0.073188
+epoch  2875 train=0.009344 validation=0.073181
+epoch  2900 train=0.009102 validation=0.073017
+epoch  2925 train=0.009074 validation=0.072746
+epoch  2950 train=0.009099 validation=0.073319
+epoch  2975 train=0.008964 validation=0.073301
+epoch  3000 train=0.008824 validation=0.073239
+epoch  3025 train=0.008846 validation=0.072838
+epoch  3050 train=0.008841 validation=0.072952
+epoch  3075 train=0.008763 validation=0.072731
+epoch  3100 train=0.008636 validation=0.072539
+epoch  3125 train=0.008593 validation=0.072470
+epoch  3150 train=0.008544 validation=0.072071
+epoch  3175 train=0.008453 validation=0.072337
+epoch  3200 train=0.008510 validation=0.072229
+epoch  3225 train=0.008428 validation=0.072318
+epoch  3250 train=0.008246 validation=0.071981
+epoch  3275 train=0.008313 validation=0.072037
+epoch  3300 train=0.008226 validation=0.071272
+epoch  3325 train=0.008178 validation=0.071451
+epoch  3350 train=0.008147 validation=0.071512
+epoch  3375 train=0.008085 validation=0.071459
+epoch  3400 train=0.008075 validation=0.071291
+epoch  3425 train=0.007963 validation=0.071193
+epoch  3450 train=0.008000 validation=0.071449
+epoch  3475 train=0.007982 validation=0.071162
+epoch  3500 train=0.007879 validation=0.070888
+epoch  3525 train=0.007884 validation=0.070934
+epoch  3550 train=0.007784 validation=0.070679
+epoch  3575 train=0.007787 validation=0.070681
+epoch  3600 train=0.007827 validation=0.070363
+epoch  3625 train=0.007822 validation=0.070430
+epoch  3650 train=0.007682 validation=0.070514
+epoch  3675 train=0.007635 validation=0.070266
+epoch  3700 train=0.007645 validation=0.070141
+epoch  3725 train=0.007635 validation=0.070597
+epoch  3750 train=0.007464 validation=0.070089
+epoch  3775 train=0.007498 validation=0.070305
+epoch  3800 train=0.007472 validation=0.070268
+epoch  3825 train=0.007478 validation=0.070319
+epoch  3850 train=0.007415 validation=0.070474
+epoch  3875 train=0.007351 validation=0.070180
+epoch  3900 train=0.007368 validation=0.069944
+epoch  3925 train=0.007274 validation=0.069571
+epoch  3950 train=0.007271 validation=0.070046
+epoch  3975 train=0.007203 validation=0.069825
+epoch  4000 train=0.007283 validation=0.069876
+epoch  4025 train=0.007173 validation=0.069509
+epoch  4050 train=0.007122 validation=0.069618
+epoch  4075 train=0.007144 validation=0.069261
+epoch  4100 train=0.007302 validation=0.069914
+epoch  4125 train=0.007118 validation=0.069780
+epoch  4150 train=0.007033 validation=0.069197
+epoch  4175 train=0.007125 validation=0.069353
+epoch  4200 train=0.006974 validation=0.068936
+epoch  4225 train=0.007103 validation=0.069013
+epoch  4250 train=0.007090 validation=0.069296
+epoch  4275 train=0.006944 validation=0.069177
+epoch  4300 train=0.006915 validation=0.068944
+epoch  4325 train=0.006893 validation=0.068815
+epoch  4350 train=0.006905 validation=0.068958
+epoch  4375 train=0.006808 validation=0.068854
+epoch  4400 train=0.006819 validation=0.068858
+epoch  4425 train=0.006833 validation=0.068660
+epoch  4450 train=0.006797 validation=0.068678
+epoch  4475 train=0.006700 validation=0.068540
+epoch  4500 train=0.006741 validation=0.068363
+epoch  4525 train=0.006741 validation=0.068556
+epoch  4550 train=0.006835 validation=0.068546
+epoch  4575 train=0.006671 validation=0.068278
+epoch  4600 train=0.006660 validation=0.068497
+epoch  4625 train=0.006603 validation=0.068693
+epoch  4650 train=0.006668 validation=0.068416
+epoch  4675 train=0.006633 validation=0.068401
+epoch  4700 train=0.006682 validation=0.068302
+epoch  4725 train=0.006573 validation=0.068013
+epoch  4750 train=0.006667 validation=0.068490
+epoch  4775 train=0.006545 validation=0.068121
+epoch  4800 train=0.006566 validation=0.068268
+epoch  4825 train=0.006608 validation=0.068486
+epoch  4850 train=0.006501 validation=0.068018
+epoch  4875 train=0.006546 validation=0.068170
+epoch  4900 train=0.006478 validation=0.067602
+epoch  4925 train=0.006506 validation=0.067780
+epoch  4950 train=0.006553 validation=0.068136
+epoch  4975 train=0.006417 validation=0.068086
+epoch  5000 train=0.006410 validation=0.067848
+epoch  5025 train=0.006349 validation=0.067402
+epoch  5050 train=0.006363 validation=0.067862
+epoch  5075 train=0.006412 validation=0.067848
+epoch  5100 train=0.006317 validation=0.067646
+epoch  5125 train=0.006378 validation=0.067453
+epoch  5150 train=0.006296 validation=0.067934
+epoch  5175 train=0.006279 validation=0.067447
+epoch  5200 train=0.006331 validation=0.067847
+epoch  5225 train=0.006182 validation=0.067909
+epoch  5250 train=0.006331 validation=0.067751
+epoch  5275 train=0.006185 validation=0.066894
+epoch  5300 train=0.006235 validation=0.067054
+epoch  5325 train=0.006228 validation=0.067218
+epoch  5350 train=0.006246 validation=0.067528
+epoch  5375 train=0.006261 validation=0.067113
+epoch  5400 train=0.006162 validation=0.067352
+epoch  5425 train=0.006179 validation=0.067069
+epoch  5450 train=0.006141 validation=0.067418
+epoch  5475 train=0.006166 validation=0.066683
+epoch  5500 train=0.006129 validation=0.066613
+epoch  5525 train=0.006173 validation=0.067442
+epoch  5550 train=0.006150 validation=0.067001
+epoch  5575 train=0.006036 validation=0.066827
+epoch  5600 train=0.006090 validation=0.067699
+epoch  5625 train=0.006000 validation=0.066866
+epoch  5650 train=0.006048 validation=0.067108
+epoch  5675 train=0.006009 validation=0.067153
+epoch  5700 train=0.006091 validation=0.067438
+epoch  5725 train=0.006057 validation=0.067408
+epoch  5750 train=0.005895 validation=0.066810
+epoch  5775 train=0.005972 validation=0.066786
+epoch  5800 train=0.005934 validation=0.067472
+epoch  5825 train=0.005975 validation=0.067128
+epoch  5850 train=0.006045 validation=0.067520
+epoch  5875 train=0.005904 validation=0.066683
+epoch  5900 train=0.005895 validation=0.067407
+epoch  5925 train=0.005873 validation=0.067274
+epoch  5950 train=0.005937 validation=0.066902
+epoch  5975 train=0.005900 validation=0.066850
+epoch  6000 train=0.005924 validation=0.066809
+metrics: training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/metrics_model_loop.json
+selection: training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/selection_score.json
+weighted_score: 0.08079488915271867
+rejected: True ['easy_target_normalized_mae_regression_62.2_percent']
+
+$ git config user.name 'Colab Regression Worker'
+
+$ git config user.email colab-regression-worker@users.noreply.github.com
+
+$ git add --force -- colab_worker_logs/colab_worker_cycle_03_20260606_030642_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_032821_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025207_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_083544_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_032952_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025747_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_023734_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_103119_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_031207_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_023529_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_024606_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025512_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025632_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_030901_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_024503_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_030728_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_030509_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_024534_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025741_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_083240_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_082600_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_030555_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_032907_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_082413_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_083701_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_081951_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_032650_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_031120_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025136_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_032519_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025710_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025556_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025627_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_033208_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_082108_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_023703_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_093303_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_023600_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_031253_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_024431_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_083052_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_032349_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025518_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_030947_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_032736_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_102529_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_082717_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_024637_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_083357_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_032434_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_103337_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025704_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_023631_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_030814_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025550_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025104_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_082256_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025310_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_031340_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_031034_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_033123_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_033038_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_103610_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_082905_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_032605_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025239_utc.json colab_worker_logs/colab_worker_20260606_215105_utc.log colab_worker_logs/colab_worker_20260606_102044_utc.log training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/training_history_model_loop.png colab_worker_logs/colab_worker_cycle_01_20260606_215550_utc.json
