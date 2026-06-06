@@ -1,6 +1,6 @@
 {
-  "description": "Live steering test with per-cycle artifact push and stale-config protection. Codex set step 13 while monitoring GitHub.",
-  "config_id": "live-steering-step-13",
+  "description": "Live steering test with per-cycle artifact push and stale-config protection. Codex set step 14 while monitoring GitHub.",
+  "config_id": "live-steering-step-14",
   "cycles": 12,
   "sleep_seconds": 45,
   "branch": "main",
@@ -13,7 +13,7 @@
   "command": [
     "python3",
     "-c",
-    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=13'); print('message=Codex advanced guarded live loop to step 13 after evaluating cycle 7'); print('utc', datetime.now(timezone.utc).isoformat())"
+    "from datetime import datetime, timezone; print('LIVE_STEERING_STEP=14'); print('message=Codex advanced guarded live loop to step 14 after evaluating cycle 8'); print('utc', datetime.now(timezone.utc).isoformat())"
   ],
   "result_globs": [
     "colab_worker_logs/*.json"
