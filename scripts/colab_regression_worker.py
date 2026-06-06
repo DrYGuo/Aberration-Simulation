@@ -218,6 +218,18 @@ def current_commit(repo_root: Path) -> str | None:
     return result.stdout.strip()
 
 
+def should_push_artifacts(config: dict[str, Any], cycle: int, cycles: int) -> bool:
+    if not config.get("git_push_after_cycle", False):
+        return False
+    push_every = int(config.get("push_every_n_cycles", 1))
+    push_on_final = bool(config.get("push_on_final_cycle", True))
+    if push_on_final and cycle == cycles:
+        return True
+    if push_every <= 0:
+        return False
+    return cycle % push_every == 0
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -302,9 +314,11 @@ def main() -> int:
             )
             artifact_paths.append(cycle_manifest.relative_to(repo_root))
 
-            if config.get("git_push_after_cycle", False) and not args.no_push:
+            if should_push_artifacts(config, cycle, cycles) and not args.no_push:
                 message = f"{config.get('commit_message_prefix', 'Add Colab worker artifacts')} cycle {cycle}/{cycles}"
                 git_commit_and_push(repo_root, artifact_paths, branch, message, worker_log_path)
+            else:
+                print("Artifact push skipped for this cycle by worker config.")
 
             if returncode and config.get("stop_on_command_failure", True):
                 return returncode
