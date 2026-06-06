@@ -207,6 +207,70 @@ def build_residual_model(input_dim: int, output_dim: int, hidden_dim: int, dropo
     return ResidualRegressor()
 
 
+def build_grouped_head_model(input_dim: int, output_dim: int, hidden_dim: int, dropout: float):
+    torch, nn = import_torch()
+    if output_dim != len(TARGET_COLUMNS):
+        raise ValueError(f"grouped_heads expects {len(TARGET_COLUMNS)} targets, got {output_dim}")
+
+    class GroupedHeadRegressor(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.linear = nn.Linear(input_dim, output_dim)
+            self.trunk = nn.Sequential(
+                nn.Linear(input_dim, hidden_dim),
+                nn.SiLU(),
+                nn.LayerNorm(hidden_dim),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.SiLU(),
+                nn.LayerNorm(hidden_dim),
+                nn.Dropout(dropout),
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.SiLU(),
+                nn.LayerNorm(hidden_dim),
+                nn.Dropout(dropout),
+            )
+            self.scalar_head = self._head(2)
+            self.low_order_head = self._head(6)
+            self.high_order_head = self._head(4)
+
+        def _head(self, out_dim):
+            head_hidden = max(32, hidden_dim // 2)
+            head = nn.Sequential(
+                nn.Linear(hidden_dim, head_hidden),
+                nn.SiLU(),
+                nn.Dropout(dropout),
+                nn.Linear(head_hidden, out_dim),
+            )
+            nn.init.zeros_(head[-1].weight)
+            nn.init.zeros_(head[-1].bias)
+            return head
+
+        def residual(self, x):
+            z = self.trunk(x)
+            return torch.cat(
+                [
+                    self.scalar_head(z),
+                    self.low_order_head(z),
+                    self.high_order_head(z),
+                ],
+                dim=1,
+            )
+
+        def forward(self, x):
+            return self.linear(x) + self.residual(x)
+
+    return GroupedHeadRegressor()
+
+
+def build_model(input_dim: int, output_dim: int, hidden_dim: int, dropout: float, architecture: str):
+    if architecture == "residual_mlp":
+        return build_residual_model(input_dim, output_dim, hidden_dim, dropout)
+    if architecture == "grouped_heads":
+        return build_grouped_head_model(input_dim, output_dim, hidden_dim, dropout)
+    raise ValueError(f"unknown architecture: {architecture}")
+
+
 def weighted_mse(pred, target, target_weights):
     torch, _ = import_torch()
     return torch.mean((pred - target) ** 2 * target_weights[None, :])
@@ -366,6 +430,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv-path", type=Path)
     parser.add_argument("--search-root", type=Path, default=Path("training_results"))
     parser.add_argument("--output-root", type=Path, default=Path("training_results/model_selection_loop"))
+    parser.add_argument("--architecture", choices=["residual_mlp", "grouped_heads"], default="residual_mlp")
     parser.add_argument("--hidden-dim", type=int, default=128)
     parser.add_argument("--dropout", type=float, default=0.05)
     parser.add_argument("--learning-rate", type=float, default=6e-4)
@@ -494,7 +559,7 @@ def main() -> int:
 
     torch, _ = import_torch()
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = build_residual_model(Xn.shape[1], yn.shape[1], args.hidden_dim, args.dropout).to(device)
+    model = build_model(Xn.shape[1], yn.shape[1], args.hidden_dim, args.dropout, args.architecture).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     target_weights = torch.tensor(
         [TARGET_WEIGHTS[name] for name in TARGET_COLUMNS],
@@ -551,6 +616,7 @@ def main() -> int:
     training_config = {
         "candidate_id": args.candidate_id,
         "family": args.family,
+        "architecture": args.architecture,
         "max_epochs": args.max_epochs,
         "eval_every": args.eval_every,
         "patience_epochs": args.patience_epochs,
@@ -611,7 +677,7 @@ def main() -> int:
             "n_test": int(len(test_index)),
         },
         "model": {
-            "type": "standardized_linear_plus_residual_mlp",
+            "type": f"standardized_linear_plus_{args.architecture}",
             "input_dim": int(Xn.shape[1]),
             "output_dim": int(yn.shape[1]),
             "hidden_dim": args.hidden_dim,
@@ -630,6 +696,7 @@ def main() -> int:
         "run_name": run_name,
         "candidate_id": args.candidate_id,
         "family": args.family,
+        "architecture": args.architecture,
         "input_dim": Xn.shape[1],
         "hidden_dim": args.hidden_dim,
         "dropout": args.dropout,
