@@ -42,8 +42,10 @@
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
+    "colab_worker_logs/*.log",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
+    "training_results/model_selection_loop/**/*failure*.json",
     "training_results/model_selection_loop/**/selection*.json",
     "training_results/model_selection_loop/**/model_registry*.csv",
     "training_results/model_selection_loop/**/*summary*.csv",

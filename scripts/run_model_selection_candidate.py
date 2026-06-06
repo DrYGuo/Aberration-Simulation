@@ -326,13 +326,57 @@ def default_baseline_metrics(csv_path: Path, family: str) -> Path | None:
     return None
 
 
+def write_preflight_failure(output_root: Path, candidate_id: str, message: str, details: dict[str, Any]) -> Path:
+    output_dir = output_root / f"{candidate_id}_preflight_failure_{utc_stamp()}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "status": "preflight_failure",
+        "candidate_id": candidate_id,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "message": message,
+        "details": details,
+    }
+    path = output_dir / "preflight_failure_model_loop.json"
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+    print("preflight failure:", path)
+    print(message)
+    return path
+
+
 def main() -> int:
     args = parse_args()
     repo_root = Path.cwd()
     filename = "training_features_enhanced.csv" if args.family == "enhanced" else "training_features_raw_angles.csv"
-    csv_path = args.csv_path or find_latest_csv(args.search_root, filename)
+    try:
+        csv_path = args.csv_path or find_latest_csv(args.search_root, filename)
+    except FileNotFoundError as exc:
+        write_preflight_failure(
+            args.output_root,
+            args.candidate_id,
+            str(exc),
+            {
+                "family": args.family,
+                "search_root": str(args.search_root),
+                "required_filename": filename,
+                "uses_existing_cached_csv_only": True,
+            },
+        )
+        return 2
     csv_path = csv_path.resolve()
-    feature_columns = find_feature_columns(csv_path, args.family)
+    try:
+        feature_columns = find_feature_columns(csv_path, args.family)
+    except FileNotFoundError as exc:
+        write_preflight_failure(
+            args.output_root,
+            args.candidate_id,
+            str(exc),
+            {
+                "family": args.family,
+                "csv_path": str(csv_path),
+                "uses_existing_cached_csv_only": True,
+            },
+        )
+        return 2
 
     run_name = f"{args.candidate_id}_{utc_stamp()}"
     output_dir = args.output_root / run_name
