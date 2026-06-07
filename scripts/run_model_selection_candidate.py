@@ -277,8 +277,13 @@ def dataset_version_summary(rows: list[dict[str, str]], csv_path: Path) -> dict[
     else:
         split_policy = "stable_hash_disjoint_benchmark_split"
         benchmark_provenance = "All rows are eligible for stable-hash train/validation/blind/stress assignment."
+    preferred_versions = [
+        version
+        for version in versions
+        if version and version not in {"parent_cached_dataset", "unversioned_cached_csv"}
+    ]
     return {
-        "dataset_version": versions[-1] if versions else "unversioned_cached_csv",
+        "dataset_version": preferred_versions[-1] if preferred_versions else versions[-1] if versions else "unversioned_cached_csv",
         "dataset_versions_present": versions,
         "dataset_sources_present": sources,
         "csv_path": str(csv_path),

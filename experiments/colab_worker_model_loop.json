@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config trains the previously best grouped-head D66 candidate on the enhanced_v3_targeted25k dataset already generated in the live Colab runtime.",
-  "config_id": "train-grouped-w192-lr6e-4-dropout0.075-on-targeted25k",
+  "description": "Real model-selection loop. This config tests a wider grouped-head D66 candidate on the enhanced_v3_targeted25k dataset, using the width-192 targeted run as the easy-target baseline.",
+  "config_id": "train-grouped-w256-lr6e-4-dropout0.075-on-targeted25k",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -16,7 +16,7 @@
     "--family",
     "enhanced",
     "--candidate-id",
-    "D66_grouped_width192_lr6e-4_dropout0.075_targeted25k",
+    "D66_grouped_width256_lr6e-4_dropout0.075_targeted25k",
     "--search-root",
     "training_results",
     "--output-root",
@@ -24,7 +24,7 @@
     "--architecture",
     "grouped_heads",
     "--hidden-dim",
-    "192",
+    "256",
     "--dropout",
     "0.075",
     "--learning-rate",
@@ -40,7 +40,9 @@
     "--patience-epochs",
     "1000",
     "--easy-regression-limit",
-    "0.10"
+    "0.10",
+    "--baseline-metrics",
+    "training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/metrics_model_loop.json"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
