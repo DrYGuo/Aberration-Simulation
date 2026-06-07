@@ -1,0 +1,14 @@
+{
+  "enabled": false,
+  "dataset_version": "enhanced_v4_targeted_a1_b2_s3",
+  "parent_dataset_version": "enhanced_v3_targeted25k",
+  "new_couplings_to_add": {
+    "coupled_A1_B2_S3_random": 5000,
+    "coupled_A1_B2_random": 1500,
+    "coupled_A1_S3_random": 1500,
+    "coupled_sparse_random": 1500,
+    "coupled_full_random": 1500
+  },
+  "split_policy": "new rows training_only; validation/blind/stress benchmarks remain fixed unless explicitly versioned",
+  "status": "planned_not_run"
+}
