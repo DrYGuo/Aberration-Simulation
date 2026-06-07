@@ -1,0 +1,437 @@
+
+$ git fetch origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+
+$ git pull --ff-only origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+
+$ python3 scripts/generate_targeted_enhanced_dataset.py --search-root training_results --output-root training_results/feature_regression_enhanced --run-prefix enhanced_v3_targeted25k --seed 31 --batch-base-cases 64 --bootstrap-if-missing --bootstrap-notebook notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --bootstrap-timeout 3600
+No training_features_enhanced.csv found under training_results; bootstrapping parent enhanced dataset.
+$ /usr/bin/python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600
+$ /usr/local/bin/jupyter nbconvert --to notebook --execute /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output uno_feature_regression_enhanced_dataset_bootstrap_executed_20260607_045023_utc.ipynb --output-dir /content/Aberration-Simulation/colab_worker_logs --ExecutePreprocessor.timeout=3600
+[NbConvertApp] Converting notebook /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb to notebook
+/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  validate(nb)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+HEAD is now at bdcc0cb Bootstrap parent dataset for targeted expansion
+[NbConvertApp] Writing 65836 bytes to /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260607_045023_utc.ipynb
+manifest: /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260607_045023_utc.json
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260607_045033_utc/training_features_enhanced.csv
+source rows: 16446
+feature columns: 66
+target columns: ['C1', 'C3', 'A1_x', 'A1_y', 'B2_x', 'B2_y', 'A2_x', 'A2_y', 'S3_x', 'S3_y', 'A3_x', 'A3_y']
+new targeted rows planned: 25000
+targeted case counts: {'coupled_full_random': 4000, 'coupled_C1_C3_random': 3500, 'coupled_A2_B2_random': 2500, 'coupled_C3_B2_random': 2000, 'coupled_sparse_random': 3500, 'coupled_C3_A3_S3_random': 3000, 'coupled_A1_S3_random': 3500, 'coupled_A1_B2_random': 2500, 'coupled_A3_S3_random': 500}
+targeted base cases: 25000
+batch base cases: 64
+processed 64/25000 targeted cases
+processed 128/25000 targeted cases
+processed 192/25000 targeted cases
+processed 256/25000 targeted cases
+processed 320/25000 targeted cases
+processed 384/25000 targeted cases
+processed 448/25000 targeted cases
+processed 512/25000 targeted cases
+processed 576/25000 targeted cases
+processed 640/25000 targeted cases
+processed 704/25000 targeted cases
+processed 768/25000 targeted cases
+processed 832/25000 targeted cases
+processed 896/25000 targeted cases
+processed 960/25000 targeted cases
+processed 1024/25000 targeted cases
+processed 1088/25000 targeted cases
+processed 1152/25000 targeted cases
+processed 1216/25000 targeted cases
+processed 1280/25000 targeted cases
+processed 1344/25000 targeted cases
+processed 1408/25000 targeted cases
+processed 1472/25000 targeted cases
+processed 1536/25000 targeted cases
+processed 1600/25000 targeted cases
+processed 1664/25000 targeted cases
+processed 1728/25000 targeted cases
+processed 1792/25000 targeted cases
+processed 1856/25000 targeted cases
+processed 1920/25000 targeted cases
+processed 1984/25000 targeted cases
+processed 2048/25000 targeted cases
+processed 2112/25000 targeted cases
+processed 2176/25000 targeted cases
+processed 2240/25000 targeted cases
+processed 2304/25000 targeted cases
+processed 2368/25000 targeted cases
+processed 2432/25000 targeted cases
+processed 2496/25000 targeted cases
+processed 2560/25000 targeted cases
+processed 2624/25000 targeted cases
+processed 2688/25000 targeted cases
+processed 2752/25000 targeted cases
+processed 2816/25000 targeted cases
+processed 2880/25000 targeted cases
+processed 2944/25000 targeted cases
+processed 3008/25000 targeted cases
+processed 3072/25000 targeted cases
+processed 3136/25000 targeted cases
+processed 3200/25000 targeted cases
+processed 3264/25000 targeted cases
+processed 3328/25000 targeted cases
+processed 3392/25000 targeted cases
+processed 3456/25000 targeted cases
+processed 3520/25000 targeted cases
+processed 3584/25000 targeted cases
+processed 3648/25000 targeted cases
+processed 3712/25000 targeted cases
+processed 3776/25000 targeted cases
+processed 3840/25000 targeted cases
+processed 3904/25000 targeted cases
+processed 3968/25000 targeted cases
+processed 4032/25000 targeted cases
+processed 4096/25000 targeted cases
+processed 4160/25000 targeted cases
+processed 4224/25000 targeted cases
+processed 4288/25000 targeted cases
+processed 4352/25000 targeted cases
+processed 4416/25000 targeted cases
+processed 4480/25000 targeted cases
+processed 4544/25000 targeted cases
+processed 4608/25000 targeted cases
+processed 4672/25000 targeted cases
+processed 4736/25000 targeted cases
+processed 4800/25000 targeted cases
+processed 4864/25000 targeted cases
+processed 4928/25000 targeted cases
+processed 4992/25000 targeted cases
+processed 5056/25000 targeted cases
+processed 5120/25000 targeted cases
+processed 5184/25000 targeted cases
+processed 5248/25000 targeted cases
+processed 5312/25000 targeted cases
+processed 5376/25000 targeted cases
+processed 5440/25000 targeted cases
+processed 5504/25000 targeted cases
+processed 5568/25000 targeted cases
+processed 5632/25000 targeted cases
+processed 5696/25000 targeted cases
+processed 5760/25000 targeted cases
+processed 5824/25000 targeted cases
+processed 5888/25000 targeted cases
+processed 5952/25000 targeted cases
+processed 6016/25000 targeted cases
+processed 6080/25000 targeted cases
+processed 6144/25000 targeted cases
+processed 6208/25000 targeted cases
+processed 6272/25000 targeted cases
+processed 6336/25000 targeted cases
+processed 6400/25000 targeted cases
+processed 6464/25000 targeted cases
+processed 6528/25000 targeted cases
+processed 6592/25000 targeted cases
+processed 6656/25000 targeted cases
+processed 6720/25000 targeted cases
+processed 6784/25000 targeted cases
+processed 6848/25000 targeted cases
+processed 6912/25000 targeted cases
+processed 6976/25000 targeted cases
+processed 7040/25000 targeted cases
+processed 7104/25000 targeted cases
+processed 7168/25000 targeted cases
+processed 7232/25000 targeted cases
+processed 7296/25000 targeted cases
+processed 7360/25000 targeted cases
+processed 7424/25000 targeted cases
+processed 7488/25000 targeted cases
+processed 7552/25000 targeted cases
+processed 7616/25000 targeted cases
+processed 7680/25000 targeted cases
+processed 7744/25000 targeted cases
+processed 7808/25000 targeted cases
+processed 7872/25000 targeted cases
+processed 7936/25000 targeted cases
+processed 8000/25000 targeted cases
+processed 8064/25000 targeted cases
+processed 8128/25000 targeted cases
+processed 8192/25000 targeted cases
+processed 8256/25000 targeted cases
+processed 8320/25000 targeted cases
+processed 8384/25000 targeted cases
+processed 8448/25000 targeted cases
+processed 8512/25000 targeted cases
+processed 8576/25000 targeted cases
+processed 8640/25000 targeted cases
+processed 8704/25000 targeted cases
+processed 8768/25000 targeted cases
+processed 8832/25000 targeted cases
+processed 8896/25000 targeted cases
+processed 8960/25000 targeted cases
+processed 9024/25000 targeted cases
+processed 9088/25000 targeted cases
+processed 9152/25000 targeted cases
+processed 9216/25000 targeted cases
+processed 9280/25000 targeted cases
+processed 9344/25000 targeted cases
+processed 9408/25000 targeted cases
+processed 9472/25000 targeted cases
+processed 9536/25000 targeted cases
+processed 9600/25000 targeted cases
+processed 9664/25000 targeted cases
+processed 9728/25000 targeted cases
+processed 9792/25000 targeted cases
+processed 9856/25000 targeted cases
+processed 9920/25000 targeted cases
+processed 9984/25000 targeted cases
+processed 10048/25000 targeted cases
+processed 10112/25000 targeted cases
+processed 10176/25000 targeted cases
+processed 10240/25000 targeted cases
+processed 10304/25000 targeted cases
+processed 10368/25000 targeted cases
+processed 10432/25000 targeted cases
+processed 10496/25000 targeted cases
+processed 10560/25000 targeted cases
+processed 10624/25000 targeted cases
+processed 10688/25000 targeted cases
+processed 10752/25000 targeted cases
+processed 10816/25000 targeted cases
+processed 10880/25000 targeted cases
+processed 10944/25000 targeted cases
+processed 11008/25000 targeted cases
+processed 11072/25000 targeted cases
+processed 11136/25000 targeted cases
+processed 11200/25000 targeted cases
+processed 11264/25000 targeted cases
+processed 11328/25000 targeted cases
+processed 11392/25000 targeted cases
+processed 11456/25000 targeted cases
+processed 11520/25000 targeted cases
+processed 11584/25000 targeted cases
+processed 11648/25000 targeted cases
+processed 11712/25000 targeted cases
+processed 11776/25000 targeted cases
+processed 11840/25000 targeted cases
+processed 11904/25000 targeted cases
+processed 11968/25000 targeted cases
+processed 12032/25000 targeted cases
+processed 12096/25000 targeted cases
+processed 12160/25000 targeted cases
+processed 12224/25000 targeted cases
+processed 12288/25000 targeted cases
+processed 12352/25000 targeted cases
+processed 12416/25000 targeted cases
+processed 12480/25000 targeted cases
+processed 12544/25000 targeted cases
+processed 12608/25000 targeted cases
+processed 12672/25000 targeted cases
+processed 12736/25000 targeted cases
+processed 12800/25000 targeted cases
+processed 12864/25000 targeted cases
+processed 12928/25000 targeted cases
+processed 12992/25000 targeted cases
+processed 13056/25000 targeted cases
+processed 13120/25000 targeted cases
+processed 13184/25000 targeted cases
+processed 13248/25000 targeted cases
+processed 13312/25000 targeted cases
+processed 13376/25000 targeted cases
+processed 13440/25000 targeted cases
+processed 13504/25000 targeted cases
+processed 13568/25000 targeted cases
+processed 13632/25000 targeted cases
+processed 13696/25000 targeted cases
+processed 13760/25000 targeted cases
+processed 13824/25000 targeted cases
+processed 13888/25000 targeted cases
+processed 13952/25000 targeted cases
+processed 14016/25000 targeted cases
+processed 14080/25000 targeted cases
+processed 14144/25000 targeted cases
+processed 14208/25000 targeted cases
+processed 14272/25000 targeted cases
+processed 14336/25000 targeted cases
+processed 14400/25000 targeted cases
+processed 14464/25000 targeted cases
+processed 14528/25000 targeted cases
+processed 14592/25000 targeted cases
+processed 14656/25000 targeted cases
+processed 14720/25000 targeted cases
+processed 14784/25000 targeted cases
+processed 14848/25000 targeted cases
+processed 14912/25000 targeted cases
+processed 14976/25000 targeted cases
+processed 15040/25000 targeted cases
+processed 15104/25000 targeted cases
+processed 15168/25000 targeted cases
+processed 15232/25000 targeted cases
+processed 15296/25000 targeted cases
+processed 15360/25000 targeted cases
+processed 15424/25000 targeted cases
+processed 15488/25000 targeted cases
+processed 15552/25000 targeted cases
+processed 15616/25000 targeted cases
+processed 15680/25000 targeted cases
+processed 15744/25000 targeted cases
+processed 15808/25000 targeted cases
+processed 15872/25000 targeted cases
+processed 15936/25000 targeted cases
+processed 16000/25000 targeted cases
+processed 16064/25000 targeted cases
+processed 16128/25000 targeted cases
+processed 16192/25000 targeted cases
+processed 16256/25000 targeted cases
+processed 16320/25000 targeted cases
+processed 16384/25000 targeted cases
+processed 16448/25000 targeted cases
+processed 16512/25000 targeted cases
+processed 16576/25000 targeted cases
+processed 16640/25000 targeted cases
+processed 16704/25000 targeted cases
+processed 16768/25000 targeted cases
+processed 16832/25000 targeted cases
+processed 16896/25000 targeted cases
+processed 16960/25000 targeted cases
+processed 17024/25000 targeted cases
+processed 17088/25000 targeted cases
+processed 17152/25000 targeted cases
+processed 17216/25000 targeted cases
+processed 17280/25000 targeted cases
+processed 17344/25000 targeted cases
+processed 17408/25000 targeted cases
+processed 17472/25000 targeted cases
+processed 17536/25000 targeted cases
+processed 17600/25000 targeted cases
+processed 17664/25000 targeted cases
+processed 17728/25000 targeted cases
+processed 17792/25000 targeted cases
+processed 17856/25000 targeted cases
+processed 17920/25000 targeted cases
+processed 17984/25000 targeted cases
+processed 18048/25000 targeted cases
+processed 18112/25000 targeted cases
+processed 18176/25000 targeted cases
+processed 18240/25000 targeted cases
+processed 18304/25000 targeted cases
+processed 18368/25000 targeted cases
+processed 18432/25000 targeted cases
+processed 18496/25000 targeted cases
+processed 18560/25000 targeted cases
+processed 18624/25000 targeted cases
+processed 18688/25000 targeted cases
+processed 18752/25000 targeted cases
+processed 18816/25000 targeted cases
+processed 18880/25000 targeted cases
+processed 18944/25000 targeted cases
+processed 19008/25000 targeted cases
+processed 19072/25000 targeted cases
+processed 19136/25000 targeted cases
+processed 19200/25000 targeted cases
+processed 19264/25000 targeted cases
+processed 19328/25000 targeted cases
+processed 19392/25000 targeted cases
+processed 19456/25000 targeted cases
+processed 19520/25000 targeted cases
+processed 19584/25000 targeted cases
+processed 19648/25000 targeted cases
+processed 19712/25000 targeted cases
+processed 19776/25000 targeted cases
+processed 19840/25000 targeted cases
+processed 19904/25000 targeted cases
+processed 19968/25000 targeted cases
+processed 20032/25000 targeted cases
+processed 20096/25000 targeted cases
+processed 20160/25000 targeted cases
+processed 20224/25000 targeted cases
+processed 20288/25000 targeted cases
+processed 20352/25000 targeted cases
+processed 20416/25000 targeted cases
+processed 20480/25000 targeted cases
+processed 20544/25000 targeted cases
+processed 20608/25000 targeted cases
+processed 20672/25000 targeted cases
+processed 20736/25000 targeted cases
+processed 20800/25000 targeted cases
+processed 20864/25000 targeted cases
+processed 20928/25000 targeted cases
+processed 20992/25000 targeted cases
+processed 21056/25000 targeted cases
+processed 21120/25000 targeted cases
+processed 21184/25000 targeted cases
+processed 21248/25000 targeted cases
+processed 21312/25000 targeted cases
+processed 21376/25000 targeted cases
+processed 21440/25000 targeted cases
+processed 21504/25000 targeted cases
+processed 21568/25000 targeted cases
+processed 21632/25000 targeted cases
+processed 21696/25000 targeted cases
+processed 21760/25000 targeted cases
+processed 21824/25000 targeted cases
+processed 21888/25000 targeted cases
+processed 21952/25000 targeted cases
+processed 22016/25000 targeted cases
+processed 22080/25000 targeted cases
+processed 22144/25000 targeted cases
+processed 22208/25000 targeted cases
+processed 22272/25000 targeted cases
+processed 22336/25000 targeted cases
+processed 22400/25000 targeted cases
+processed 22464/25000 targeted cases
+processed 22528/25000 targeted cases
+processed 22592/25000 targeted cases
+processed 22656/25000 targeted cases
+processed 22720/25000 targeted cases
+processed 22784/25000 targeted cases
+processed 22848/25000 targeted cases
+processed 22912/25000 targeted cases
+processed 22976/25000 targeted cases
+processed 23040/25000 targeted cases
+processed 23104/25000 targeted cases
+processed 23168/25000 targeted cases
+processed 23232/25000 targeted cases
+processed 23296/25000 targeted cases
+processed 23360/25000 targeted cases
+processed 23424/25000 targeted cases
+processed 23488/25000 targeted cases
+processed 23552/25000 targeted cases
+processed 23616/25000 targeted cases
+processed 23680/25000 targeted cases
+processed 23744/25000 targeted cases
+processed 23808/25000 targeted cases
+processed 23872/25000 targeted cases
+processed 23936/25000 targeted cases
+processed 24000/25000 targeted cases
+processed 24064/25000 targeted cases
+processed 24128/25000 targeted cases
+processed 24192/25000 targeted cases
+processed 24256/25000 targeted cases
+processed 24320/25000 targeted cases
+processed 24384/25000 targeted cases
+processed 24448/25000 targeted cases
+processed 24512/25000 targeted cases
+processed 24576/25000 targeted cases
+processed 24640/25000 targeted cases
+processed 24704/25000 targeted cases
+processed 24768/25000 targeted cases
+processed 24832/25000 targeted cases
+processed 24896/25000 targeted cases
+processed 24960/25000 targeted cases
+processed 25000/25000 targeted cases
+wrote combined enhanced dataset: training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/training_features_enhanced.csv
+combined rows: 41446
+manifest: training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/dataset_manifest.json
+
+$ git add --force -- colab_worker_logs/colab_worker_cycle_03_20260606_030642_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_032821_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.json colab_worker_logs/colab_worker_cycle_01_20260607_044108_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025207_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_083544_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_032952_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025747_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_023734_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_103119_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_031207_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_023529_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_024606_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025512_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025632_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_030901_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_024503_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_030728_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_030509_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_024534_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025741_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_083240_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_082600_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_030555_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_032907_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_082413_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_221217_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_083701_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_081951_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_032650_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_220000_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_031120_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025136_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_032519_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025710_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_222844_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025556_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025627_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_033208_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_082108_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_023703_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_093303_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_222305_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_023600_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_031253_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_024431_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_083052_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_032349_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025518_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_030947_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_032736_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_102529_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_082717_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_024637_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_083357_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_215550_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_032434_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_103337_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025704_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_023631_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_220638_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_215736_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_030814_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025550_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025104_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260607_045023_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_082256_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025310_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_031340_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_031034_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_033123_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_033038_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_103610_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_082905_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_032605_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_221756_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025239_utc.json colab_worker_logs/colab_worker_20260607_045022_utc.log colab_worker_logs/colab_worker_20260607_044106_utc.log colab_worker_logs/colab_worker_20260606_215105_utc.log colab_worker_logs/colab_worker_20260606_102044_utc.log training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260607_045033_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/metrics_model_loop.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/selection_score.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/training_history_model_loop.png colab_worker_logs/colab_worker_cycle_01_20260607_045916_utc.json
