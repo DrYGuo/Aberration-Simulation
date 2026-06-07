@@ -22,7 +22,12 @@
     "--seed",
     "31",
     "--batch-base-cases",
-    "64"
+    "64",
+    "--bootstrap-if-missing",
+    "--bootstrap-notebook",
+    "notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb",
+    "--bootstrap-timeout",
+    "3600"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",

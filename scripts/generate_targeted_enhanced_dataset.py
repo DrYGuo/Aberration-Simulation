@@ -117,6 +117,47 @@ def find_latest_csv(search_root: Path) -> Path:
     return matches[-1]
 
 
+def run_dataset_bootstrap(notebook: Path, timeout_seconds: int, output_dir: Path) -> None:
+    command = [
+        sys.executable,
+        "scripts/run_notebook_headless.py",
+        str(notebook),
+        "--output-dir",
+        str(output_dir),
+        "--timeout",
+        str(timeout_seconds),
+    ]
+    print("$", " ".join(command), flush=True)
+    process = subprocess.Popen(
+        command,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert process.stdout is not None
+    for line in process.stdout:
+        print(line, end="" if line.endswith("\n") else "\n", flush=True)
+    returncode = int(process.wait())
+    if returncode:
+        raise RuntimeError(f"dataset bootstrap failed with exit {returncode}")
+
+
+def find_or_bootstrap_parent_csv(args: argparse.Namespace) -> Path:
+    if args.parent_csv:
+        return args.parent_csv
+    try:
+        return find_latest_csv(args.search_root)
+    except FileNotFoundError:
+        if not args.bootstrap_if_missing:
+            raise
+    print(
+        f"No training_features_enhanced.csv found under {args.search_root}; bootstrapping parent enhanced dataset.",
+        flush=True,
+    )
+    run_dataset_bootstrap(args.bootstrap_notebook, args.bootstrap_timeout, args.bootstrap_output_dir)
+    return find_latest_csv(args.search_root)
+
+
 def read_csv(path: Path) -> tuple[list[dict[str, str]], list[str]]:
     with path.open() as handle:
         reader = csv.DictReader(handle)
@@ -535,13 +576,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-prefix", default="enhanced_v3_targeted25k")
     parser.add_argument("--seed", type=int, default=31)
     parser.add_argument("--batch-base-cases", type=int, default=64)
+    parser.add_argument(
+        "--bootstrap-if-missing",
+        action="store_true",
+        help="Run the enhanced dataset bootstrap notebook if no parent training_features_enhanced.csv exists.",
+    )
+    parser.add_argument(
+        "--bootstrap-notebook",
+        type=Path,
+        default=Path("notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb"),
+    )
+    parser.add_argument("--bootstrap-timeout", type=int, default=3600)
+    parser.add_argument("--bootstrap-output-dir", type=Path, default=Path("colab_worker_logs"))
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     repo_root = Path.cwd()
-    source_csv = args.parent_csv or find_latest_csv(args.search_root)
+    source_csv = find_or_bootstrap_parent_csv(args)
     source_csv = source_csv.resolve()
     source_rows, source_fieldnames = read_csv(source_csv)
     if not source_rows:
