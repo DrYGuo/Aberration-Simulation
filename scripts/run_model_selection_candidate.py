@@ -22,7 +22,7 @@ from typing import Any
 import numpy as np
 
 from feature_regression_model import TARGET_COLUMNS, Standardizer, file_sha256, target_from_row
-from regression_diagnostics import discover_regime_column, per_target_diagnostics, regime_breakdown
+from regression_diagnostics import discover_regime_column, per_target_diagnostics, regime_breakdown, vector_diagnostics
 from select_regression_model import score_run
 
 
@@ -605,6 +605,74 @@ def plot_scatter(
     plt.close(fig)
 
 
+def plot_vector_diagnostics(
+    output_dir: Path,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    target_columns: list[str],
+    validation_index: np.ndarray,
+    vector_diag: dict[str, Any],
+) -> None:
+    import matplotlib.pyplot as plt
+
+    plot_dir = output_dir / "plots" / "vector_diagnostics"
+    plot_dir.mkdir(parents=True, exist_ok=True)
+    for pair_name in ("B2", "S3", "A3"):
+        x_name = f"{pair_name}_x"
+        y_name = f"{pair_name}_y"
+        x_index = target_columns.index(x_name)
+        y_index = target_columns.index(y_name)
+        true_x = y_true[validation_index, x_index]
+        true_y = y_true[validation_index, y_index]
+        pred_x = y_pred[validation_index, x_index]
+        pred_y = y_pred[validation_index, y_index]
+        true_magnitude = np.sqrt(true_x**2 + true_y**2)
+        pred_magnitude = np.sqrt(pred_x**2 + pred_y**2)
+        true_angle = np.rad2deg(np.arctan2(true_y, true_x))
+        pred_angle = np.rad2deg(np.arctan2(pred_y, pred_x))
+        angle_error = (pred_angle - true_angle + 180.0) % 360.0 - 180.0
+        threshold = float(
+            vector_diag["vector_pairs"][pair_name]["angle"]["angle_threshold"]
+        )
+        angle_mask = true_magnitude > threshold
+
+        fig, ax = plt.subplots(figsize=(4.2, 3.6))
+        ax.scatter(true_magnitude, pred_magnitude, s=7, alpha=0.5)
+        high = float(max(np.max(true_magnitude) if len(true_magnitude) else 0.0, np.max(pred_magnitude) if len(pred_magnitude) else 0.0))
+        ax.plot([0.0, high], [0.0, high], "k--", linewidth=0.8)
+        ax.set_xlabel("true magnitude")
+        ax.set_ylabel("pred magnitude")
+        ax.set_title(f"{pair_name} magnitude", fontsize=10)
+        ax.grid(alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(plot_dir / f"{pair_name}_pred_vs_true_magnitude.png", dpi=120)
+        plt.close(fig)
+
+        fig, ax = plt.subplots(figsize=(4.2, 3.6))
+        ax.scatter(true_magnitude[angle_mask], angle_error[angle_mask], s=7, alpha=0.5)
+        ax.axhline(0.0, color="k", linestyle="--", linewidth=0.8)
+        ax.set_xlabel("true magnitude")
+        ax.set_ylabel("angle error deg")
+        ax.set_title(f"{pair_name} angle error", fontsize=10)
+        ax.grid(alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(plot_dir / f"{pair_name}_angle_error_vs_true_magnitude.png", dpi=120)
+        plt.close(fig)
+
+        fig, ax = plt.subplots(figsize=(4.2, 3.6))
+        ax.scatter(true_angle[angle_mask], pred_angle[angle_mask], s=7, alpha=0.5)
+        ax.plot([-180.0, 180.0], [-180.0, 180.0], "k--", linewidth=0.8)
+        ax.set_xlim(-180.0, 180.0)
+        ax.set_ylim(-180.0, 180.0)
+        ax.set_xlabel("true angle deg")
+        ax.set_ylabel("pred angle deg")
+        ax.set_title(f"{pair_name} angle", fontsize=10)
+        ax.grid(alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(plot_dir / f"{pair_name}_pred_vs_true_angle.png", dpi=120)
+        plt.close(fig)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--family", choices=["enhanced", "raw_angles"], required=True)
@@ -880,6 +948,16 @@ def main() -> int:
         target_physical_scales,
     )
     (output_dir / "per_target_diagnostics.json").write_text(json.dumps(diagnostics, indent=2) + "\n")
+    vector_diag = vector_diagnostics(
+        y,
+        y_pred,
+        rows,
+        TARGET_COLUMNS,
+        split_indices,
+    )
+    vector_diagnostics_path = output_dir / "vector_diagnostics.json"
+    vector_diagnostics_path.write_text(json.dumps(vector_diag, indent=2) + "\n")
+    plot_vector_diagnostics(output_dir, y, y_pred, TARGET_COLUMNS, validation_index, vector_diag)
 
     baseline_path = args.baseline_metrics or default_baseline_metrics(csv_path, args.family)
     baseline = json.loads(baseline_path.read_text()) if baseline_path and baseline_path.exists() else None
@@ -937,6 +1015,7 @@ def main() -> int:
         "metrics_path": str(metrics_path),
         "selection_score_path": str(output_dir / "selection_score.json"),
         "per_target_diagnostics_path": str(output_dir / "per_target_diagnostics.json"),
+        "vector_diagnostics_path": str(vector_diagnostics_path),
     }
     (output_dir / "run_manifest_model_loop.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
@@ -964,6 +1043,11 @@ def main() -> int:
         "training_only_new_rows": dataset_info["training_only_new_rows"],
         "true_hard_target_normalized_mae": selection["components"].get("true_hard_target_normalized_mae"),
     }
+    for pair_name in ("B2", "S3", "A3"):
+        pair_diag = vector_diag["vector_pairs"][pair_name]
+        registry_row[f"{pair_name}_mean_abs_angle_error_deg"] = pair_diag["angle"]["mean_abs_angle_error_deg"]
+        registry_row[f"{pair_name}_magnitude_mae"] = pair_diag["magnitude"]["magnitude_mae"]
+        registry_row[f"{pair_name}_mean_cosine_similarity"] = pair_diag["directional_cosine"]["mean_cosine_similarity"]
     write_csv(registry_path, [registry_row], list(registry_row))
 
     print("metrics:", metrics_path)
