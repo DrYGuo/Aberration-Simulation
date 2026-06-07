@@ -275,12 +275,31 @@ def randomize(params: dict[str, Any], fields: tuple[str, ...], rng: np.random.Ge
     return params
 
 
-def generate_target_cases(seed: int) -> list[dict[str, Any]]:
+def load_case_counts(path: Path | None) -> dict[str, int]:
+    if path is None:
+        return dict(TARGETED_CASE_COUNTS)
+    data = json.loads(path.read_text())
+    if "case_counts" in data:
+        counts = data["case_counts"]
+    elif "new_couplings_to_add" in data:
+        counts = data["new_couplings_to_add"]
+    else:
+        counts = data
+    if not isinstance(counts, dict):
+        raise TypeError(f"case-count config must contain a mapping, got {type(counts).__name__}")
+    parsed = {str(label): int(count) for label, count in counts.items()}
+    if any(count <= 0 for count in parsed.values()):
+        raise ValueError(f"all case counts must be positive: {parsed}")
+    return parsed
+
+
+def generate_target_cases(seed: int, case_counts: dict[str, int]) -> list[dict[str, Any]]:
     rng = np.random.default_rng(seed)
     field_sets = {
         "coupled_full_random": ALL_FIELDS,
         "coupled_C1_C3_random": ("C1", "C3"),
         "coupled_A1_S3_random": ("A1", "S3"),
+        "coupled_A1_B2_S3_random": ("A1", "B2", "S3"),
         "coupled_C3_A3_S3_random": ("C3", "A3", "S3"),
         "coupled_A1_B2_random": ("A1", "B2"),
         "coupled_A2_B2_random": ("A2", "B2"),
@@ -288,7 +307,9 @@ def generate_target_cases(seed: int) -> list[dict[str, Any]]:
         "coupled_A3_S3_random": ("A3", "S3"),
     }
     cases: list[dict[str, Any]] = []
-    for label, count in TARGETED_CASE_COUNTS.items():
+    for label, count in case_counts.items():
+        if label != "coupled_sparse_random" and label not in field_sets:
+            raise KeyError(f"unknown targeted case label: {label}")
         for _ in range(count):
             params = dict(BASELINE_PARAMETERS)
             params["sweep_label"] = label
@@ -574,6 +595,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--search-root", type=Path, default=Path("training_results"))
     parser.add_argument("--output-root", type=Path, default=Path("training_results/feature_regression_enhanced"))
     parser.add_argument("--run-prefix", default="enhanced_v3_targeted25k")
+    parser.add_argument("--dataset-version", default=DATASET_VERSION)
+    parser.add_argument("--case-counts-json", type=Path)
     parser.add_argument("--seed", type=int, default=31)
     parser.add_argument("--batch-base-cases", type=int, default=64)
     parser.add_argument(
@@ -592,7 +615,9 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    global DATASET_VERSION
     args = parse_args()
+    DATASET_VERSION = args.dataset_version
     repo_root = Path.cwd()
     source_csv = find_or_bootstrap_parent_csv(args)
     source_csv = source_csv.resolve()
@@ -603,8 +628,8 @@ def main() -> int:
 
     feature_columns = load_feature_columns(source_csv)
     attach_parent_metadata(source_rows)
-    target_cases = generate_target_cases(args.seed)
-    assert len(target_cases) == 25000
+    case_counts = load_case_counts(args.case_counts_json)
+    target_cases = generate_target_cases(args.seed, case_counts)
     print("source CSV:", source_csv, flush=True)
     print("source rows:", len(source_rows), flush=True)
     print("feature columns:", len(feature_columns), flush=True)
@@ -644,7 +669,7 @@ def main() -> int:
         "appended_training_only_row_count": len(new_rows),
         "total_rows": len(combined_rows),
         "random_seed": args.seed,
-        "targeted_case_counts": TARGETED_CASE_COUNTS,
+        "targeted_case_counts": case_counts,
         "target_columns": TARGET_COLUMNS,
         "feature_columns": feature_columns,
         "feature_count": len(feature_columns),

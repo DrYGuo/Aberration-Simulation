@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config runs a small batch of grouped-head D66 candidates on enhanced_v3_targeted25k with resumability and a walltime guard.",
-  "config_id": "batch-targeted25k-grouped-heads-live",
+  "description": "Real model-selection loop. This config expands enhanced_v3_targeted25k with targeted A1/B2/S3 coupling rows and keeps new rows training-only.",
+  "config_id": "expand-enhanced-v4-a1-b2-s3-couplings",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,13 +12,21 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "python3",
-    "scripts/run_model_selection_batch.py",
-    "--batch-config",
-    "configs/model_selection_batch_live.json",
+    "scripts/generate_targeted_enhanced_dataset.py",
+    "--search-root",
+    "training_results",
     "--output-root",
-    "training_results/model_selection_loop",
-    "--summary-root",
-    "training_results/model_selection_batches"
+    "training_results/feature_regression_enhanced",
+    "--run-prefix",
+    "enhanced_v4_a1_b2_s3",
+    "--dataset-version",
+    "enhanced_v4_targeted_a1_b2_s3",
+    "--case-counts-json",
+    "configs/targeted_expansion_a1_b2_s3.json",
+    "--seed",
+    "43",
+    "--batch-base-cases",
+    "256"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",

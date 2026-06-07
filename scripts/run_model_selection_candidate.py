@@ -222,6 +222,7 @@ def four_way_benchmark_split(
         "coupled_sparse_random",
         "coupled_C1_C3_random",
         "coupled_A1_B2_random",
+        "coupled_A1_B2_S3_random",
         "coupled_A2_B2_random",
         "coupled_C3_B2_random",
         "coupled_A1_S3_random",

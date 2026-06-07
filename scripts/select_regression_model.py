@@ -77,6 +77,7 @@ DEFAULT_HARD_LABEL_WEIGHTS = {
     "coupled_sparse_random": 1.25,
     "coupled_C1_C3_random": 1.30,
     "coupled_A1_B2_random": 1.0,
+    "coupled_A1_B2_S3_random": 1.25,
     "coupled_A2_B2_random": 1.0,
     "coupled_C3_B2_random": 1.0,
     "coupled_A1_S3_random": 1.30,
