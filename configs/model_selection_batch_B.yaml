@@ -1,0 +1,39 @@
+# Disabled candidate batch for later review; do not enable until Batch A and dataset audit are inspected.
+enabled: false
+batch_id: model_selection_batch_B
+dataset_version: enhanced_v3_targeted25k
+estimated_minutes_per_job: 35
+walltime_safety_margin_minutes: 10
+artifact_policy:
+  push_large_artifacts: false
+  allowed_artifacts:
+    - run_manifest_model_loop.json
+    - metrics_model_loop.json
+    - selection_score.json
+    - per_target_diagnostics.json
+    - model_registry_model_loop.csv
+    - training_history_summary.csv
+    - training_history_model_loop.png
+    - prediction_scatter_model_loop.png
+resumability:
+  key: job_id
+  skip_completed_jobs_by_default: true
+  force_single_jobs_flag: --force-jobs
+  force_all_jobs_flag: --force-all
+jobs:
+  - job_id: grouped_w256_lr4e-4_do0p10_seed7
+    enabled: false
+    dataset_version: enhanced_v3_targeted25k
+    seed: 7
+    loss_weighting_mode: weighted_target_loss_v1
+    model:
+      architecture: grouped_heads
+      family: enhanced
+      hidden_dim: 256
+      dropout: 0.10
+      learning_rate: 0.0004
+      weight_decay: 0.0001
+      residual_penalty: 0.003
+      max_epochs: 8000
+      eval_every: 25
+      patience_epochs: 1250

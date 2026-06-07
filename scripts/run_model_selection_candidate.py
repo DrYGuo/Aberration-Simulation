@@ -22,6 +22,7 @@ from typing import Any
 import numpy as np
 
 from feature_regression_model import TARGET_COLUMNS, Standardizer, file_sha256, target_from_row
+from regression_diagnostics import discover_regime_column, per_target_diagnostics, regime_breakdown
 from select_regression_model import score_run
 
 
@@ -55,6 +56,8 @@ DEFAULT_TARGET_PHYSICAL_SCALES = {
     "A3_x": 100.0,
     "A3_y": 100.0,
 }
+DATASET_SPLIT_HINT_FIELD = "dataset_split_hint"
+TRAINING_ONLY_HINT = "training_only"
 
 
 def utc_stamp() -> str:
@@ -164,12 +167,13 @@ def find_feature_columns(csv_path: Path, family: str) -> list[str]:
 
 def prepare_dataset(csv_path: Path, feature_columns: list[str]) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[dict[str, str]]]:
     rows = load_rows(csv_path)
+    regime_column = discover_regime_column(rows)
     X = np.asarray(
         [[row_float(row, name) for name in feature_columns] for row in rows],
         dtype=np.float32,
     )
     y = np.asarray([target_from_row(row) for row in rows], dtype=np.float32)
-    labels = np.asarray([row.get("sweep_label", "") for row in rows])
+    labels = np.asarray([row.get(regime_column, "") if regime_column else "" for row in rows])
     return X, y, labels, rows
 
 
@@ -232,6 +236,10 @@ def four_way_benchmark_split(
 
     splits: dict[str, list[int]] = {"train": [], "validation": [], "blind": [], "stress": []}
     for index, row in enumerate(rows):
+        if str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() == TRAINING_ONLY_HINT:
+            splits["train"].append(index)
+            continue
+
         key = stable_row_key(row, index)
         label = str(labels[index])
         stress_candidate = label in stress_labels or float(np.max(normalized_abs[index])) >= stress_threshold
@@ -251,6 +259,38 @@ def four_way_benchmark_split(
         if not values:
             raise RuntimeError(f"split {name!r} is empty; cannot run model selection safely")
     return {name: np.asarray(values, dtype=np.int64) for name, values in splits.items()}
+
+
+def dataset_version_summary(rows: list[dict[str, str]], csv_path: Path) -> dict[str, Any]:
+    versions = sorted({str(row.get("dataset_version", "")).strip() for row in rows if str(row.get("dataset_version", "")).strip()})
+    sources = sorted({str(row.get("dataset_source", "")).strip() for row in rows if str(row.get("dataset_source", "")).strip()})
+    training_only_count = sum(
+        1 for row in rows if str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() == TRAINING_ONLY_HINT
+    )
+    has_training_only_rows = training_only_count > 0
+    if has_training_only_rows:
+        split_policy = "stable_hash_parent_benchmark_with_training_only_append_rows"
+        benchmark_provenance = (
+            "Rows marked dataset_split_hint=training_only are assigned only to training. "
+            "Validation, blind, and stress benchmarks are drawn from unhinted parent rows."
+        )
+    else:
+        split_policy = "stable_hash_disjoint_benchmark_split"
+        benchmark_provenance = "All rows are eligible for stable-hash train/validation/blind/stress assignment."
+    return {
+        "dataset_version": versions[-1] if versions else "unversioned_cached_csv",
+        "dataset_versions_present": versions,
+        "dataset_sources_present": sources,
+        "csv_path": str(csv_path),
+        "csv_sha256": file_sha256(csv_path),
+        "n_rows": int(len(rows)),
+        "training_only_new_rows": int(training_only_count),
+        "training_only_rows_respected": has_training_only_rows,
+        "split_policy": split_policy,
+        "validation_provenance": benchmark_provenance,
+        "blind_provenance": benchmark_provenance,
+        "stress_provenance": benchmark_provenance,
+    }
 
 
 def import_torch():
@@ -690,6 +730,7 @@ def main() -> int:
     print("output:", output_dir)
 
     X, y, labels, rows = prepare_dataset(csv_path, feature_columns)
+    dataset_info = dataset_version_summary(rows, csv_path)
     selection_config = (
         json.loads(args.selection_config.read_text())
         if args.selection_config and args.selection_config.exists()
@@ -784,7 +825,7 @@ def main() -> int:
         "residual_penalty": args.residual_penalty,
         "hidden_dim": args.hidden_dim,
         "dropout_probability": args.dropout,
-        "split_strategy": "stable_hash_disjoint_benchmark_split",
+        "split_strategy": dataset_info["split_policy"],
         "evaluation_protocol": "train_validation_blind_stress_disjoint",
         "split_seed": args.split_seed,
         "validation_fraction": args.validation_fraction,
@@ -794,11 +835,45 @@ def main() -> int:
         "best_validation_weighted_mse_scaled": best_validation_loss,
         "feature_count": len(feature_columns),
         "scaler": "standard_train_split",
+        "dataset_version": dataset_info["dataset_version"],
+        "dataset_versions_present": dataset_info["dataset_versions_present"],
+        "training_only_new_rows": dataset_info["training_only_new_rows"],
+        "training_only_rows_respected": dataset_info["training_only_rows_respected"],
+        "validation_provenance": dataset_info["validation_provenance"],
+        "blind_provenance": dataset_info["blind_provenance"],
+        "stress_provenance": dataset_info["stress_provenance"],
     }
     metrics = summarize_predictions(y, y_pred, labels, split_indices, training_config, target_physical_scales)
     metrics["run_name"] = run_name
+    metrics["dataset"] = {
+        **dataset_info,
+        "n_train": int(len(train_index)),
+        "n_validation": int(len(split_indices["validation"])),
+        "n_blind": int(len(split_indices["blind"])),
+        "n_stress": int(len(split_indices["stress"])),
+    }
     metrics_path = output_dir / "metrics_model_loop.json"
     metrics_path.write_text(json.dumps(metrics, indent=2) + "\n")
+
+    diagnostics = {
+        split_name: per_target_diagnostics(
+            y[indices],
+            y_pred[indices],
+            TARGET_COLUMNS,
+            target_physical_scales,
+            split_name=split_name,
+        )
+        for split_name, indices in split_indices.items()
+    }
+    diagnostics["validation_regime_breakdown"] = regime_breakdown(
+        y,
+        y_pred,
+        rows,
+        validation_index,
+        TARGET_COLUMNS,
+        target_physical_scales,
+    )
+    (output_dir / "per_target_diagnostics.json").write_text(json.dumps(diagnostics, indent=2) + "\n")
 
     baseline_path = args.baseline_metrics or default_baseline_metrics(csv_path, args.family)
     baseline = json.loads(baseline_path.read_text()) if baseline_path and baseline_path.exists() else None
@@ -835,8 +910,7 @@ def main() -> int:
         "baseline_metrics_path": None if baseline_path is None else str(baseline_path),
         "selection_config_path": None if args.selection_config is None else str(args.selection_config),
         "dataset": {
-            "csv_path": str(csv_path),
-            "csv_sha256": file_sha256(csv_path),
+            **dataset_info,
             "n_rows": int(len(rows)),
             "n_train": int(len(train_index)),
             "n_validation": int(len(split_indices["validation"])),
@@ -856,6 +930,7 @@ def main() -> int:
         "output_dir": str(output_dir),
         "metrics_path": str(metrics_path),
         "selection_score_path": str(output_dir / "selection_score.json"),
+        "per_target_diagnostics_path": str(output_dir / "per_target_diagnostics.json"),
     }
     (output_dir / "run_manifest_model_loop.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
@@ -879,6 +954,9 @@ def main() -> int:
         "selection_weighted_score": selection["weighted_score"],
         "selection_rejected": selection["rejected"],
         "source_csv_sha256": manifest["dataset"]["csv_sha256"],
+        "dataset_version": dataset_info["dataset_version"],
+        "training_only_new_rows": dataset_info["training_only_new_rows"],
+        "true_hard_target_normalized_mae": selection["components"].get("true_hard_target_normalized_mae"),
     }
     write_csv(registry_path, [registry_row], list(registry_row))
 

@@ -18,6 +18,27 @@ HARD_TARGETS = (
     "A3_x",
     "A3_y",
 )
+TRUE_HARD_TARGETS = (
+    "C1",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y",
+)
+ALL_TARGETS = (
+    "C1",
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "A2_x",
+    "A2_y",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y",
+)
 EASY_TARGETS = (
     "C3",
     "A1_x",
@@ -158,6 +179,16 @@ def mean(values: list[float]) -> float:
     return sum(finite) / len(finite) if finite else 0.0
 
 
+def mean_targets(
+    metrics: dict[str, Any],
+    split: str,
+    targets: tuple[str, ...],
+    metric: str,
+    target_scales: dict[str, float],
+) -> float:
+    return mean([split_target_metric(metrics, split, target, metric, target_scales) for target in targets])
+
+
 def weighted_mean_by_label(values: list[tuple[str, float]], weights: dict[str, float]) -> float:
     total = 0.0
     weight_total = 0.0
@@ -194,7 +225,9 @@ def score_run(
     selection_config = selection_config or {}
     split = str(selection_config.get("selection_split", "validation"))
     hard_labels = tuple(selection_config.get("hard_labels", HARD_LABELS))
-    hard_targets = tuple(selection_config.get("hard_targets", HARD_TARGETS))
+    legacy_hard_targets = tuple(selection_config.get("hard_targets", HARD_TARGETS))
+    true_hard_targets = tuple(selection_config.get("true_hard_targets", TRUE_HARD_TARGETS))
+    all_targets = tuple(selection_config.get("all_targets", ALL_TARGETS))
     easy_targets = tuple(selection_config.get("easy_targets", EASY_TARGETS))
     target_scales = {**DEFAULT_TARGET_PHYSICAL_SCALES, **selection_config.get("target_physical_scales", {})}
     weights = {**DEFAULT_SCORE_WEIGHTS, **selection_config.get("score_weights", {})}
@@ -208,25 +241,25 @@ def score_run(
         [(label, split_label_metric(metrics, split, label, "normalized_p95_abs_error", target_scales)) for label in hard_labels],
         hard_label_weights,
     )
-    hard_target_norm_mae = mean([split_target_metric(metrics, split, target, "normalized_mae", target_scales) for target in hard_targets])
-    hard_target_norm_p95 = mean([split_target_metric(metrics, split, target, "normalized_p95_abs_error", target_scales) for target in hard_targets])
+    legacy_hard_target_norm_mae = mean_targets(metrics, split, legacy_hard_targets, "normalized_mae", target_scales)
+    legacy_hard_target_norm_p95 = mean_targets(metrics, split, legacy_hard_targets, "normalized_p95_abs_error", target_scales)
+    true_hard_target_norm_mae = mean_targets(metrics, split, true_hard_targets, "normalized_mae", target_scales)
+    true_hard_target_norm_p95 = mean_targets(metrics, split, true_hard_targets, "normalized_p95_abs_error", target_scales)
+    all_target_norm_mae = mean_targets(metrics, split, all_targets, "normalized_mae", target_scales)
+    all_target_norm_p95 = mean_targets(metrics, split, all_targets, "normalized_p95_abs_error", target_scales)
     overall_norm_mae = split_overall_metric(metrics, split, "overall_normalized_mae")
     overall_norm_p95 = split_overall_metric(metrics, split, "overall_normalized_p95_abs_error")
     if overall_norm_mae == 0.0:
-        overall_norm_mae = mean(
-            [split_target_metric(metrics, split, target, "normalized_mae", target_scales) for target in target_scales]
-        )
+        overall_norm_mae = all_target_norm_mae
     if overall_norm_p95 == 0.0:
-        overall_norm_p95 = mean(
-            [split_target_metric(metrics, split, target, "normalized_p95_abs_error", target_scales) for target in target_scales]
-        )
+        overall_norm_p95 = all_target_norm_p95
     easy_target_norm_mae = mean([split_target_metric(metrics, split, target, "normalized_mae", target_scales) for target in easy_targets])
 
     weighted_score = (
         weights["hard_label_normalized_mae"] * hard_label_norm_mae
         + weights["hard_label_normalized_p95"] * hard_label_norm_p95
-        + weights["hard_target_normalized_mae"] * hard_target_norm_mae
-        + weights["hard_target_normalized_p95"] * hard_target_norm_p95
+        + weights["hard_target_normalized_mae"] * true_hard_target_norm_mae
+        + weights["hard_target_normalized_p95"] * true_hard_target_norm_p95
         + weights["overall_normalized_mae"] * overall_norm_mae
         + weights["overall_normalized_p95"] * overall_norm_p95
     )
@@ -250,13 +283,23 @@ def score_run(
         "run_name": run_name_for(metrics_path, metrics),
         "weighted_score": weighted_score,
         "selection_split": split,
+        "selection_score_version": 2,
         "rejected": rejected,
         "rejection_reasons": rejection_reasons,
+        "legacy_hard_targets": legacy_hard_targets,
+        "true_hard_targets": true_hard_targets,
+        "all_targets": all_targets,
         "components": {
             "hard_label_normalized_mae": hard_label_norm_mae,
             "hard_label_normalized_p95": hard_label_norm_p95,
-            "hard_target_normalized_mae": hard_target_norm_mae,
-            "hard_target_normalized_p95": hard_target_norm_p95,
+            "hard_target_normalized_mae": true_hard_target_norm_mae,
+            "hard_target_normalized_p95": true_hard_target_norm_p95,
+            "legacy_hard_target_normalized_mae": legacy_hard_target_norm_mae,
+            "legacy_hard_target_normalized_p95": legacy_hard_target_norm_p95,
+            "true_hard_target_normalized_mae": true_hard_target_norm_mae,
+            "true_hard_target_normalized_p95": true_hard_target_norm_p95,
+            "all_targets_normalized_mae": all_target_norm_mae,
+            "all_targets_normalized_p95": all_target_norm_p95,
             "overall_normalized_mae": overall_norm_mae,
             "overall_normalized_p95": overall_norm_p95,
             "easy_target_normalized_mae": easy_target_norm_mae,
@@ -299,9 +342,13 @@ def main() -> int:
     ranked.sort(key=lambda row: (row["rejected"], row["weighted_score"]))
     payload = {
         "selection_policy": {
+            "selection_score_version": 2,
             "hard_labels": (selection_config or {}).get("hard_labels", HARD_LABELS),
             "hard_label_weights": (selection_config or {}).get("hard_label_weights", DEFAULT_HARD_LABEL_WEIGHTS),
             "hard_targets": (selection_config or {}).get("hard_targets", HARD_TARGETS),
+            "legacy_hard_targets": (selection_config or {}).get("hard_targets", HARD_TARGETS),
+            "true_hard_targets": (selection_config or {}).get("true_hard_targets", TRUE_HARD_TARGETS),
+            "all_targets": (selection_config or {}).get("all_targets", ALL_TARGETS),
             "easy_targets": (selection_config or {}).get("easy_targets", EASY_TARGETS),
             "easy_regression_limit": args.easy_regression_limit,
             "lower_weighted_score_is_better": True,

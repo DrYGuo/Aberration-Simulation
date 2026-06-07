@@ -12,6 +12,7 @@ import argparse
 import csv
 from collections import Counter
 from datetime import datetime, timezone
+import itertools
 import json
 from pathlib import Path
 import platform
@@ -25,7 +26,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from feature_regression_model import FEATURE_COLUMNS as UNO_FEATURE_COLUMNS, file_sha256
+from feature_regression_model import FEATURE_COLUMNS as UNO_FEATURE_COLUMNS, TARGET_COLUMNS, file_sha256, target_from_row
 
 
 UNDER_FOCUS_C1_OFFSET = -909
@@ -34,6 +35,13 @@ C1_OFFSETS = [UNDER_FOCUS_C1_OFFSET, OVER_FOCUS_C1_OFFSET]
 PROFILE_RADIUS_PIXELS = 80
 PROFILE_STEP_DEGREES = 10
 NUM_PROFILE_LINES = int(180 / PROFILE_STEP_DEGREES) + 1
+DATASET_VERSION = "enhanced_v3_targeted25k"
+SPLIT_HINT_FIELD = "dataset_split_hint"
+SPLIT_HINT_TRAINING_ONLY = "training_only"
+DATASET_SOURCE_FIELD = "dataset_source"
+DATASET_VERSION_FIELD = "dataset_version"
+TRUE_HARD_TARGETS = ("C1", "S3_x", "S3_y", "A3_x", "A3_y")
+COUPLING_EPSILON = 1e-8
 
 COMBINATION_FIELDS = (
     "sweep_label",
@@ -115,6 +123,27 @@ def read_csv(path: Path) -> tuple[list[dict[str, str]], list[str]]:
         return list(reader), list(reader.fieldnames or [])
 
 
+def require_source_columns(fieldnames: list[str]) -> None:
+    required = {
+        "sweep_label",
+        "C1",
+        "C3",
+        "A1_amp",
+        "A1_phase",
+        "A2_amp",
+        "A2_phase",
+        "B2_amp",
+        "B2_phase",
+        "A3_amp",
+        "A3_phase",
+        "S3_amp",
+        "S3_phase",
+    }
+    missing = sorted(required.difference(fieldnames))
+    if missing:
+        raise RuntimeError(f"source CSV is missing required columns: {missing}")
+
+
 def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
     with path.open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore")
@@ -132,6 +161,33 @@ def load_feature_columns(source_csv: Path) -> list[str]:
                 return list(data["features"])
             return list(data)
     return list(UNO_FEATURE_COLUMNS) + extra_feature_columns()
+
+
+def fieldnames_with_metadata(source_fieldnames: list[str]) -> list[str]:
+    return list(
+        dict.fromkeys(
+            [
+                *source_fieldnames,
+                DATASET_VERSION_FIELD,
+                DATASET_SOURCE_FIELD,
+                SPLIT_HINT_FIELD,
+            ]
+        )
+    )
+
+
+def attach_parent_metadata(rows: list[dict[str, Any]]) -> None:
+    for row in rows:
+        row.setdefault(DATASET_VERSION_FIELD, "parent_cached_dataset")
+        row.setdefault(DATASET_SOURCE_FIELD, "parent")
+        row.setdefault(SPLIT_HINT_FIELD, "")
+
+
+def attach_new_row_metadata(rows: list[dict[str, Any]]) -> None:
+    for row in rows:
+        row[DATASET_VERSION_FIELD] = DATASET_VERSION
+        row[DATASET_SOURCE_FIELD] = "targeted25k"
+        row[SPLIT_HINT_FIELD] = SPLIT_HINT_TRAINING_ONLY
 
 
 def extra_feature_columns() -> list[str]:
@@ -313,9 +369,167 @@ def write_label_summary(path: Path, rows: list[dict[str, Any]]) -> None:
             writer.writerow({"sweep_label": label, "n_rows": count})
 
 
+def row_target_dict(row: dict[str, Any]) -> dict[str, float]:
+    values = target_from_row(row)
+    return {name: float(values[index]) for index, name in enumerate(TARGET_COLUMNS)}
+
+
+def target_matrix(rows: list[dict[str, Any]], target_names: tuple[str, ...]) -> np.ndarray:
+    if not rows:
+        return np.zeros((0, len(target_names)), dtype=float)
+    converted = [row_target_dict(row) for row in rows]
+    return np.asarray([[target_values[name] for name in target_names] for target_values in converted], dtype=float)
+
+
+def hard_target_scales(rows: list[dict[str, Any]]) -> dict[str, float]:
+    matrix = target_matrix(rows, TRUE_HARD_TARGETS)
+    scales: dict[str, float] = {}
+    for index, name in enumerate(TRUE_HARD_TARGETS):
+        if matrix.size:
+            value = float(np.max(np.abs(matrix[:, index])))
+        else:
+            value = 0.0
+        scales[name] = max(value, 1e-8)
+    return scales
+
+
+def active_groups(row: dict[str, Any]) -> int:
+    active = 0
+    if abs(float(row.get("C1") or 0.0)) > COUPLING_EPSILON:
+        active += 1
+    if abs(float(row.get("C3") or 0.0)) > COUPLING_EPSILON:
+        active += 1
+    for name in ("A1", "A2", "B2", "A3", "S3"):
+        if abs(float(row.get(f"{name}_amp") or 0.0)) > COUPLING_EPSILON:
+            active += 1
+    return active
+
+
+def coupling_density(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    counts = np.asarray([active_groups(row) for row in rows], dtype=float)
+    if not len(counts):
+        return {"n": 0}
+    return {
+        "n": int(len(counts)),
+        "mean_active_groups": float(np.mean(counts)),
+        "median_active_groups": float(np.median(counts)),
+        "min_active_groups": int(np.min(counts)),
+        "max_active_groups": int(np.max(counts)),
+        "fraction_active_groups_ge_2": float(np.mean(counts >= 2)),
+        "fraction_active_groups_ge_3": float(np.mean(counts >= 3)),
+        "fraction_active_groups_ge_5": float(np.mean(counts >= 5)),
+    }
+
+
+def per_regime_hard_target_stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    by_label: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        by_label.setdefault(str(row.get("sweep_label", "")), []).append(row)
+
+    stats: dict[str, Any] = {}
+    for label, label_rows in sorted(by_label.items()):
+        matrix = np.abs(target_matrix(label_rows, TRUE_HARD_TARGETS))
+        label_stats: dict[str, Any] = {"n": len(label_rows), "targets": {}}
+        for index, target in enumerate(TRUE_HARD_TARGETS):
+            values = matrix[:, index] if matrix.size else np.asarray([], dtype=float)
+            label_stats["targets"][target] = {
+                "mean_abs": float(np.mean(values)) if len(values) else 0.0,
+                "std_abs": float(np.std(values)) if len(values) else 0.0,
+                "max_abs": float(np.max(values)) if len(values) else 0.0,
+            }
+        stats[label] = label_stats
+    return stats
+
+
+def pairwise_hard_target_histograms(
+    output_dir: Path,
+    rows: list[dict[str, Any]],
+    scales: dict[str, float],
+    bins: int = 20,
+) -> dict[str, Any]:
+    import matplotlib.pyplot as plt
+
+    matrix = target_matrix(rows, TRUE_HARD_TARGETS)
+    histogram_dir = output_dir / "hard_target_histograms"
+    histogram_dir.mkdir(parents=True, exist_ok=True)
+    histograms: dict[str, Any] = {}
+    for left, right in itertools.combinations(TRUE_HARD_TARGETS, 2):
+        left_index = TRUE_HARD_TARGETS.index(left)
+        right_index = TRUE_HARD_TARGETS.index(right)
+        left_scale = max(scales[left], 1e-8)
+        right_scale = max(scales[right], 1e-8)
+        x = matrix[:, left_index] / left_scale if len(matrix) else np.asarray([], dtype=float)
+        y = matrix[:, right_index] / right_scale if len(matrix) else np.asarray([], dtype=float)
+        counts, x_edges, y_edges = np.histogram2d(x, y, bins=bins, range=[[-1.0, 1.0], [-1.0, 1.0]])
+        key = f"{left}__{right}"
+        png_path = histogram_dir / f"{key}_hist2d.png"
+        fig, ax = plt.subplots(figsize=(4, 3.5))
+        image = ax.imshow(
+            counts.T,
+            origin="lower",
+            extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]],
+            aspect="auto",
+            cmap="viridis",
+        )
+        ax.set_xlabel(f"{left} / scale")
+        ax.set_ylabel(f"{right} / scale")
+        ax.set_title(key, fontsize=9)
+        fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
+        fig.tight_layout()
+        fig.savefig(png_path, dpi=120)
+        plt.close(fig)
+        histograms[key] = {
+            "counts": counts.astype(int).tolist(),
+            "x_edges": x_edges.tolist(),
+            "y_edges": y_edges.tolist(),
+            "png_path": str(png_path),
+        }
+    return histograms
+
+
+def write_targeted_audit(
+    path: Path,
+    combined_rows: list[dict[str, Any]],
+    new_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    new_scales = hard_target_scales(new_rows)
+    new_matrix = target_matrix(new_rows, TRUE_HARD_TARGETS)
+    normalized_abs = np.abs(new_matrix) / np.asarray([new_scales[name] for name in TRUE_HARD_TARGETS])[None, :]
+    new_labels = np.asarray([str(row.get("sweep_label", "")) for row in new_rows])
+    full_random_mask = new_labels == "coupled_full_random"
+    full_random_norm = normalized_abs[full_random_mask] if len(normalized_abs) else np.zeros((0, len(TRUE_HARD_TARGETS)))
+    audit = {
+        "dataset_version": DATASET_VERSION,
+        "true_hard_targets": list(TRUE_HARD_TARGETS),
+        "hard_target_scale_definition": "max(abs(target_min), abs(target_max)) on newly appended rows, not full span",
+        "new_hard_target_scales": new_scales,
+        "new_rows_per_regime": dict(Counter(str(row.get("sweep_label", "")) for row in new_rows)),
+        "total_rows_per_regime_after_merge": dict(Counter(str(row.get("sweep_label", "")) for row in combined_rows)),
+        "combined_coupling_density": coupling_density(combined_rows),
+        "new_coupling_density": coupling_density(new_rows),
+        "fraction_new_rows_at_least_3_of_5_hard_targets_above_half_scale": float(
+            np.mean(np.sum(normalized_abs > 0.5, axis=1) >= 3)
+        )
+        if len(normalized_abs)
+        else 0.0,
+        "fraction_coupled_full_random_rows_all_5_hard_targets_below_20_percent_scale": float(
+            np.mean(np.all(full_random_norm < 0.2, axis=1))
+        )
+        if len(full_random_norm)
+        else 0.0,
+        "new_per_regime_hard_target_stats": per_regime_hard_target_stats(new_rows),
+        "combined_per_regime_hard_target_stats": per_regime_hard_target_stats(combined_rows),
+        "a3_s3_coverage_warning": True,
+        "a3_s3_coverage_note": "coupled_A3_S3_random is intentionally only 500 rows in this first +25k expansion; review before treating A3/S3 pair coverage as saturated.",
+    }
+    audit["pairwise_hard_target_histograms"] = pairwise_hard_target_histograms(path.parent, new_rows, new_scales)
+    path.write_text(json.dumps(audit, indent=2) + "\n")
+    return audit
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-csv", type=Path)
+    parser.add_argument("--parent-csv", "--source-csv", dest="parent_csv", type=Path)
     parser.add_argument("--search-root", type=Path, default=Path("training_results"))
     parser.add_argument("--output-root", type=Path, default=Path("training_results/feature_regression_enhanced"))
     parser.add_argument("--run-prefix", default="enhanced_v3_targeted25k")
@@ -327,17 +541,21 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     repo_root = Path.cwd()
-    source_csv = args.source_csv or find_latest_csv(args.search_root)
+    source_csv = args.parent_csv or find_latest_csv(args.search_root)
     source_csv = source_csv.resolve()
     source_rows, source_fieldnames = read_csv(source_csv)
     if not source_rows:
         raise RuntimeError(f"source CSV is empty: {source_csv}")
+    require_source_columns(source_fieldnames)
 
     feature_columns = load_feature_columns(source_csv)
+    attach_parent_metadata(source_rows)
     target_cases = generate_target_cases(args.seed)
     assert len(target_cases) == 25000
     print("source CSV:", source_csv, flush=True)
     print("source rows:", len(source_rows), flush=True)
+    print("feature columns:", len(feature_columns), flush=True)
+    print("target columns:", TARGET_COLUMNS, flush=True)
     print("new targeted rows planned:", len(target_cases), flush=True)
     print("targeted case counts:", dict(Counter(row["sweep_label"] for row in target_cases)), flush=True)
 
@@ -346,31 +564,46 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     new_rows = simulate_rows(target_cases, args.batch_base_cases)
+    attach_new_row_metadata(new_rows)
     combined_rows: list[dict[str, Any]] = [*source_rows, *new_rows]
+    output_fieldnames = fieldnames_with_metadata(source_fieldnames)
     output_csv = output_dir / "training_features_enhanced.csv"
-    write_csv(output_csv, combined_rows, source_fieldnames)
+    write_csv(output_csv, combined_rows, output_fieldnames)
     (output_dir / "feature_columns_enhanced.json").write_text(json.dumps(feature_columns, indent=2) + "\n")
     write_label_summary(output_dir / "label_summary.csv", combined_rows)
     write_label_summary(output_dir / "new_targeted_label_summary.csv", new_rows)
+    audit_path = output_dir / "targeted25k_audit.json"
+    audit = write_targeted_audit(audit_path, combined_rows, new_rows)
 
     manifest = {
         "run_name": run_name,
+        "dataset_version": DATASET_VERSION,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "git_commit": current_commit(repo_root),
+        "generation_script": "scripts/generate_targeted_enhanced_dataset.py",
         "python": sys.version,
         "platform": platform.platform(),
-        "source_csv": str(source_csv),
-        "source_csv_sha256": file_sha256(source_csv),
+        "parent_dataset_path": str(source_csv),
+        "parent_dataset_sha256": file_sha256(source_csv),
         "output_csv": str(output_csv),
         "output_csv_sha256": file_sha256(output_csv),
-        "source_rows": len(source_rows),
-        "new_targeted_rows": len(new_rows),
-        "combined_rows": len(combined_rows),
+        "row_count_before_expansion": len(source_rows),
+        "appended_training_only_row_count": len(new_rows),
+        "total_rows": len(combined_rows),
         "random_seed": args.seed,
         "targeted_case_counts": TARGETED_CASE_COUNTS,
+        "target_columns": TARGET_COLUMNS,
+        "feature_columns": feature_columns,
+        "feature_count": len(feature_columns),
+        "regime_counts_after_merge": dict(Counter(str(row.get("sweep_label", "")) for row in combined_rows)),
+        "new_rows_per_regime": audit["new_rows_per_regime"],
+        "split_policy": "New rows are training-only unless a later, explicit versioned split experiment changes validation/blind/stress benchmark definitions.",
+        "dataset_split_hint_field": SPLIT_HINT_FIELD,
+        "new_row_split_hint": SPLIT_HINT_TRAINING_ONLY,
         "feature_columns_path": str(output_dir / "feature_columns_enhanced.json"),
         "label_summary_path": str(output_dir / "label_summary.csv"),
         "new_targeted_label_summary_path": str(output_dir / "new_targeted_label_summary.csv"),
+        "targeted25k_audit_path": str(audit_path),
         "large_artifact_policy": "training_features_enhanced.csv is intentionally not pushed to GitHub",
     }
     (output_dir / "dataset_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
