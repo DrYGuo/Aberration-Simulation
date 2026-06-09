@@ -1,8 +1,8 @@
 {
   "enabled": true,
-  "batch_id": "targeted25k_architecture_batch_live",
-  "dataset_version": "enhanced_v3_targeted25k",
-  "estimated_minutes_per_job": 10,
+  "batch_id": "v4b25k_grouped_head_batch_live",
+  "dataset_version": "enhanced_v4b_targeted_a1_b2_s3_topup14k",
+  "estimated_minutes_per_job": 9,
   "walltime_safety_margin_minutes": 6,
   "max_runtime_minutes": 52,
   "artifact_policy": {
@@ -24,10 +24,12 @@
   },
   "defaults": {
     "family": "enhanced",
+    "csv_path": "training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/training_features_enhanced.csv",
     "search_root": "training_results",
     "selection_config": "experiments/model_selection_weights.json",
-    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/metrics_model_loop.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/metrics_model_loop.json",
     "easy_regression_limit": 0.10,
+    "split_seed": 7,
     "weight_decay": 0.0001,
     "residual_penalty": 0.003,
     "eval_every": 25,
@@ -36,8 +38,8 @@
   },
   "jobs": [
     {
-      "job_id": "grouped_w320_lr8e-4_do0p075_seed7",
-      "candidate_id": "D66_grouped_width320_lr8e-4_dropout0.075_targeted25k",
+      "job_id": "grouped_w320_lr8e-4_do0p075_v4b_seed7",
+      "candidate_id": "D66_grouped_width320_lr8e-4_dropout0.075_v4b25k",
       "enabled": true,
       "seed": 7,
       "loss_weighting_mode": "weighted_target_loss_v1",
@@ -50,8 +52,8 @@
       }
     },
     {
-      "job_id": "grouped_w384_lr6e-4_do0p075_seed7",
-      "candidate_id": "D66_grouped_width384_lr6e-4_dropout0.075_targeted25k",
+      "job_id": "grouped_w384_lr6e-4_do0p075_v4b_seed7",
+      "candidate_id": "D66_grouped_width384_lr6e-4_dropout0.075_v4b25k",
       "enabled": true,
       "seed": 7,
       "loss_weighting_mode": "weighted_target_loss_v1",
@@ -64,8 +66,8 @@
       }
     },
     {
-      "job_id": "grouped_w320_lr6e-4_do0p10_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.10_targeted25k",
+      "job_id": "grouped_w320_lr6e-4_do0p10_v4b_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.10_v4b25k",
       "enabled": true,
       "seed": 7,
       "loss_weighting_mode": "weighted_target_loss_v1",
@@ -76,11 +78,24 @@
         "dropout": 0.10,
         "learning_rate": 0.0006
       }
+    },
+    {
+      "job_id": "grouped_w384_lr8e-4_do0p075_v4b_seed7",
+      "candidate_id": "D66_grouped_width384_lr8e-4_dropout0.075_v4b25k",
+      "enabled": true,
+      "seed": 7,
+      "loss_weighting_mode": "weighted_target_loss_v1",
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 384,
+        "dropout": 0.075,
+        "learning_rate": 0.0008
+      }
     }
   ],
   "future_data_expansion_note": {
     "do_not_run_in_this_batch": true,
-    "new_coupling_to_add_next": "coupled_A1_B2_S3_random",
-    "reason": "A1/B2/S3 joint interactions should be tested after current architecture comparison, so data distribution changes do not confound model-selection results."
+    "reason": "This batch compares model architecture/hyperparameters on the fixed v4b +25k A1/B2/S3 dataset before any additional simulation expansion."
   }
 }

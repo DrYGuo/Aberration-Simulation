@@ -34,6 +34,44 @@ def completed_job(output_root: Path, candidate_id: str) -> Path | None:
     return matches[-1] if matches else None
 
 
+def selection_summary(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.exists():
+        return {}
+    try:
+        selection = load_json(path)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    summary: dict[str, Any] = {
+        "selection_score_path": str(path),
+        "weighted_score": selection.get("weighted_score"),
+        "rejected": selection.get("rejected"),
+    }
+    components = selection.get("components", {})
+    if isinstance(components, dict):
+        for key in [
+            "true_hard_target_normalized_mae",
+            "hard_label_normalized_mae",
+            "hard_label_normalized_p95",
+            "overall_normalized_mae",
+            "overall_normalized_p95",
+            "easy_target_normalized_mae_relative_change",
+        ]:
+            if key in components:
+                summary[key] = components[key]
+    metrics_path = selection.get("metrics_path")
+    if metrics_path:
+        try:
+            metrics = load_json(Path(metrics_path))
+        except (OSError, json.JSONDecodeError):
+            metrics = {}
+        splits = metrics.get("splits", {}) if isinstance(metrics, dict) else {}
+        for split_name in ["validation", "blind", "stress"]:
+            split = splits.get(split_name, {}) if isinstance(splits, dict) else {}
+            if "overall_normalized_mae" in split:
+                summary[f"{split_name}_normalized_mae"] = split["overall_normalized_mae"]
+    return summary
+
+
 def minutes_remaining(start_time: float, max_runtime_minutes: float) -> float:
     return max_runtime_minutes - (time.monotonic() - start_time) / 60.0
 
@@ -48,8 +86,6 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
         str(model.get("family", defaults.get("family", "enhanced"))),
         "--candidate-id",
         candidate_id,
-        "--search-root",
-        str(defaults.get("search_root", "training_results")),
         "--output-root",
         str(output_root),
         "--architecture",
@@ -73,12 +109,26 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
         "--easy-regression-limit",
         str(defaults.get("easy_regression_limit", 0.10)),
     ]
+    csv_path = job.get("csv_path", model.get("csv_path", defaults.get("csv_path")))
+    if csv_path:
+        command.extend(["--csv-path", str(csv_path)])
+    else:
+        command.extend(["--search-root", str(defaults.get("search_root", "training_results"))])
     baseline_metrics = job.get("baseline_metrics", defaults.get("baseline_metrics"))
     if baseline_metrics:
         command.extend(["--baseline-metrics", str(baseline_metrics)])
     selection_config = defaults.get("selection_config")
     if selection_config:
         command.extend(["--selection-config", str(selection_config)])
+    split_seed = job.get("split_seed", job.get("seed", defaults.get("split_seed")))
+    if split_seed is not None:
+        command.extend(["--split-seed", str(split_seed)])
+    if defaults.get("bootstrap_if_missing"):
+        command.append("--bootstrap-if-missing")
+        if defaults.get("bootstrap_notebook"):
+            command.extend(["--bootstrap-notebook", str(defaults["bootstrap_notebook"])])
+        if defaults.get("bootstrap_timeout"):
+            command.extend(["--bootstrap-timeout", str(defaults["bootstrap_timeout"])])
     return command
 
 
@@ -131,14 +181,13 @@ def main() -> int:
         if not args.force_all and job_id not in force_jobs:
             completed = completed_job(args.output_root, candidate_id)
             if completed is not None:
-                rows.append(
-                    {
-                        "job_id": job_id,
-                        "candidate_id": candidate_id,
-                        "status": "skipped_completed",
-                        "selection_score_path": str(completed),
-                    }
-                )
+                row = {
+                    "job_id": job_id,
+                    "candidate_id": candidate_id,
+                    "status": "skipped_completed",
+                }
+                row.update(selection_summary(completed))
+                rows.append(row)
                 continue
         remaining = minutes_remaining(started, max_runtime)
         if remaining < estimated_minutes + safety_margin:
@@ -165,8 +214,7 @@ def main() -> int:
             "elapsed_minutes": elapsed,
         }
         completed = completed_job(args.output_root, candidate_id)
-        if completed is not None:
-            row["selection_score_path"] = str(completed)
+        row.update(selection_summary(completed))
         rows.append(row)
         if returncode:
             status = "failed"
@@ -188,7 +236,26 @@ def main() -> int:
     write_csv(
         summary_dir / "batch_summary.csv",
         rows,
-        ["job_id", "candidate_id", "status", "returncode", "elapsed_minutes", "selection_score_path", "minutes_remaining"],
+        [
+            "job_id",
+            "candidate_id",
+            "status",
+            "returncode",
+            "elapsed_minutes",
+            "selection_score_path",
+            "weighted_score",
+            "rejected",
+            "true_hard_target_normalized_mae",
+            "hard_label_normalized_mae",
+            "hard_label_normalized_p95",
+            "overall_normalized_mae",
+            "overall_normalized_p95",
+            "easy_target_normalized_mae_relative_change",
+            "validation_normalized_mae",
+            "blind_normalized_mae",
+            "stress_normalized_mae",
+            "minutes_remaining",
+        ],
     )
     print("batch manifest:", summary_dir / "batch_manifest.json", flush=True)
     print("batch status:", status, flush=True)
