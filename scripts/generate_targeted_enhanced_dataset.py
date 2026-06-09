@@ -299,6 +299,7 @@ def generate_target_cases(seed: int, case_counts: dict[str, int]) -> list[dict[s
         "coupled_full_random": ALL_FIELDS,
         "coupled_C1_C3_random": ("C1", "C3"),
         "coupled_A1_S3_random": ("A1", "S3"),
+        "coupled_B2_S3_random": ("B2", "S3"),
         "coupled_A1_B2_S3_random": ("A1", "B2", "S3"),
         "coupled_C3_A3_S3_random": ("C3", "A3", "S3"),
         "coupled_A1_B2_random": ("A1", "B2"),

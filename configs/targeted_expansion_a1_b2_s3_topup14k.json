@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "dataset_version": "enhanced_v4b_targeted_a1_b2_s3_topup14k",
+  "parent_dataset_version": "enhanced_v4_targeted_a1_b2_s3",
+  "purpose": "Top up the first v4 A1/B2/S3 expansion from +11k to +25k total new training-only rows.",
+  "new_couplings_to_add": {
+    "coupled_A1_B2_S3_random": 6000,
+    "coupled_B2_S3_random": 2500,
+    "coupled_A1_B2_random": 1500,
+    "coupled_A1_S3_random": 1500,
+    "coupled_sparse_random": 1500,
+    "coupled_full_random": 1000
+  },
+  "expected_prior_v4_appended_rows": 11000,
+  "topup_appended_rows": 14000,
+  "expected_total_v4_sequence_appended_rows": 25000,
+  "split_policy": "new rows training_only; validation/blind/stress benchmarks remain fixed unless explicitly versioned",
+  "status": "queued_for_colab_worker"
+}
