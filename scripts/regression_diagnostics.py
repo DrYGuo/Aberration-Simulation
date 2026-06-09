@@ -16,6 +16,7 @@ VECTOR_TARGET_PAIRS = {
     "S3": ("S3_x", "S3_y"),
     "A3": ("A3_x", "A3_y"),
 }
+ORTHOGONAL_TRUE_HARD_TARGETS = ("C1", "S3_x", "S3_y", "A3_x", "A3_y")
 
 
 def discover_regime_column(rows: list[dict[str, Any]]) -> str | None:
@@ -307,3 +308,189 @@ def vector_diagnostics(
                 regimes[label] = pair_for_indices(pair_name, local_indices)
             payload["by_regime"]["pairs"][pair_name] = regimes
     return payload
+
+
+def _normalized_p95(diagnostics: dict[str, Any]) -> float | None:
+    value = diagnostics.get("p95_abs_error", {}).get("value")
+    if value is None:
+        return None
+    return float(value) / max(float(diagnostics.get("target_scale", 1.0)), 1e-8)
+
+
+def _mean_optional(values: list[float | None]) -> float | None:
+    clean = [float(value) for value in values if value is not None]
+    if not clean:
+        return None
+    return float(np.mean(clean))
+
+
+def _hard_target_normalized_summary(
+    target_summary: dict[str, Any],
+    hard_targets: tuple[str, ...] = ORTHOGONAL_TRUE_HARD_TARGETS,
+) -> dict[str, Any]:
+    targets = target_summary["targets"]
+    included = [target for target in hard_targets if target in targets]
+    return {
+        "targets": included,
+        "true_hard_target_normalized_mae": _mean_optional(
+            [targets[target].get("normalized_mae") for target in included]
+        ),
+        "true_hard_target_normalized_p95": _mean_optional(
+            [_normalized_p95(targets[target]) for target in included]
+        ),
+    }
+
+
+def _group_indices_by_row_field(
+    rows: list[dict[str, Any]],
+    field_name: str,
+    indices: np.ndarray,
+) -> dict[str, np.ndarray]:
+    grouped: dict[str, list[int]] = defaultdict(list)
+    for index in indices:
+        label = str(rows[int(index)].get(field_name, ""))
+        if label:
+            grouped[label].append(int(index))
+    return {label: np.asarray(values, dtype=np.int64) for label, values in sorted(grouped.items())}
+
+
+def _grouped_orthogonal_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    rows: list[dict[str, Any]],
+    indices: np.ndarray,
+    target_columns: list[str],
+    target_scales: dict[str, float],
+    *,
+    field_name: str,
+) -> dict[str, Any]:
+    groups: dict[str, Any] = {}
+    for label, group_indices in _group_indices_by_row_field(rows, field_name, indices).items():
+        summary = per_target_diagnostics(
+            y_true[group_indices],
+            y_pred[group_indices],
+            target_columns,
+            target_scales,
+            split_name=f"{field_name}:{label}",
+        )
+        groups[label] = {
+            "n": int(len(group_indices)),
+            "per_target": summary,
+            **_hard_target_normalized_summary(summary),
+        }
+    return {"field": field_name, "groups": groups}
+
+
+def _grouped_orthogonal_vector_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    rows: list[dict[str, Any]],
+    target_columns: list[str],
+    indices: np.ndarray,
+    *,
+    field_name: str,
+) -> dict[str, Any]:
+    groups: dict[str, Any] = {}
+    for label, group_indices in _group_indices_by_row_field(rows, field_name, indices).items():
+        groups[label] = vector_diagnostics(
+            y_true,
+            y_pred,
+            rows,
+            target_columns,
+            {
+                "train": group_indices,
+                "validation": group_indices,
+                "blind": np.asarray([], dtype=np.int64),
+                "stress": np.asarray([], dtype=np.int64),
+            },
+        )
+        groups[label]["n"] = int(len(group_indices))
+    return {"field": field_name, "groups": groups}
+
+
+def orthogonal_benchmark_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    rows: list[dict[str, Any]],
+    target_columns: list[str],
+    target_scales: dict[str, float],
+    *,
+    split_name: str = "orthogonal_hard_benchmark_v1",
+) -> dict[str, Any]:
+    """Build compact metrics for the diagnostic orthogonal hard benchmark.
+
+    This hook intentionally reuses the normal per-target and vector diagnostics.
+    It does not define a primary model-selection score and should not be used as
+    training data.
+    """
+
+    indices = np.arange(len(y_true), dtype=np.int64)
+    target_summary = per_target_diagnostics(
+        y_true,
+        y_pred,
+        target_columns,
+        target_scales,
+        split_name=split_name,
+    )
+    vector_payload = vector_diagnostics(
+        y_true,
+        y_pred,
+        rows,
+        target_columns,
+        {
+            "train": indices,
+            "validation": indices,
+            "blind": np.asarray([], dtype=np.int64),
+            "stress": np.asarray([], dtype=np.int64),
+        },
+    )
+    vector_payload["scale_policy"]["orthogonal_benchmark_note"] = (
+        "The diagnostic benchmark has no training split; vector scales are the 95th percentile "
+        "of true benchmark magnitudes and are evaluated through the existing vector diagnostics."
+    )
+
+    return {
+        "split": split_name,
+        "benchmark_id": split_name,
+        "diagnostic_only": True,
+        "train_on_this": False,
+        "selection_primary_metric": False,
+        "n": int(len(y_true)),
+        "per_target": target_summary,
+        **_hard_target_normalized_summary(target_summary),
+        "by_coupling_family": _grouped_orthogonal_metrics(
+            y_true,
+            y_pred,
+            rows,
+            indices,
+            target_columns,
+            target_scales,
+            field_name="coupling_family",
+        ),
+        "by_relative_angle_category": _grouped_orthogonal_metrics(
+            y_true,
+            y_pred,
+            rows,
+            indices,
+            target_columns,
+            target_scales,
+            field_name="relative_angle_category",
+        ),
+        "vector_diagnostics": vector_payload,
+        "vector_diagnostics_by_coupling_family": _grouped_orthogonal_vector_metrics(
+            y_true,
+            y_pred,
+            rows,
+            target_columns,
+            indices,
+            field_name="coupling_family",
+        ),
+        "vector_diagnostics_by_relative_angle_category": _grouped_orthogonal_vector_metrics(
+            y_true,
+            y_pred,
+            rows,
+            target_columns,
+            indices,
+            field_name="relative_angle_category",
+        ),
+    }

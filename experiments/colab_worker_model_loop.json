@@ -38,6 +38,7 @@
     "training_results/feature_regression_enhanced/**/hard_target_histograms/*.png",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
+    "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",
     "training_results/model_selection_loop/**/per_target_diagnostics.json",
     "training_results/model_selection_loop/**/vector_diagnostics.json",
     "training_results/model_selection_loop/**/*failure*.json",
@@ -46,7 +47,12 @@
     "training_results/model_selection_loop/**/*summary.csv",
     "training_results/model_selection_loop/**/*.png",
     "training_results/model_selection_batches/**/batch_manifest.json",
-    "training_results/model_selection_batches/**/batch_summary.csv"
+    "training_results/model_selection_batches/**/batch_summary.csv",
+    "training_results/orthogonal_benchmarks/**/orthogonal_design_manifest.json",
+    "training_results/orthogonal_benchmarks/**/factor_balance_summary.json",
+    "training_results/orthogonal_benchmarks/**/factor_correlation_matrix.csv",
+    "training_results/orthogonal_benchmarks/**/orthogonal_design_table.csv",
+    "training_results/orthogonal_benchmarks/**/*.png"
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,

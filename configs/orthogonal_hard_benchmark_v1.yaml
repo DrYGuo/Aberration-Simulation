@@ -1,0 +1,32 @@
+{
+  "benchmark_id": "orthogonal_hard_benchmark_v1",
+  "design_type": "balanced_fractional_orthogonal_like_design",
+  "diagnostic_only": true,
+  "train_on_this": false,
+  "selection_primary_metric": false,
+  "description": "Controlled diagnostic benchmark for nonlinear inverse-map coupling and vector-orientation failure modes. This is not exact orthogonality and must not be used as training data or as the primary model-selection score.",
+  "target_row_count": 512,
+  "c1_levels": [-100.0, -50.0, 50.0, 100.0],
+  "base_angle_degrees": [0.0, 45.0, 90.0, 135.0, 180.0, 225.0, 270.0, 315.0],
+  "relative_angle_categories": {
+    "aligned": 0.0,
+    "orthogonal_pos": 90.0,
+    "anti_aligned": 180.0,
+    "orthogonal_neg": 270.0
+  },
+  "vector_magnitude_levels": {
+    "A1": [20.0, 60.0],
+    "B2": [1.0, 3.0],
+    "S3": [35.0, 100.0],
+    "A3": [35.0, 100.0]
+  },
+  "coupling_families": {
+    "C1_S3": 48,
+    "C1_A3": 48,
+    "C1_S3_A3": 96,
+    "A1_S3": 64,
+    "B2_S3": 64,
+    "A3_S3": 64,
+    "A1_B2_S3": 128
+  }
+}
