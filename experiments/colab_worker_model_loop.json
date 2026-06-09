@@ -1,5 +1,5 @@
 {
-  "description": "Real model-selection loop. This config expands enhanced_v3_targeted25k with targeted A1/B2/S3 coupling rows and keeps new rows training-only.",
+  "description": "Real model-selection loop. This config expands enhanced_v3_targeted25k with targeted A1/B2/S3 coupling rows, bootstraps the parent feature CSV inside Colab if missing, and keeps new rows training-only.",
   "config_id": "expand-enhanced-v4-a1-b2-s3-couplings",
   "cycles": 8,
   "sleep_seconds": 30,
@@ -26,7 +26,12 @@
     "--seed",
     "43",
     "--batch-base-cases",
-    "256"
+    "256",
+    "--bootstrap-if-missing",
+    "--bootstrap-notebook",
+    "notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb",
+    "--bootstrap-timeout",
+    "3600"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
