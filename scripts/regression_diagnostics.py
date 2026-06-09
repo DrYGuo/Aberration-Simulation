@@ -16,6 +16,7 @@ VECTOR_TARGET_PAIRS = {
     "S3": ("S3_x", "S3_y"),
     "A3": ("A3_x", "A3_y"),
 }
+VECTOR_MAGNITUDE_BIN_PAIRS = ("A1", "B2", "S3", "A3")
 ORTHOGONAL_TRUE_HARD_TARGETS = ("C1", "S3_x", "S3_y", "A3_x", "A3_y")
 
 
@@ -164,6 +165,146 @@ def _linear_fit_diagnostics(true_values: np.ndarray, pred_values: np.ndarray) ->
     }
 
 
+def _predicted_magnitude_distribution(values: np.ndarray, vector_scale: float) -> dict[str, Any]:
+    if len(values) == 0:
+        return {
+            "n": 0,
+            "mean": None,
+            "median": None,
+            "std": None,
+            "p95": None,
+            "max": None,
+            "mean_normalized_by_vector_scale": None,
+            "p95_normalized_by_vector_scale": None,
+        }
+    scale = max(float(vector_scale), 1e-8)
+    return {
+        "n": int(len(values)),
+        "mean": float(np.mean(values)),
+        "median": float(np.median(values)),
+        "std": float(np.std(values)),
+        "p95": float(np.quantile(values, 0.95)),
+        "max": float(np.max(values)),
+        "mean_normalized_by_vector_scale": float(np.mean(values) / scale),
+        "p95_normalized_by_vector_scale": float(np.quantile(values, 0.95) / scale),
+    }
+
+
+def _vector_magnitude_bin_summary(
+    true_x: np.ndarray,
+    true_y: np.ndarray,
+    pred_x: np.ndarray,
+    pred_y: np.ndarray,
+    *,
+    vector_scale: float,
+) -> dict[str, Any]:
+    scale = max(float(vector_scale), 1e-8)
+    true_magnitude = np.sqrt(true_x**2 + true_y**2)
+    pred_magnitude = np.sqrt(pred_x**2 + pred_y**2)
+    magnitude_error = pred_magnitude - true_magnitude
+    error_x = pred_x - true_x
+    error_y = pred_y - true_y
+    true_angle = np.arctan2(true_y, true_x)
+    pred_angle = np.arctan2(pred_y, pred_x)
+    angle_error = _wrapped_angle_error_deg(true_angle, pred_angle)
+    cosine_denominator = true_magnitude * pred_magnitude + 1e-8
+    cosine = (true_x * pred_x + true_y * pred_y) / cosine_denominator
+    pred_nonzero = pred_magnitude > 1e-8
+
+    bin_masks = {
+        "near_zero": true_magnitude <= 0.1 * scale,
+        "low": (true_magnitude > 0.1 * scale) & (true_magnitude <= 0.3 * scale),
+        "medium": (true_magnitude > 0.3 * scale) & (true_magnitude <= 0.7 * scale),
+        "high": true_magnitude > 0.7 * scale,
+    }
+    bins: dict[str, Any] = {}
+    for bin_name, mask in bin_masks.items():
+        n = int(np.sum(mask))
+        bin_payload: dict[str, Any] = {
+            "n": n,
+            "true_magnitude_range_normalized": {
+                "near_zero": [0.0, 0.1],
+                "low": [0.1, 0.3],
+                "medium": [0.3, 0.7],
+                "high": [0.7, None],
+            }[bin_name],
+            "component_errors": {
+                "MAE_x": float(np.mean(np.abs(error_x[mask]))) if n else None,
+                "MAE_y": float(np.mean(np.abs(error_y[mask]))) if n else None,
+                "RMSE_x": float(np.sqrt(np.mean(error_x[mask] ** 2))) if n else None,
+                "RMSE_y": float(np.sqrt(np.mean(error_y[mask] ** 2))) if n else None,
+            },
+            "magnitude": {
+                "magnitude_mae": float(np.mean(np.abs(magnitude_error[mask]))) if n else None,
+                "magnitude_bias": float(np.mean(magnitude_error[mask])) if n else None,
+                "magnitude_rmse": float(np.sqrt(np.mean(magnitude_error[mask] ** 2))) if n else None,
+                "true_magnitude_mean": float(np.mean(true_magnitude[mask])) if n else None,
+                "pred_magnitude_mean": float(np.mean(pred_magnitude[mask])) if n else None,
+                "magnitude_compression_ratio": (
+                    float(np.std(pred_magnitude[mask]) / (np.std(true_magnitude[mask]) + 1e-8)) if n else None
+                ),
+                "magnitude_slope": None,
+                "magnitude_r2": None,
+                "magnitude_fit_available": False,
+                "magnitude_fit_minimum_n": 30,
+            },
+        }
+        if n:
+            fit = _linear_fit_diagnostics(true_magnitude[mask], pred_magnitude[mask])
+            bin_payload["magnitude"].update(
+                {
+                    "magnitude_slope": fit["slope"],
+                    "magnitude_r2": fit["r2"],
+                    "magnitude_fit_available": fit["available"],
+                }
+            )
+        if bin_name == "near_zero":
+            bin_payload["angle"] = {
+                "defined": False,
+                "reason": "true_magnitude <= 0.1 * vector_scale",
+            }
+            bin_payload["directional_cosine"] = {
+                "defined": False,
+                "reason": "true_magnitude <= 0.1 * vector_scale",
+            }
+            bin_payload["predicted_magnitude_distribution"] = _predicted_magnitude_distribution(
+                pred_magnitude[mask],
+                vector_scale,
+            )
+        else:
+            angle_values = np.abs(angle_error[mask])
+            cosine_mask = mask & pred_nonzero
+            cosine_values = cosine[cosine_mask]
+            bin_payload["angle"] = {
+                "defined": bool(n > 0),
+                "mean_abs_angle_error_deg": float(np.mean(angle_values)) if len(angle_values) else None,
+                "median_abs_angle_error_deg": float(np.median(angle_values)) if len(angle_values) else None,
+                "p95_abs_angle_error_deg": float(np.quantile(angle_values, 0.95)) if len(angle_values) >= 20 else None,
+                "p95_reliable": bool(len(angle_values) >= 20),
+            }
+            bin_payload["directional_cosine"] = {
+                "defined_count": int(len(cosine_values)),
+                "undefined_zero_pred_count": int(n - len(cosine_values)),
+                "mean_cosine_similarity": float(np.mean(cosine_values)) if len(cosine_values) else None,
+                "median_cosine_similarity": float(np.median(cosine_values)) if len(cosine_values) else None,
+                "p05_cosine_similarity": float(np.quantile(cosine_values, 0.05)) if len(cosine_values) >= 20 else None,
+                "p05_reliable": bool(len(cosine_values) >= 20),
+            }
+        bins[bin_name] = bin_payload
+
+    return {
+        "bin_policy": {
+            "vector_scale": float(vector_scale),
+            "near_zero": "true_magnitude <= 0.1 * vector_scale",
+            "low": "0.1 * vector_scale < true_magnitude <= 0.3 * vector_scale",
+            "medium": "0.3 * vector_scale < true_magnitude <= 0.7 * vector_scale",
+            "high": "true_magnitude > 0.7 * vector_scale",
+            "angle_and_cosine_policy": "reported only for low/medium/high bins; near_zero angles are undefined",
+        },
+        "bins": bins,
+    }
+
+
 def vector_scale_from_training(
     y_true: np.ndarray,
     train_index: np.ndarray,
@@ -195,6 +336,7 @@ def _vector_pair_diagnostics(
     *,
     vector_scale: float,
     scale_source: str,
+    include_magnitude_bins: bool = False,
 ) -> dict[str, Any]:
     error_x = pred_x - true_x
     error_y = pred_y - true_y
@@ -217,7 +359,7 @@ def _vector_pair_diagnostics(
         / (true_magnitude[cosine_mask] * pred_magnitude[cosine_mask] + 1e-8)
     )
 
-    return {
+    payload = {
         "n": int(len(true_x)),
         "component_errors": {
             "MAE_x": float(np.mean(np.abs(error_x))) if len(error_x) else 0.0,
@@ -254,6 +396,15 @@ def _vector_pair_diagnostics(
             "p05_reliable": bool(len(cosine) >= 20),
         },
     }
+    if include_magnitude_bins:
+        payload["magnitude_bins"] = _vector_magnitude_bin_summary(
+            true_x,
+            true_y,
+            pred_x,
+            pred_y,
+            vector_scale=vector_scale,
+        )
+    return payload
 
 
 def vector_diagnostics(
@@ -282,6 +433,7 @@ def vector_diagnostics(
             y_pred[indices, y_index],
             vector_scale=float(scale_data["vector_scale"]),
             scale_source=str(scale_data["scale_source"]),
+            include_magnitude_bins=pair_name in VECTOR_MAGNITUDE_BIN_PAIRS,
         )
 
     payload: dict[str, Any] = {
