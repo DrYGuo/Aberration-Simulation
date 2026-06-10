@@ -404,6 +404,62 @@ def weighted_mse(pred, target, target_weights):
     return torch.mean((pred - target) ** 2 * target_weights[None, :])
 
 
+def s3_magnitude_loss(
+    pred_scaled,
+    target_scaled,
+    *,
+    y_mean,
+    y_std,
+    vector_scale: float,
+    loss_weight: float,
+    low_bin_weight: float,
+    medium_bin_weight: float,
+    high_bin_weight: float,
+    use_smooth_l1: bool,
+):
+    torch, _ = import_torch()
+    if loss_weight <= 0:
+        return torch.zeros((), dtype=pred_scaled.dtype, device=pred_scaled.device)
+
+    s3_x_index = TARGET_COLUMNS.index("S3_x")
+    s3_y_index = TARGET_COLUMNS.index("S3_y")
+    pred_phys = pred_scaled * y_std[None, :] + y_mean[None, :]
+    target_phys = target_scaled * y_std[None, :] + y_mean[None, :]
+    pred_mag = torch.sqrt(pred_phys[:, s3_x_index] ** 2 + pred_phys[:, s3_y_index] ** 2 + 1e-8)
+    true_mag = torch.sqrt(target_phys[:, s3_x_index] ** 2 + target_phys[:, s3_y_index] ** 2 + 1e-8)
+    scale = max(float(vector_scale), 1e-8)
+    normalized_error = (pred_mag - true_mag) / scale
+    if use_smooth_l1:
+        per_sample = torch.nn.functional.smooth_l1_loss(
+            normalized_error,
+            torch.zeros_like(normalized_error),
+            reduction="none",
+        )
+    else:
+        per_sample = torch.abs(normalized_error)
+
+    bin_weights = torch.zeros_like(true_mag)
+    bin_weights = torch.where(
+        (true_mag > 0.1 * scale) & (true_mag <= 0.3 * scale),
+        torch.full_like(bin_weights, float(low_bin_weight)),
+        bin_weights,
+    )
+    bin_weights = torch.where(
+        (true_mag > 0.3 * scale) & (true_mag <= 0.7 * scale),
+        torch.full_like(bin_weights, float(medium_bin_weight)),
+        bin_weights,
+    )
+    bin_weights = torch.where(
+        true_mag > 0.7 * scale,
+        torch.full_like(bin_weights, float(high_bin_weight)),
+        bin_weights,
+    )
+    active = bin_weights > 0
+    if int(torch.sum(active).detach().cpu()) == 0:
+        return torch.zeros((), dtype=pred_scaled.dtype, device=pred_scaled.device)
+    return float(loss_weight) * torch.mean(per_sample[active] * bin_weights[active])
+
+
 def summarize_predictions(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -686,6 +742,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=6e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--residual-penalty", type=float, default=3e-3)
+    parser.add_argument("--s3-magnitude-loss-weight", type=float, default=0.0)
+    parser.add_argument("--s3-magnitude-low-bin-weight", type=float, default=1.0)
+    parser.add_argument("--s3-magnitude-medium-bin-weight", type=float, default=2.0)
+    parser.add_argument("--s3-magnitude-high-bin-weight", type=float, default=4.0)
+    parser.add_argument("--s3-magnitude-loss-kind", choices=["smooth_l1", "mae"], default="smooth_l1")
     parser.add_argument("--max-epochs", type=int, default=6000)
     parser.add_argument("--eval-every", type=int, default=25)
     parser.add_argument("--patience-epochs", type=int, default=1000)
@@ -840,6 +901,12 @@ def main() -> int:
         dtype=torch.float32,
         device=device,
     )
+    y_mean = torch.tensor(y_scaler.mean, dtype=torch.float32, device=device)
+    y_std = torch.tensor(y_scaler.std, dtype=torch.float32, device=device)
+    s3_x_index = TARGET_COLUMNS.index("S3_x")
+    s3_y_index = TARGET_COLUMNS.index("S3_y")
+    s3_train_magnitude = np.sqrt(y[train_index, s3_x_index] ** 2 + y[train_index, s3_y_index] ** 2)
+    s3_vector_scale = float(np.quantile(s3_train_magnitude, 0.95)) if len(s3_train_magnitude) else 1e-8
 
     x_train = torch.tensor(Xn[train_index], device=device)
     y_train = torch.tensor(yn[train_index], device=device)
@@ -857,17 +924,61 @@ def main() -> int:
         optimizer.zero_grad(set_to_none=True)
         pred_train = model(x_train)
         residual = model.residual(x_train)
-        loss = weighted_mse(pred_train, y_train, target_weights) + args.residual_penalty * torch.mean(residual**2)
+        train_component_loss = weighted_mse(pred_train, y_train, target_weights)
+        train_s3_magnitude_loss = s3_magnitude_loss(
+            pred_train,
+            y_train,
+            y_mean=y_mean,
+            y_std=y_std,
+            vector_scale=s3_vector_scale,
+            loss_weight=args.s3_magnitude_loss_weight,
+            low_bin_weight=args.s3_magnitude_low_bin_weight,
+            medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+            high_bin_weight=args.s3_magnitude_high_bin_weight,
+            use_smooth_l1=args.s3_magnitude_loss_kind == "smooth_l1",
+        )
+        loss = (
+            train_component_loss
+            + train_s3_magnitude_loss
+            + args.residual_penalty * torch.mean(residual**2)
+        )
         loss.backward()
         optimizer.step()
 
         if epoch % args.eval_every == 0 or epoch == 1:
             model.eval()
             with torch.no_grad():
-                train_loss = float(weighted_mse(model(x_train), y_train, target_weights).detach().cpu())
+                train_pred_eval = model(x_train)
+                train_loss = float(weighted_mse(train_pred_eval, y_train, target_weights).detach().cpu())
+                train_s3_mag_loss_eval = float(
+                    s3_magnitude_loss(
+                        train_pred_eval,
+                        y_train,
+                        y_mean=y_mean,
+                        y_std=y_std,
+                        vector_scale=s3_vector_scale,
+                        loss_weight=args.s3_magnitude_loss_weight,
+                        low_bin_weight=args.s3_magnitude_low_bin_weight,
+                        medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                        high_bin_weight=args.s3_magnitude_high_bin_weight,
+                        use_smooth_l1=args.s3_magnitude_loss_kind == "smooth_l1",
+                    )
+                    .detach()
+                    .cpu()
+                )
                 validation_loss = float(weighted_mse(model(x_validation), y_validation, target_weights).detach().cpu())
-            history.append({"epoch": epoch, "train_loss": train_loss, "validation_loss": validation_loss})
-            print(f"epoch {epoch:5d} train={train_loss:.6f} validation={validation_loss:.6f}")
+            history.append(
+                {
+                    "epoch": epoch,
+                    "train_loss": train_loss,
+                    "validation_loss": validation_loss,
+                    "train_s3_magnitude_loss": train_s3_mag_loss_eval,
+                }
+            )
+            print(
+                f"epoch {epoch:5d} train={train_loss:.6f} "
+                f"s3mag={train_s3_mag_loss_eval:.6f} validation={validation_loss:.6f}"
+            )
             if validation_loss < best_validation_loss:
                 best_validation_loss = validation_loss
                 best_epoch = epoch
@@ -897,6 +1008,24 @@ def main() -> int:
         "learning_rate": args.learning_rate,
         "weight_decay": args.weight_decay,
         "residual_penalty": args.residual_penalty,
+        "s3_magnitude_loss": {
+            "enabled": bool(args.s3_magnitude_loss_weight > 0),
+            "loss_weight": args.s3_magnitude_loss_weight,
+            "loss_kind": args.s3_magnitude_loss_kind,
+            "vector_scale": s3_vector_scale,
+            "scale_source": "training_split_true_S3_magnitude_p95",
+            "near_zero_bin_weight": 0.0,
+            "low_bin_weight": args.s3_magnitude_low_bin_weight,
+            "medium_bin_weight": args.s3_magnitude_medium_bin_weight,
+            "high_bin_weight": args.s3_magnitude_high_bin_weight,
+            "bin_policy": {
+                "near_zero": "true_magnitude <= 0.1 * vector_scale",
+                "low": "0.1 * vector_scale < true_magnitude <= 0.3 * vector_scale",
+                "medium": "0.3 * vector_scale < true_magnitude <= 0.7 * vector_scale",
+                "high": "true_magnitude > 0.7 * vector_scale",
+            },
+            "angle_loss_enabled": False,
+        },
         "hidden_dim": args.hidden_dim,
         "dropout_probability": args.dropout,
         "split_strategy": dataset_info["split_policy"],
@@ -975,7 +1104,7 @@ def main() -> int:
     write_csv(
         output_dir / "training_history_summary.csv",
         history,
-        ["epoch", "train_loss", "validation_loss"],
+        ["epoch", "train_loss", "validation_loss", "train_s3_magnitude_loss"],
     )
     plot_history(output_dir / "training_history_model_loop.png", history)
     plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, labels, validation_index)
@@ -1048,6 +1177,15 @@ def main() -> int:
         registry_row[f"{pair_name}_mean_abs_angle_error_deg"] = pair_diag["angle"]["mean_abs_angle_error_deg"]
         registry_row[f"{pair_name}_magnitude_mae"] = pair_diag["magnitude"]["magnitude_mae"]
         registry_row[f"{pair_name}_mean_cosine_similarity"] = pair_diag["directional_cosine"]["mean_cosine_similarity"]
+    s3_high = vector_diag["vector_pairs"]["S3"].get("magnitude_bins", {}).get("bins", {}).get("high", {})
+    s3_high_magnitude = s3_high.get("magnitude", {})
+    s3_high_angle = s3_high.get("angle", {})
+    registry_row["S3_high_bin_n"] = s3_high.get("n")
+    registry_row["S3_high_magnitude_mae"] = s3_high_magnitude.get("magnitude_mae")
+    registry_row["S3_high_magnitude_bias"] = s3_high_magnitude.get("magnitude_bias")
+    registry_row["S3_high_magnitude_slope"] = s3_high_magnitude.get("magnitude_slope")
+    registry_row["S3_high_mean_abs_angle_error_deg"] = s3_high_angle.get("mean_abs_angle_error_deg")
+    registry_row["S3_high_p95_abs_angle_error_deg"] = s3_high_angle.get("p95_abs_angle_error_deg")
     write_csv(registry_path, [registry_row], list(registry_row))
 
     print("metrics:", metrics_path)
