@@ -1,0 +1,12 @@
+{
+  "description": "Append 8554 targeted S3-coupling rows to v3 targeted25k, producing roughly 50000 total cached rows from the 41446-row v3 dataset. New rows remain training-only; validation/blind/stress benchmarks stay fixed.",
+  "case_counts": {
+    "coupled_A1_S3_random": 1500,
+    "coupled_B2_S3_random": 1500,
+    "coupled_A3_S3_random": 1500,
+    "coupled_C3_A3_S3_random": 1000,
+    "coupled_A1_B2_S3_random": 1000,
+    "coupled_full_random": 1000,
+    "coupled_sparse_random": 1054
+  }
+}
