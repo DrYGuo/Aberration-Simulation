@@ -1,0 +1,22 @@
+
+$ git fetch origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+
+$ git pull --ff-only origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+
+$ bash -lc 'set -euo pipefail
+V3_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v3_targeted25k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+if [ -z "$V3_CSV" ]; then
+  V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+  if [ -z "$V2_CSV" ]; then
+    python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600
+    V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv | head -1)
+  fi
+  python3 scripts/generate_targeted_enhanced_dataset.py --parent-csv "$V2_CSV" --run-prefix enhanced_v3_targeted25k --dataset-version enhanced_v3_targeted25k --seed 31
+fi
+python3 scripts/run_model_selection_batch.py --batch-config configs/model_selection_batch_live.json --output-root training_results/model_selection_loop --summary-root training_results/model_selection_batches --max-runtime-minutes 70'
+$ /usr/bin/python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10 --output-root training_results/model_selection_loop --architecture grouped_heads --hidden-dim 320 --dropout 0.075 --learning-rate 0.0006 --weight-decay 0.0001 --residual-penalty 0.003 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.1 --search-root training_results/feature_regression_enhanced --baseline-metrics training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/metrics_model_loop.json --selection-config experiments/model_selection_weights.json --split-seed 7 --s3-magnitude-loss-weight 0.1 --s3-magnitude-loss-kind smooth_l1 --s3-magnitude-low-bin-weight 1.0 --s3-magnitude-medium-bin-weight 2.0 --s3-magnitude-high-bin-weight 4.0
