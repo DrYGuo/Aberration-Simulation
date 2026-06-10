@@ -69,6 +69,35 @@ def selection_summary(path: Path | None) -> dict[str, Any]:
             split = splits.get(split_name, {}) if isinstance(splits, dict) else {}
             if "overall_normalized_mae" in split:
                 summary[f"{split_name}_normalized_mae"] = split["overall_normalized_mae"]
+    vector_path = path.parent / "vector_diagnostics.json"
+    if vector_path.exists():
+        try:
+            vector = load_json(vector_path)
+        except (OSError, json.JSONDecodeError):
+            vector = {}
+        pairs = vector.get("vector_pairs", {}) if isinstance(vector, dict) else {}
+        s3 = pairs.get("S3", {}) if isinstance(pairs, dict) else {}
+        s3_high = (
+            s3.get("magnitude_bins", {})
+            .get("bins", {})
+            .get("high", {})
+            if isinstance(s3, dict)
+            else {}
+        )
+        s3_high_magnitude = s3_high.get("magnitude", {}) if isinstance(s3_high, dict) else {}
+        s3_high_angle = s3_high.get("angle", {}) if isinstance(s3_high, dict) else {}
+        if s3_high_magnitude:
+            summary["S3_high_magnitude_mae"] = s3_high_magnitude.get("magnitude_mae")
+            summary["S3_high_magnitude_bias"] = s3_high_magnitude.get("magnitude_bias")
+            summary["S3_high_magnitude_slope"] = s3_high_magnitude.get("magnitude_slope")
+        if s3_high_angle:
+            summary["S3_high_mean_abs_angle_error_deg"] = s3_high_angle.get("mean_abs_angle_error_deg")
+            summary["S3_high_p95_abs_angle_error_deg"] = s3_high_angle.get("p95_abs_angle_error_deg")
+        for pair_name in ["B2", "A3"]:
+            pair = pairs.get(pair_name, {}) if isinstance(pairs, dict) else {}
+            if pair:
+                summary[f"{pair_name}_magnitude_mae"] = pair.get("magnitude", {}).get("magnitude_mae")
+                summary[f"{pair_name}_mean_abs_angle_error_deg"] = pair.get("angle", {}).get("mean_abs_angle_error_deg")
     return summary
 
 
@@ -123,6 +152,21 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
     split_seed = job.get("split_seed", job.get("seed", defaults.get("split_seed")))
     if split_seed is not None:
         command.extend(["--split-seed", str(split_seed)])
+    s3_loss_weight = model.get("s3_magnitude_loss_weight", defaults.get("s3_magnitude_loss_weight", 0.0))
+    if float(s3_loss_weight) > 0:
+        command.extend(["--s3-magnitude-loss-weight", str(s3_loss_weight)])
+        command.extend(
+            [
+                "--s3-magnitude-loss-kind",
+                str(model.get("s3_magnitude_loss_kind", defaults.get("s3_magnitude_loss_kind", "smooth_l1"))),
+                "--s3-magnitude-low-bin-weight",
+                str(model.get("s3_magnitude_low_bin_weight", defaults.get("s3_magnitude_low_bin_weight", 1.0))),
+                "--s3-magnitude-medium-bin-weight",
+                str(model.get("s3_magnitude_medium_bin_weight", defaults.get("s3_magnitude_medium_bin_weight", 2.0))),
+                "--s3-magnitude-high-bin-weight",
+                str(model.get("s3_magnitude_high_bin_weight", defaults.get("s3_magnitude_high_bin_weight", 4.0))),
+            ]
+        )
     if defaults.get("bootstrap_if_missing"):
         command.append("--bootstrap-if-missing")
         if defaults.get("bootstrap_notebook"):
@@ -254,6 +298,15 @@ def main() -> int:
             "validation_normalized_mae",
             "blind_normalized_mae",
             "stress_normalized_mae",
+            "S3_high_magnitude_mae",
+            "S3_high_magnitude_bias",
+            "S3_high_magnitude_slope",
+            "S3_high_mean_abs_angle_error_deg",
+            "S3_high_p95_abs_angle_error_deg",
+            "B2_magnitude_mae",
+            "B2_mean_abs_angle_error_deg",
+            "A3_magnitude_mae",
+            "A3_mean_abs_angle_error_deg",
             "minutes_remaining",
         ],
     )

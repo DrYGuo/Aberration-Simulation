@@ -1,16 +1,15 @@
 {
   "enabled": true,
-  "batch_id": "v4b25k_grouped_head_batch_live",
-  "dataset_version": "enhanced_v4b_targeted_a1_b2_s3_topup14k",
-  "estimated_minutes_per_job": 9,
+  "batch_id": "v3_s3_magnitude_loss_weight_batch",
+  "dataset_version": "enhanced_v3_targeted25k",
+  "estimated_minutes_per_job": 12,
   "walltime_safety_margin_minutes": 6,
-  "max_runtime_minutes": 52,
+  "max_runtime_minutes": 70,
   "artifact_policy": {
     "push_large_artifacts": false,
     "allowed_artifacts": [
       "run_manifest_model_loop.json",
       "metrics_model_loop.json",
-      "orthogonal_benchmark_metrics.json",
       "selection_score.json",
       "per_target_diagnostics.json",
       "vector_diagnostics.json",
@@ -24,78 +23,85 @@
   },
   "defaults": {
     "family": "enhanced",
-    "csv_path": "training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/training_features_enhanced.csv",
-    "search_root": "training_results",
+    "search_root": "training_results/feature_regression_enhanced",
     "selection_config": "experiments/model_selection_weights.json",
-    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/metrics_model_loop.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/metrics_model_loop.json",
     "easy_regression_limit": 0.10,
     "split_seed": 7,
     "weight_decay": 0.0001,
     "residual_penalty": 0.003,
     "eval_every": 25,
     "patience_epochs": 1000,
-    "max_epochs": 6000
+    "max_epochs": 6000,
+    "s3_magnitude_loss_kind": "smooth_l1",
+    "s3_magnitude_low_bin_weight": 1.0,
+    "s3_magnitude_medium_bin_weight": 2.0,
+    "s3_magnitude_high_bin_weight": 4.0
   },
   "jobs": [
     {
-      "job_id": "grouped_w320_lr8e-4_do0p075_v4b_seed7",
-      "candidate_id": "D66_grouped_width320_lr8e-4_dropout0.075_v4b25k",
+      "job_id": "w320_lr6e-4_do0p075_s3mag_w0p10_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10",
       "enabled": true,
       "seed": 7,
-      "loss_weighting_mode": "weighted_target_loss_v1",
       "model": {
         "architecture": "grouped_heads",
         "family": "enhanced",
         "hidden_dim": 320,
         "dropout": 0.075,
-        "learning_rate": 0.0008
+        "learning_rate": 0.0006,
+        "s3_magnitude_loss_weight": 0.10
       }
     },
     {
-      "job_id": "grouped_w384_lr6e-4_do0p075_v4b_seed7",
-      "candidate_id": "D66_grouped_width384_lr6e-4_dropout0.075_v4b25k",
+      "job_id": "w320_lr6e-4_do0p075_s3mag_w0p25_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25",
       "enabled": true,
       "seed": 7,
-      "loss_weighting_mode": "weighted_target_loss_v1",
-      "model": {
-        "architecture": "grouped_heads",
-        "family": "enhanced",
-        "hidden_dim": 384,
-        "dropout": 0.075,
-        "learning_rate": 0.0006
-      }
-    },
-    {
-      "job_id": "grouped_w320_lr6e-4_do0p10_v4b_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.10_v4b25k",
-      "enabled": true,
-      "seed": 7,
-      "loss_weighting_mode": "weighted_target_loss_v1",
       "model": {
         "architecture": "grouped_heads",
         "family": "enhanced",
         "hidden_dim": 320,
-        "dropout": 0.10,
-        "learning_rate": 0.0006
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "s3_magnitude_loss_weight": 0.25
       }
     },
     {
-      "job_id": "grouped_w384_lr8e-4_do0p075_v4b_seed7",
-      "candidate_id": "D66_grouped_width384_lr8e-4_dropout0.075_v4b25k",
+      "job_id": "w320_lr6e-4_do0p075_s3mag_w0p50_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50",
       "enabled": true,
       "seed": 7,
-      "loss_weighting_mode": "weighted_target_loss_v1",
       "model": {
         "architecture": "grouped_heads",
         "family": "enhanced",
-        "hidden_dim": 384,
+        "hidden_dim": 320,
         "dropout": 0.075,
-        "learning_rate": 0.0008
+        "learning_rate": 0.0006,
+        "s3_magnitude_loss_weight": 0.50
+      }
+    },
+    {
+      "job_id": "w320_lr6e-4_do0p075_s3mag_w0p25_high2_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2",
+      "enabled": true,
+      "seed": 7,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "s3_magnitude_loss_weight": 0.25,
+        "s3_magnitude_medium_bin_weight": 1.5,
+        "s3_magnitude_high_bin_weight": 2.0
       }
     }
   ],
-  "future_data_expansion_note": {
-    "do_not_run_in_this_batch": true,
-    "reason": "This batch compares model architecture/hyperparameters on the fixed v4b +25k A1/B2/S3 dataset before any additional simulation expansion."
+  "decision_note": {
+    "baseline": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc",
+    "rejected_prior_variant": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc",
+    "reason": "Weight 1.0 improved high-S3 MAE/bias but failed on high-S3 slope and degraded B2/A3/overall metrics. This batch tests weaker loss strengths only.",
+    "no_data_expansion_in_this_batch": true
   }
 }

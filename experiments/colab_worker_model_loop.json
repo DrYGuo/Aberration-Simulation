@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config runs the S3 magnitude-loss data-scale controller: v3 baseline gate, 50k total rows, then optional 100k total rows.",
-  "config_id": "s3magloss-v3-data-scale-50k-then-100k-controller",
+  "description": "Real model-selection loop. This config runs a controlled v3 batch of weaker S3 magnitude-loss variants after the weight-1.0 loss failed the expansion gate.",
+  "config_id": "batch-v3-s3magloss-weaker-loss-variants",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -11,8 +11,9 @@
   "git_push_after_cycle": true,
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
-    "python3",
-    "scripts/run_s3magloss_data_scale_decision.py"
+    "bash",
+    "-lc",
+    "set -euo pipefail\nV3_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v3_targeted25k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)\nif [ -z \"$V3_CSV\" ]; then\n  V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)\n  if [ -z \"$V2_CSV\" ]; then\n    python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600\n    V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv | head -1)\n  fi\n  python3 scripts/generate_targeted_enhanced_dataset.py --parent-csv \"$V2_CSV\" --run-prefix enhanced_v3_targeted25k --dataset-version enhanced_v3_targeted25k --seed 31\nfi\npython3 scripts/run_model_selection_batch.py --batch-config configs/model_selection_batch_live.json --output-root training_results/model_selection_loop --summary-root training_results/model_selection_batches --max-runtime-minutes 70"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
