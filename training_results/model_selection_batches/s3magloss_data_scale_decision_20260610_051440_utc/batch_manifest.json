@@ -1,0 +1,16 @@
+{
+  "run_id": "s3magloss_data_scale_decision_20260610_051440_utc",
+  "created_utc": "2026-06-10T05:14:40.150685+00:00",
+  "policy": "v3 targeted25k is baseline; v4b is rejected as model-improvement direction",
+  "new_rows_split_policy": "new expansion rows are training-only; validation/blind/stress benchmarks remain fixed",
+  "s3_couplings_included": [
+    "coupled_A1_S3_random",
+    "coupled_B2_S3_random",
+    "coupled_A3_S3_random",
+    "coupled_C3_A3_S3_random",
+    "coupled_A1_B2_S3_random",
+    "coupled_full_random",
+    "coupled_sparse_random"
+  ],
+  "status": "trained_s3magloss_on_v3"
+}
