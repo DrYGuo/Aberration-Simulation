@@ -15,6 +15,7 @@ import json
 import math
 import platform
 from pathlib import Path
+import random
 import subprocess
 import sys
 from typing import Any
@@ -399,9 +400,30 @@ def build_model(input_dim: int, output_dim: int, hidden_dim: int, dropout: float
     raise ValueError(f"unknown architecture: {architecture}")
 
 
-def weighted_mse(pred, target, target_weights):
+def weighted_component_loss(pred, target, target_weights, *, loss_kind: str, smooth_l1_beta: float):
     torch, _ = import_torch()
-    return torch.mean((pred - target) ** 2 * target_weights[None, :])
+    if loss_kind == "mse":
+        per_component = (pred - target) ** 2
+    elif loss_kind == "smooth_l1":
+        per_component = torch.nn.functional.smooth_l1_loss(
+            pred,
+            target,
+            reduction="none",
+            beta=smooth_l1_beta,
+        )
+    else:
+        raise ValueError(f"unknown component loss: {loss_kind}")
+    return torch.mean(per_component * target_weights[None, :])
+
+
+def weighted_mse(pred, target, target_weights):
+    return weighted_component_loss(
+        pred,
+        target,
+        target_weights,
+        loss_kind="mse",
+        smooth_l1_beta=1.0,
+    )
 
 
 def s3_magnitude_loss(
@@ -742,6 +764,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=6e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--residual-penalty", type=float, default=3e-3)
+    parser.add_argument("--torch-seed", type=int, default=None)
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=0,
+        help="Use full-batch training when <= 0; otherwise train with shuffled mini-batches.",
+    )
+    parser.add_argument("--shuffle-batches", action="store_true")
+    parser.add_argument("--component-loss-kind", choices=["mse", "smooth_l1"], default="mse")
+    parser.add_argument("--component-smooth-l1-beta", type=float, default=0.25)
+    parser.add_argument("--grad-clip-norm", type=float, default=0.0)
+    parser.add_argument("--lr-scheduler", choices=["none", "plateau"], default="none")
+    parser.add_argument("--lr-plateau-factor", type=float, default=0.5)
+    parser.add_argument("--lr-plateau-patience-evals", type=int, default=8)
+    parser.add_argument("--min-learning-rate", type=float, default=1e-5)
     parser.add_argument("--s3-magnitude-loss-weight", type=float, default=0.0)
     parser.add_argument("--s3-magnitude-low-bin-weight", type=float, default=1.0)
     parser.add_argument("--s3-magnitude-medium-bin-weight", type=float, default=2.0)
@@ -893,9 +930,24 @@ def main() -> int:
     yn = y_scaler.transform(y).astype(np.float32)
 
     torch, _ = import_torch()
+    if args.torch_seed is not None:
+        random.seed(args.torch_seed)
+        np.random.seed(args.torch_seed)
+        torch.manual_seed(args.torch_seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(args.torch_seed)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = build_model(Xn.shape[1], yn.shape[1], args.hidden_dim, args.dropout, args.architecture).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
+    scheduler = None
+    if args.lr_scheduler == "plateau":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            factor=args.lr_plateau_factor,
+            patience=args.lr_plateau_patience_evals,
+            min_lr=args.min_learning_rate,
+        )
     target_weights = torch.tensor(
         [TARGET_WEIGHTS[name] for name in TARGET_COLUMNS],
         dtype=torch.float32,
@@ -919,31 +971,61 @@ def main() -> int:
     best_validation_loss = float("inf")
     epochs_since_best = 0
 
+    n_train_rows = int(x_train.shape[0])
     for epoch in range(1, args.max_epochs + 1):
         model.train()
-        optimizer.zero_grad(set_to_none=True)
-        pred_train = model(x_train)
-        residual = model.residual(x_train)
-        train_component_loss = weighted_mse(pred_train, y_train, target_weights)
-        train_s3_magnitude_loss = s3_magnitude_loss(
-            pred_train,
-            y_train,
-            y_mean=y_mean,
-            y_std=y_std,
-            vector_scale=s3_vector_scale,
-            loss_weight=args.s3_magnitude_loss_weight,
-            low_bin_weight=args.s3_magnitude_low_bin_weight,
-            medium_bin_weight=args.s3_magnitude_medium_bin_weight,
-            high_bin_weight=args.s3_magnitude_high_bin_weight,
-            use_smooth_l1=args.s3_magnitude_loss_kind == "smooth_l1",
-        )
-        loss = (
-            train_component_loss
-            + train_s3_magnitude_loss
-            + args.residual_penalty * torch.mean(residual**2)
-        )
-        loss.backward()
-        optimizer.step()
+        epoch_total_loss = 0.0
+        if args.batch_size and args.batch_size > 0:
+            if args.shuffle_batches:
+                order = torch.randperm(n_train_rows, device=device)
+            else:
+                order = torch.arange(n_train_rows, device=device)
+            batch_size = int(args.batch_size)
+            batches = [order[start : start + batch_size] for start in range(0, n_train_rows, batch_size)]
+        else:
+            batches = [None]
+
+        for batch in batches:
+            if batch is None:
+                xb = x_train
+                yb = y_train
+                batch_n = n_train_rows
+            else:
+                xb = x_train[batch]
+                yb = y_train[batch]
+                batch_n = int(batch.shape[0])
+            optimizer.zero_grad(set_to_none=True)
+            pred_batch = model(xb)
+            residual = model.residual(xb)
+            train_component_loss = weighted_component_loss(
+                pred_batch,
+                yb,
+                target_weights,
+                loss_kind=args.component_loss_kind,
+                smooth_l1_beta=args.component_smooth_l1_beta,
+            )
+            train_s3_magnitude_loss = s3_magnitude_loss(
+                pred_batch,
+                yb,
+                y_mean=y_mean,
+                y_std=y_std,
+                vector_scale=s3_vector_scale,
+                loss_weight=args.s3_magnitude_loss_weight,
+                low_bin_weight=args.s3_magnitude_low_bin_weight,
+                medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                high_bin_weight=args.s3_magnitude_high_bin_weight,
+                use_smooth_l1=args.s3_magnitude_loss_kind == "smooth_l1",
+            )
+            loss = (
+                train_component_loss
+                + train_s3_magnitude_loss
+                + args.residual_penalty * torch.mean(residual**2)
+            )
+            loss.backward()
+            if args.grad_clip_norm and args.grad_clip_norm > 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip_norm)
+            optimizer.step()
+            epoch_total_loss += float(loss.detach().cpu()) * batch_n
 
         if epoch % args.eval_every == 0 or epoch == 1:
             model.eval()
@@ -967,17 +1049,21 @@ def main() -> int:
                     .cpu()
                 )
                 validation_loss = float(weighted_mse(model(x_validation), y_validation, target_weights).detach().cpu())
+                current_lr = float(optimizer.param_groups[0]["lr"])
             history.append(
                 {
                     "epoch": epoch,
                     "train_loss": train_loss,
                     "validation_loss": validation_loss,
                     "train_s3_magnitude_loss": train_s3_mag_loss_eval,
+                    "train_total_objective_loss": epoch_total_loss / max(n_train_rows, 1),
+                    "learning_rate": current_lr,
                 }
             )
             print(
                 f"epoch {epoch:5d} train={train_loss:.6f} "
-                f"s3mag={train_s3_mag_loss_eval:.6f} validation={validation_loss:.6f}"
+                f"s3mag={train_s3_mag_loss_eval:.6f} validation={validation_loss:.6f} "
+                f"lr={current_lr:.3g}"
             )
             if validation_loss < best_validation_loss:
                 best_validation_loss = validation_loss
@@ -986,6 +1072,8 @@ def main() -> int:
                 epochs_since_best = 0
             else:
                 epochs_since_best += args.eval_every
+            if scheduler is not None:
+                scheduler.step(validation_loss)
             if epochs_since_best >= args.patience_epochs:
                 print("early stopping at epoch", epoch)
                 break
@@ -1008,6 +1096,16 @@ def main() -> int:
         "learning_rate": args.learning_rate,
         "weight_decay": args.weight_decay,
         "residual_penalty": args.residual_penalty,
+        "torch_seed": args.torch_seed,
+        "batch_size": args.batch_size,
+        "shuffle_batches": args.shuffle_batches,
+        "component_loss_kind": args.component_loss_kind,
+        "component_smooth_l1_beta": args.component_smooth_l1_beta,
+        "grad_clip_norm": args.grad_clip_norm,
+        "lr_scheduler": args.lr_scheduler,
+        "lr_plateau_factor": args.lr_plateau_factor,
+        "lr_plateau_patience_evals": args.lr_plateau_patience_evals,
+        "min_learning_rate": args.min_learning_rate,
         "s3_magnitude_loss": {
             "enabled": bool(args.s3_magnitude_loss_weight > 0),
             "loss_weight": args.s3_magnitude_loss_weight,
@@ -1104,7 +1202,14 @@ def main() -> int:
     write_csv(
         output_dir / "training_history_summary.csv",
         history,
-        ["epoch", "train_loss", "validation_loss", "train_s3_magnitude_loss"],
+        [
+            "epoch",
+            "train_loss",
+            "validation_loss",
+            "train_s3_magnitude_loss",
+            "train_total_objective_loss",
+            "learning_rate",
+        ],
     )
     plot_history(output_dir / "training_history_model_loop.png", history)
     plot_scatter(output_dir / "prediction_scatter_model_loop.png", y, y_pred, labels, validation_index)
@@ -1137,6 +1242,13 @@ def main() -> int:
             "output_dim": int(yn.shape[1]),
             "hidden_dim": args.hidden_dim,
             "dropout_probability": args.dropout,
+            "torch_seed": args.torch_seed,
+            "batch_size": args.batch_size,
+            "shuffle_batches": args.shuffle_batches,
+            "component_loss_kind": args.component_loss_kind,
+            "component_smooth_l1_beta": args.component_smooth_l1_beta,
+            "grad_clip_norm": args.grad_clip_norm,
+            "lr_scheduler": args.lr_scheduler,
         },
         "feature_columns": feature_columns,
         "target_columns": TARGET_COLUMNS,
@@ -1158,6 +1270,12 @@ def main() -> int:
         "hidden_dim": args.hidden_dim,
         "dropout": args.dropout,
         "learning_rate": args.learning_rate,
+        "torch_seed": args.torch_seed,
+        "batch_size": args.batch_size,
+        "shuffle_batches": args.shuffle_batches,
+        "component_loss_kind": args.component_loss_kind,
+        "grad_clip_norm": args.grad_clip_norm,
+        "lr_scheduler": args.lr_scheduler,
         "best_epoch": best_epoch,
         "best_validation_weighted_mse_scaled": best_validation_loss,
         "overall_mae": metrics["overall_mae"],

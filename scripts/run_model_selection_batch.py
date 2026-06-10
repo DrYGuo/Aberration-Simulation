@@ -138,6 +138,24 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
         "--easy-regression-limit",
         str(defaults.get("easy_regression_limit", 0.10)),
     ]
+    torch_seed = model.get("torch_seed", job.get("torch_seed", defaults.get("torch_seed")))
+    if torch_seed is not None:
+        command.extend(["--torch-seed", str(torch_seed)])
+    for option_name, flag_name in [
+        ("batch_size", "--batch-size"),
+        ("component_loss_kind", "--component-loss-kind"),
+        ("component_smooth_l1_beta", "--component-smooth-l1-beta"),
+        ("grad_clip_norm", "--grad-clip-norm"),
+        ("lr_scheduler", "--lr-scheduler"),
+        ("lr_plateau_factor", "--lr-plateau-factor"),
+        ("lr_plateau_patience_evals", "--lr-plateau-patience-evals"),
+        ("min_learning_rate", "--min-learning-rate"),
+    ]:
+        value = model.get(option_name, defaults.get(option_name))
+        if value is not None:
+            command.extend([flag_name, str(value)])
+    if bool(model.get("shuffle_batches", defaults.get("shuffle_batches", False))):
+        command.append("--shuffle-batches")
     csv_path = job.get("csv_path", model.get("csv_path", defaults.get("csv_path")))
     if csv_path:
         command.extend(["--csv-path", str(csv_path)])

@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config runs a controlled v3 batch of weaker S3 magnitude-loss variants after the weight-1.0 loss failed the expansion gate.",
-  "config_id": "batch-v3-s3magloss-weaker-loss-variants",
+  "description": "Real model-selection loop. This config runs a fixed-data v3 optimizer/stability batch before feature or dataset expansion.",
+  "config_id": "batch-v3-optimizer-stability-fixed-data",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -43,7 +43,7 @@
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
-  "command_timeout_seconds": 7200,
+  "command_timeout_seconds": 10800,
   "artifact_max_bytes": 1500000,
   "artifact_blocked_suffixes": [
     ".pt",
