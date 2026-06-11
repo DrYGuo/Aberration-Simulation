@@ -1,10 +1,10 @@
 {
   "enabled": true,
-  "batch_id": "v3_optimizer_stability_batch",
+  "batch_id": "v3_smoothl1_seed_repeat_batch",
   "dataset_version": "enhanced_v3_targeted25k",
-  "estimated_minutes_per_job": 14,
+  "estimated_minutes_per_job": 12,
   "walltime_safety_margin_minutes": 8,
-  "max_runtime_minutes": 70,
+  "max_runtime_minutes": 50,
   "artifact_policy": {
     "push_large_artifacts": false,
     "allowed_artifacts": [
@@ -25,10 +25,9 @@
     "family": "enhanced",
     "search_root": "training_results/feature_regression_enhanced",
     "selection_config": "experiments/model_selection_weights.json",
-    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/metrics_model_loop.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json",
     "easy_regression_limit": 0.10,
     "split_seed": 7,
-    "torch_seed": 7,
     "weight_decay": 0.0001,
     "residual_penalty": 0.003,
     "eval_every": 25,
@@ -36,30 +35,18 @@
     "max_epochs": 6000,
     "batch_size": 0,
     "shuffle_batches": false,
-    "component_loss_kind": "mse",
+    "component_loss_kind": "smooth_l1",
     "component_smooth_l1_beta": 0.25,
-    "grad_clip_norm": 0.0,
-    "lr_scheduler": "none",
+    "grad_clip_norm": 1.0,
+    "lr_scheduler": "plateau",
     "lr_plateau_factor": 0.5,
     "lr_plateau_patience_evals": 8,
     "min_learning_rate": 0.00001
   },
   "jobs": [
     {
-      "job_id": "w320_seeded_fullbatch_mse_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse",
-      "enabled": true,
-      "model": {
-        "architecture": "grouped_heads",
-        "family": "enhanced",
-        "hidden_dim": 320,
-        "dropout": 0.075,
-        "learning_rate": 0.0006
-      }
-    },
-    {
-      "job_id": "w320_plateau_clip_mse_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse",
+      "job_id": "w320_plateau_clip_smoothl1_torchseed11_splitseed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11",
       "enabled": true,
       "model": {
         "architecture": "grouped_heads",
@@ -67,13 +54,12 @@
         "hidden_dim": 320,
         "dropout": 0.075,
         "learning_rate": 0.0006,
-        "grad_clip_norm": 1.0,
-        "lr_scheduler": "plateau"
+        "torch_seed": 11
       }
     },
     {
-      "job_id": "w320_plateau_clip_smoothl1_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1",
+      "job_id": "w320_plateau_clip_smoothl1_torchseed23_splitseed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23",
       "enabled": true,
       "model": {
         "architecture": "grouped_heads",
@@ -81,15 +67,12 @@
         "hidden_dim": 320,
         "dropout": 0.075,
         "learning_rate": 0.0006,
-        "grad_clip_norm": 1.0,
-        "lr_scheduler": "plateau",
-        "component_loss_kind": "smooth_l1",
-        "component_smooth_l1_beta": 0.25
+        "torch_seed": 23
       }
     },
     {
-      "job_id": "w320_minibatch4096_plateau_clip_mse_seed7",
-      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse",
+      "job_id": "w320_plateau_clip_smoothl1_torchseed37_splitseed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37",
       "enabled": true,
       "model": {
         "architecture": "grouped_heads",
@@ -97,18 +80,17 @@
         "hidden_dim": 320,
         "dropout": 0.075,
         "learning_rate": 0.0006,
-        "batch_size": 4096,
-        "shuffle_batches": true,
-        "grad_clip_norm": 1.0,
-        "lr_scheduler": "plateau"
+        "torch_seed": 37
       }
     }
   ],
   "decision_note": {
-    "baseline": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc",
-    "reason": "S3 magnitude-loss variants improved selected high-S3 metrics but degraded C1 and/or overall hard-target performance. This batch keeps v3 data/features fixed and tests optimizer stability before feature or dataset expansion.",
+    "champion": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc",
+    "reason": "Validate whether the SmoothL1 plateau/clip optimizer improvement is robust before generating targeted S3-tail data.",
     "fixed_dataset": true,
+    "fixed_split_seed": 7,
+    "varied_torch_seeds": [11, 23, 37],
     "no_simulation_generation": true,
-    "promotion_rule": "Promote only if validation weighted score improves without material blind/stress, C1, S3, B2, or A3 regressions."
+    "promotion_rule": "Accept the SmoothL1 plateau/clip direction if seed-repeat metrics remain near or better than the champion without material blind/stress, C1, S3, B2, or A3 regressions. If high-S3 slope remains near 0.72 after robust repeats, expand targeted S3-tail data to about 55k-60k total rows."
   }
 }
