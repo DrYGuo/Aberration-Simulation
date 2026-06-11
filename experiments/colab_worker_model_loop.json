@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config runs fixed-data seed repeats for the v3 SmoothL1 plateau/clip champion.",
-  "config_id": "batch-v3-smoothl1-seed-repeat-fixed-data",
+  "description": "Real model-selection loop. This config generates the v5 S3-tail training-only expansion, audits S3 feature saturation, then retrains the SmoothL1 plateau/clip champion on the expanded dataset.",
+  "config_id": "v5-s3-tail60k-smoothl1-retrain",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,8 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "-lc",
-    "set -euo pipefail\nV3_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v3_targeted25k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)\nif [ -z \"$V3_CSV\" ]; then\n  V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)\n  if [ -z \"$V2_CSV\" ]; then\n    python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600\n    V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv | head -1)\n  fi\n  python3 scripts/generate_targeted_enhanced_dataset.py --parent-csv \"$V2_CSV\" --run-prefix enhanced_v3_targeted25k --dataset-version enhanced_v3_targeted25k --seed 31\nfi\npython3 scripts/run_model_selection_batch.py --batch-config configs/model_selection_batch_live.json --output-root training_results/model_selection_loop --summary-root training_results/model_selection_batches --max-runtime-minutes 50"
+    "scripts/run_colab_v5_s3_tail60k_workflow.sh"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
@@ -23,6 +22,8 @@
     "training_results/feature_regression_enhanced/**/*summary.csv",
     "training_results/feature_regression_enhanced/**/feature_columns_enhanced.json",
     "training_results/feature_regression_enhanced/**/hard_target_histograms/*.png",
+    "training_results/model_selection_reports/s3_feature_saturation_audit_*.md",
+    "training_results/model_selection_reports/s3_feature_saturation_audit_*.json",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
     "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",

@@ -1,0 +1,58 @@
+{
+  "description": "Append 16000 high-S3-tail targeted training-only rows to the enhanced_v3_targeted25k dataset, yielding about 57446 total rows. This is a controlled data-expansion test for high-S3 magnitude compression.",
+  "dataset_version": "enhanced_v5_s3_tail60k",
+  "parent_dataset_version": "enhanced_v3_targeted25k",
+  "expected_parent_rows": 41446,
+  "expected_new_training_only_rows": 16000,
+  "expected_total_rows": 57446,
+  "s3_tail_threshold_source": "0.7 * S3 vector scale from the current SmoothL1 champion validation vector diagnostics.",
+  "s3_vector_scale": 90.73979949951172,
+  "s3_amp_min": 63.5,
+  "s3_amp_max": 100.0,
+  "case_counts": {
+    "S3_high_random": 2500,
+    "coupled_A3_S3_random": 3000,
+    "coupled_C1_C3_S3_random": 2500,
+    "coupled_A1_B2_S3_random": 2500,
+    "coupled_B2_S3_random": 1500,
+    "coupled_A1_S3_random": 1000,
+    "coupled_sparse_random": 2000,
+    "coupled_full_random": 1000
+  },
+  "sampling": {
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_sparse_random",
+        "coupled_full_random"
+      ],
+      "force_s3_in_sparse": true
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "keep_existing_validation_blind_stress_benchmarks": true,
+    "split_seed": 7,
+    "current_validation_index_hash": "cb5355cf950ca26f"
+  },
+  "success_criteria": {
+    "baseline_run": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc",
+    "baseline_weighted_score": 0.05567891693315827,
+    "baseline_high_s3_magnitude_mae": 9.54025936126709,
+    "baseline_high_s3_magnitude_bias": -7.682642936706543,
+    "baseline_high_s3_magnitude_slope": 0.7208754515704693,
+    "weighted_score_max_relative_regression": 0.02,
+    "target_high_s3_magnitude_slope": 0.8,
+    "require_blind_stress_no_material_regression": true,
+    "require_b2_a3_c1_no_material_regression": true,
+    "if_high_s3_slope_stays_near_0_72": "Stop expanding toward 100k and prioritize feature engineering for high-S3 sensitivity."
+  }
+}

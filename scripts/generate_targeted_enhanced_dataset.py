@@ -227,7 +227,7 @@ def attach_parent_metadata(rows: list[dict[str, Any]]) -> None:
 def attach_new_row_metadata(rows: list[dict[str, Any]]) -> None:
     for row in rows:
         row[DATASET_VERSION_FIELD] = DATASET_VERSION
-        row[DATASET_SOURCE_FIELD] = "targeted25k"
+        row[DATASET_SOURCE_FIELD] = DATASET_VERSION
         row[SPLIT_HINT_FIELD] = SPLIT_HINT_TRAINING_ONLY
 
 
@@ -242,7 +242,14 @@ def extra_feature_columns() -> list[str]:
     return columns
 
 
-def randomize(params: dict[str, Any], fields: tuple[str, ...], rng: np.random.Generator, *, sparse: bool = False) -> dict[str, Any]:
+def randomize(
+    params: dict[str, Any],
+    fields: tuple[str, ...],
+    rng: np.random.Generator,
+    *,
+    sparse: bool = False,
+    s3_amp_range: tuple[float, float] | None = None,
+) -> dict[str, Any]:
     def uniform(low: float, high: float) -> float:
         return float(rng.uniform(low, high))
 
@@ -270,34 +277,56 @@ def randomize(params: dict[str, Any], fields: tuple[str, ...], rng: np.random.Ge
         params["A3_amp"] = amp(100.0, active_probability)
         params["A3_phase"] = uniform(0.0, 90.0)
     if "S3" in fields:
-        params["S3_amp"] = amp(100.0, active_probability)
+        if s3_amp_range is not None:
+            params["S3_amp"] = uniform(*s3_amp_range)
+        else:
+            params["S3_amp"] = amp(100.0, active_probability)
         params["S3_phase"] = uniform(0.0, 180.0)
     return params
 
 
-def load_case_counts(path: Path | None) -> dict[str, int]:
+def load_generation_config(path: Path | None) -> dict[str, Any]:
     if path is None:
-        return dict(TARGETED_CASE_COUNTS)
+        return {"case_counts": dict(TARGETED_CASE_COUNTS)}
     data = json.loads(path.read_text())
     if "case_counts" in data:
-        counts = data["case_counts"]
+        case_counts = data["case_counts"]
     elif "new_couplings_to_add" in data:
-        counts = data["new_couplings_to_add"]
+        case_counts = data["new_couplings_to_add"]
     else:
-        counts = data
-    if not isinstance(counts, dict):
-        raise TypeError(f"case-count config must contain a mapping, got {type(counts).__name__}")
-    parsed = {str(label): int(count) for label, count in counts.items()}
+        case_counts = data
+        data = {"case_counts": case_counts}
+    if not isinstance(case_counts, dict):
+        raise TypeError(f"case-count config must contain a mapping, got {type(case_counts).__name__}")
+    parsed = {str(label): int(count) for label, count in case_counts.items()}
     if any(count <= 0 for count in parsed.values()):
         raise ValueError(f"all case counts must be positive: {parsed}")
-    return parsed
+    config = dict(data)
+    config["case_counts"] = parsed
+    return config
 
 
-def generate_target_cases(seed: int, case_counts: dict[str, int]) -> list[dict[str, Any]]:
+def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[dict[str, Any]]:
     rng = np.random.default_rng(seed)
+    case_counts = generation_config["case_counts"]
+    sampling = generation_config.get("sampling", {})
+    s3_tail = sampling.get("s3_tail", {}) if isinstance(sampling, dict) else {}
+    s3_tail_enabled = bool(s3_tail.get("enabled", False))
+    s3_amp_range = None
+    if s3_tail_enabled:
+        s3_amp_range = (
+            float(s3_tail.get("s3_amp_min", 63.5)),
+            float(s3_tail.get("s3_amp_max", 100.0)),
+        )
+        if s3_amp_range[0] < 0 or s3_amp_range[1] <= s3_amp_range[0]:
+            raise ValueError(f"invalid S3 tail amplitude range: {s3_amp_range}")
+    s3_tail_labels = set(s3_tail.get("labels", [])) if isinstance(s3_tail, dict) else set()
+    force_s3_in_sparse = bool(s3_tail.get("force_s3_in_sparse", False)) if isinstance(s3_tail, dict) else False
     field_sets = {
+        "S3_high_random": ("S3",),
         "coupled_full_random": ALL_FIELDS,
         "coupled_C1_C3_random": ("C1", "C3"),
+        "coupled_C1_C3_S3_random": ("C1", "C3", "S3"),
         "coupled_A1_S3_random": ("A1", "S3"),
         "coupled_B2_S3_random": ("B2", "S3"),
         "coupled_A1_B2_S3_random": ("A1", "B2", "S3"),
@@ -314,12 +343,18 @@ def generate_target_cases(seed: int, case_counts: dict[str, int]) -> list[dict[s
         for _ in range(count):
             params = dict(BASELINE_PARAMETERS)
             params["sweep_label"] = label
+            label_s3_range = s3_amp_range if s3_tail_enabled and label in s3_tail_labels else None
             if label == "coupled_sparse_random":
                 active_count = int(rng.integers(2, min(5, len(ALL_FIELDS)) + 1))
-                fields = tuple(rng.choice(ALL_FIELDS, size=active_count, replace=False))
-                cases.append(randomize(params, fields, rng, sparse=True))
+                if s3_tail_enabled and force_s3_in_sparse:
+                    available = tuple(field for field in ALL_FIELDS if field != "S3")
+                    other_count = max(1, active_count - 1)
+                    fields = ("S3", *tuple(rng.choice(available, size=other_count, replace=False)))
+                else:
+                    fields = tuple(rng.choice(ALL_FIELDS, size=active_count, replace=False))
+                cases.append(randomize(params, fields, rng, sparse=True, s3_amp_range=label_s3_range))
             else:
-                cases.append(randomize(params, field_sets[label], rng))
+                cases.append(randomize(params, field_sets[label], rng, s3_amp_range=label_s3_range))
     rng.shuffle(cases)
     return cases
 
@@ -456,6 +491,26 @@ def hard_target_scales(rows: list[dict[str, Any]]) -> dict[str, float]:
     return scales
 
 
+def s3_magnitude_histogram(rows: list[dict[str, Any]], bins: int = 20) -> dict[str, Any]:
+    matrix = target_matrix(rows, ("S3_x", "S3_y"))
+    if not len(matrix):
+        return {"n": 0, "counts": [], "bin_edges": []}
+    magnitudes = np.hypot(matrix[:, 0], matrix[:, 1])
+    max_edge = max(100.0, float(np.max(magnitudes)))
+    counts, edges = np.histogram(magnitudes, bins=bins, range=(0.0, max_edge))
+    return {
+        "n": int(len(magnitudes)),
+        "max_magnitude": float(np.max(magnitudes)),
+        "p50_magnitude": float(np.percentile(magnitudes, 50)),
+        "p90_magnitude": float(np.percentile(magnitudes, 90)),
+        "p95_magnitude": float(np.percentile(magnitudes, 95)),
+        "count_gt_63_5": int(np.sum(magnitudes > 63.5)),
+        "fraction_gt_63_5": float(np.mean(magnitudes > 63.5)),
+        "counts": counts.astype(int).tolist(),
+        "bin_edges": edges.tolist(),
+    }
+
+
 def active_groups(row: dict[str, Any]) -> int:
     active = 0
     if abs(float(row.get("C1") or 0.0)) > COUPLING_EPSILON:
@@ -561,6 +616,7 @@ def write_targeted_audit(
     new_labels = np.asarray([str(row.get("sweep_label", "")) for row in new_rows])
     full_random_mask = new_labels == "coupled_full_random"
     full_random_norm = normalized_abs[full_random_mask] if len(normalized_abs) else np.zeros((0, len(TRUE_HARD_TARGETS)))
+    a3_s3_count = Counter(str(row.get("sweep_label", "")) for row in new_rows).get("coupled_A3_S3_random", 0)
     audit = {
         "dataset_version": DATASET_VERSION,
         "true_hard_targets": list(TRUE_HARD_TARGETS),
@@ -568,6 +624,8 @@ def write_targeted_audit(
         "new_hard_target_scales": new_scales,
         "new_rows_per_regime": dict(Counter(str(row.get("sweep_label", "")) for row in new_rows)),
         "total_rows_per_regime_after_merge": dict(Counter(str(row.get("sweep_label", "")) for row in combined_rows)),
+        "new_s3_magnitude_histogram": s3_magnitude_histogram(new_rows),
+        "combined_s3_magnitude_histogram": s3_magnitude_histogram(combined_rows),
         "combined_coupling_density": coupling_density(combined_rows),
         "new_coupling_density": coupling_density(new_rows),
         "fraction_new_rows_at_least_3_of_5_hard_targets_above_half_scale": float(
@@ -582,8 +640,13 @@ def write_targeted_audit(
         else 0.0,
         "new_per_regime_hard_target_stats": per_regime_hard_target_stats(new_rows),
         "combined_per_regime_hard_target_stats": per_regime_hard_target_stats(combined_rows),
-        "a3_s3_coverage_warning": True,
-        "a3_s3_coverage_note": "coupled_A3_S3_random is intentionally only 500 rows in this first +25k expansion; review before treating A3/S3 pair coverage as saturated.",
+        "a3_s3_coverage_warning": a3_s3_count < 1000,
+        "a3_s3_coverage_note": (
+            "coupled_A3_S3_random has fewer than 1000 newly appended rows; review before treating "
+            "A3/S3 pair coverage as saturated."
+        )
+        if a3_s3_count < 1000
+        else "coupled_A3_S3_random has at least 1000 newly appended rows in this expansion.",
     }
     audit["pairwise_hard_target_histograms"] = pairwise_hard_target_histograms(path.parent, new_rows, new_scales)
     path.write_text(json.dumps(audit, indent=2) + "\n")
@@ -629,8 +692,9 @@ def main() -> int:
 
     feature_columns = load_feature_columns(source_csv)
     attach_parent_metadata(source_rows)
-    case_counts = load_case_counts(args.case_counts_json)
-    target_cases = generate_target_cases(args.seed, case_counts)
+    generation_config = load_generation_config(args.case_counts_json)
+    case_counts = generation_config["case_counts"]
+    target_cases = generate_target_cases(args.seed, generation_config)
     print("source CSV:", source_csv, flush=True)
     print("source rows:", len(source_rows), flush=True)
     print("feature columns:", len(feature_columns), flush=True)
@@ -671,6 +735,7 @@ def main() -> int:
         "total_rows": len(combined_rows),
         "random_seed": args.seed,
         "targeted_case_counts": case_counts,
+        "generation_config": generation_config,
         "target_columns": TARGET_COLUMNS,
         "feature_columns": feature_columns,
         "feature_count": len(feature_columns),

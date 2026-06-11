@@ -1,0 +1,88 @@
+{
+  "enabled": true,
+  "batch_id": "v5_s3_tail60k_smoothl1_retrain_batch",
+  "dataset_version": "enhanced_v5_s3_tail60k",
+  "estimated_minutes_per_job": 18,
+  "walltime_safety_margin_minutes": 10,
+  "max_runtime_minutes": 120,
+  "artifact_policy": {
+    "push_large_artifacts": false,
+    "allowed_artifacts": [
+      "run_manifest_model_loop.json",
+      "metrics_model_loop.json",
+      "selection_score.json",
+      "per_target_diagnostics.json",
+      "vector_diagnostics.json",
+      "model_registry_model_loop.csv",
+      "training_history_summary.csv",
+      "training_history_model_loop.png",
+      "prediction_scatter_model_loop.png",
+      "batch_manifest.json",
+      "batch_summary.csv"
+    ]
+  },
+  "defaults": {
+    "family": "enhanced",
+    "search_root": "training_results/feature_regression_enhanced",
+    "selection_config": "experiments/model_selection_weights.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json",
+    "easy_regression_limit": 0.10,
+    "split_seed": 7,
+    "weight_decay": 0.0001,
+    "residual_penalty": 0.003,
+    "eval_every": 25,
+    "patience_epochs": 1000,
+    "max_epochs": 6000,
+    "batch_size": 0,
+    "shuffle_batches": false,
+    "component_loss_kind": "smooth_l1",
+    "component_smooth_l1_beta": 0.25,
+    "grad_clip_norm": 1.0,
+    "lr_scheduler": "plateau",
+    "lr_plateau_factor": 0.5,
+    "lr_plateau_patience_evals": 8,
+    "min_learning_rate": 0.00001
+  },
+  "jobs": [
+    {
+      "job_id": "w320_plateau_clip_smoothl1_s3tail60k_torchseed7_splitseed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed7",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 7
+      }
+    },
+    {
+      "job_id": "w320_plateau_clip_smoothl1_s3tail60k_torchseed23_splitseed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 23
+      }
+    }
+  ],
+  "decision_note": {
+    "champion": "D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc",
+    "reason": "Test whether targeted high-S3-tail training-only expansion improves robust high-S3 magnitude compression while preserving fixed validation/blind/stress benchmarks.",
+    "fixed_architecture_and_optimizer": true,
+    "data_change_only": true,
+    "split_seed": 7,
+    "parent_dataset_rows": 41446,
+    "expected_v5_total_rows": 57446,
+    "baseline_weighted_score": 0.05567891693315827,
+    "baseline_high_s3_magnitude_mae": 9.54025936126709,
+    "baseline_high_s3_magnitude_bias": -7.682642936706543,
+    "baseline_high_s3_magnitude_slope": 0.7208754515704693,
+    "promotion_rule": "Promote only if high-S3 magnitude slope, bias, and MAE improve without more than about 1-2% weighted-score regression or material blind/stress, C1, B2, or A3 regression. If high-S3 slope remains near 0.72, prioritize feature engineering over expansion to 100k."
+  }
+}
