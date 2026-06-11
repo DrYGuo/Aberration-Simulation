@@ -1,0 +1,1204 @@
+
+$ git fetch origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+
+$ git pull --ff-only origin main
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+
+$ bash -lc 'set -euo pipefail
+V3_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v3_targeted25k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+if [ -z "$V3_CSV" ]; then
+  V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+  if [ -z "$V2_CSV" ]; then
+    python3 scripts/run_notebook_headless.py notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output-dir colab_worker_logs --timeout 3600
+    V2_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_*/training_features_enhanced.csv | head -1)
+  fi
+  python3 scripts/generate_targeted_enhanced_dataset.py --parent-csv "$V2_CSV" --run-prefix enhanced_v3_targeted25k --dataset-version enhanced_v3_targeted25k --seed 31
+fi
+python3 scripts/run_model_selection_batch.py --batch-config configs/model_selection_batch_live.json --output-root training_results/model_selection_loop --summary-root training_results/model_selection_batches --max-runtime-minutes 50'
+$ /usr/local/bin/jupyter nbconvert --to notebook --execute /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb --output uno_feature_regression_enhanced_dataset_bootstrap_executed_20260611_071658_utc.ipynb --output-dir /content/Aberration-Simulation/colab_worker_logs --ExecutePreprocessor.timeout=3600
+[NbConvertApp] Converting notebook /content/Aberration-Simulation/notebooks/uno_feature_regression_enhanced_dataset_bootstrap.ipynb to notebook
+/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  validate(nb)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+[NbConvertApp] ERROR | unhandled iopub msg: colab_request
+From https://github.com/DrYGuo/Aberration-Simulation
+ * branch            main       -> FETCH_HEAD
+HEAD is now at dc7ffde Queue SmoothL1 seed repeat batch
+[NbConvertApp] Writing 65836 bytes to /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260611_071658_utc.ipynb
+manifest: /content/Aberration-Simulation/colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260611_071658_utc.json
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260611_071708_utc/training_features_enhanced.csv
+source rows: 16446
+feature columns: 66
+target columns: ['C1', 'C3', 'A1_x', 'A1_y', 'B2_x', 'B2_y', 'A2_x', 'A2_y', 'S3_x', 'S3_y', 'A3_x', 'A3_y']
+new targeted rows planned: 25000
+targeted case counts: {'coupled_full_random': 4000, 'coupled_C1_C3_random': 3500, 'coupled_A2_B2_random': 2500, 'coupled_C3_B2_random': 2000, 'coupled_sparse_random': 3500, 'coupled_C3_A3_S3_random': 3000, 'coupled_A1_S3_random': 3500, 'coupled_A1_B2_random': 2500, 'coupled_A3_S3_random': 500}
+targeted base cases: 25000
+batch base cases: 64
+processed 64/25000 targeted cases
+processed 128/25000 targeted cases
+processed 192/25000 targeted cases
+processed 256/25000 targeted cases
+processed 320/25000 targeted cases
+processed 384/25000 targeted cases
+processed 448/25000 targeted cases
+processed 512/25000 targeted cases
+processed 576/25000 targeted cases
+processed 640/25000 targeted cases
+processed 704/25000 targeted cases
+processed 768/25000 targeted cases
+processed 832/25000 targeted cases
+processed 896/25000 targeted cases
+processed 960/25000 targeted cases
+processed 1024/25000 targeted cases
+processed 1088/25000 targeted cases
+processed 1152/25000 targeted cases
+processed 1216/25000 targeted cases
+processed 1280/25000 targeted cases
+processed 1344/25000 targeted cases
+processed 1408/25000 targeted cases
+processed 1472/25000 targeted cases
+processed 1536/25000 targeted cases
+processed 1600/25000 targeted cases
+processed 1664/25000 targeted cases
+processed 1728/25000 targeted cases
+processed 1792/25000 targeted cases
+processed 1856/25000 targeted cases
+processed 1920/25000 targeted cases
+processed 1984/25000 targeted cases
+processed 2048/25000 targeted cases
+processed 2112/25000 targeted cases
+processed 2176/25000 targeted cases
+processed 2240/25000 targeted cases
+processed 2304/25000 targeted cases
+processed 2368/25000 targeted cases
+processed 2432/25000 targeted cases
+processed 2496/25000 targeted cases
+processed 2560/25000 targeted cases
+processed 2624/25000 targeted cases
+processed 2688/25000 targeted cases
+processed 2752/25000 targeted cases
+processed 2816/25000 targeted cases
+processed 2880/25000 targeted cases
+processed 2944/25000 targeted cases
+processed 3008/25000 targeted cases
+processed 3072/25000 targeted cases
+processed 3136/25000 targeted cases
+processed 3200/25000 targeted cases
+processed 3264/25000 targeted cases
+processed 3328/25000 targeted cases
+processed 3392/25000 targeted cases
+processed 3456/25000 targeted cases
+processed 3520/25000 targeted cases
+processed 3584/25000 targeted cases
+processed 3648/25000 targeted cases
+processed 3712/25000 targeted cases
+processed 3776/25000 targeted cases
+processed 3840/25000 targeted cases
+processed 3904/25000 targeted cases
+processed 3968/25000 targeted cases
+processed 4032/25000 targeted cases
+processed 4096/25000 targeted cases
+processed 4160/25000 targeted cases
+processed 4224/25000 targeted cases
+processed 4288/25000 targeted cases
+processed 4352/25000 targeted cases
+processed 4416/25000 targeted cases
+processed 4480/25000 targeted cases
+processed 4544/25000 targeted cases
+processed 4608/25000 targeted cases
+processed 4672/25000 targeted cases
+processed 4736/25000 targeted cases
+processed 4800/25000 targeted cases
+processed 4864/25000 targeted cases
+processed 4928/25000 targeted cases
+processed 4992/25000 targeted cases
+processed 5056/25000 targeted cases
+processed 5120/25000 targeted cases
+processed 5184/25000 targeted cases
+processed 5248/25000 targeted cases
+processed 5312/25000 targeted cases
+processed 5376/25000 targeted cases
+processed 5440/25000 targeted cases
+processed 5504/25000 targeted cases
+processed 5568/25000 targeted cases
+processed 5632/25000 targeted cases
+processed 5696/25000 targeted cases
+processed 5760/25000 targeted cases
+processed 5824/25000 targeted cases
+processed 5888/25000 targeted cases
+processed 5952/25000 targeted cases
+processed 6016/25000 targeted cases
+processed 6080/25000 targeted cases
+processed 6144/25000 targeted cases
+processed 6208/25000 targeted cases
+processed 6272/25000 targeted cases
+processed 6336/25000 targeted cases
+processed 6400/25000 targeted cases
+processed 6464/25000 targeted cases
+processed 6528/25000 targeted cases
+processed 6592/25000 targeted cases
+processed 6656/25000 targeted cases
+processed 6720/25000 targeted cases
+processed 6784/25000 targeted cases
+processed 6848/25000 targeted cases
+processed 6912/25000 targeted cases
+processed 6976/25000 targeted cases
+processed 7040/25000 targeted cases
+processed 7104/25000 targeted cases
+processed 7168/25000 targeted cases
+processed 7232/25000 targeted cases
+processed 7296/25000 targeted cases
+processed 7360/25000 targeted cases
+processed 7424/25000 targeted cases
+processed 7488/25000 targeted cases
+processed 7552/25000 targeted cases
+processed 7616/25000 targeted cases
+processed 7680/25000 targeted cases
+processed 7744/25000 targeted cases
+processed 7808/25000 targeted cases
+processed 7872/25000 targeted cases
+processed 7936/25000 targeted cases
+processed 8000/25000 targeted cases
+processed 8064/25000 targeted cases
+processed 8128/25000 targeted cases
+processed 8192/25000 targeted cases
+processed 8256/25000 targeted cases
+processed 8320/25000 targeted cases
+processed 8384/25000 targeted cases
+processed 8448/25000 targeted cases
+processed 8512/25000 targeted cases
+processed 8576/25000 targeted cases
+processed 8640/25000 targeted cases
+processed 8704/25000 targeted cases
+processed 8768/25000 targeted cases
+processed 8832/25000 targeted cases
+processed 8896/25000 targeted cases
+processed 8960/25000 targeted cases
+processed 9024/25000 targeted cases
+processed 9088/25000 targeted cases
+processed 9152/25000 targeted cases
+processed 9216/25000 targeted cases
+processed 9280/25000 targeted cases
+processed 9344/25000 targeted cases
+processed 9408/25000 targeted cases
+processed 9472/25000 targeted cases
+processed 9536/25000 targeted cases
+processed 9600/25000 targeted cases
+processed 9664/25000 targeted cases
+processed 9728/25000 targeted cases
+processed 9792/25000 targeted cases
+processed 9856/25000 targeted cases
+processed 9920/25000 targeted cases
+processed 9984/25000 targeted cases
+processed 10048/25000 targeted cases
+processed 10112/25000 targeted cases
+processed 10176/25000 targeted cases
+processed 10240/25000 targeted cases
+processed 10304/25000 targeted cases
+processed 10368/25000 targeted cases
+processed 10432/25000 targeted cases
+processed 10496/25000 targeted cases
+processed 10560/25000 targeted cases
+processed 10624/25000 targeted cases
+processed 10688/25000 targeted cases
+processed 10752/25000 targeted cases
+processed 10816/25000 targeted cases
+processed 10880/25000 targeted cases
+processed 10944/25000 targeted cases
+processed 11008/25000 targeted cases
+processed 11072/25000 targeted cases
+processed 11136/25000 targeted cases
+processed 11200/25000 targeted cases
+processed 11264/25000 targeted cases
+processed 11328/25000 targeted cases
+processed 11392/25000 targeted cases
+processed 11456/25000 targeted cases
+processed 11520/25000 targeted cases
+processed 11584/25000 targeted cases
+processed 11648/25000 targeted cases
+processed 11712/25000 targeted cases
+processed 11776/25000 targeted cases
+processed 11840/25000 targeted cases
+processed 11904/25000 targeted cases
+processed 11968/25000 targeted cases
+processed 12032/25000 targeted cases
+processed 12096/25000 targeted cases
+processed 12160/25000 targeted cases
+processed 12224/25000 targeted cases
+processed 12288/25000 targeted cases
+processed 12352/25000 targeted cases
+processed 12416/25000 targeted cases
+processed 12480/25000 targeted cases
+processed 12544/25000 targeted cases
+processed 12608/25000 targeted cases
+processed 12672/25000 targeted cases
+processed 12736/25000 targeted cases
+processed 12800/25000 targeted cases
+processed 12864/25000 targeted cases
+processed 12928/25000 targeted cases
+processed 12992/25000 targeted cases
+processed 13056/25000 targeted cases
+processed 13120/25000 targeted cases
+processed 13184/25000 targeted cases
+processed 13248/25000 targeted cases
+processed 13312/25000 targeted cases
+processed 13376/25000 targeted cases
+processed 13440/25000 targeted cases
+processed 13504/25000 targeted cases
+processed 13568/25000 targeted cases
+processed 13632/25000 targeted cases
+processed 13696/25000 targeted cases
+processed 13760/25000 targeted cases
+processed 13824/25000 targeted cases
+processed 13888/25000 targeted cases
+processed 13952/25000 targeted cases
+processed 14016/25000 targeted cases
+processed 14080/25000 targeted cases
+processed 14144/25000 targeted cases
+processed 14208/25000 targeted cases
+processed 14272/25000 targeted cases
+processed 14336/25000 targeted cases
+processed 14400/25000 targeted cases
+processed 14464/25000 targeted cases
+processed 14528/25000 targeted cases
+processed 14592/25000 targeted cases
+processed 14656/25000 targeted cases
+processed 14720/25000 targeted cases
+processed 14784/25000 targeted cases
+processed 14848/25000 targeted cases
+processed 14912/25000 targeted cases
+processed 14976/25000 targeted cases
+processed 15040/25000 targeted cases
+processed 15104/25000 targeted cases
+processed 15168/25000 targeted cases
+processed 15232/25000 targeted cases
+processed 15296/25000 targeted cases
+processed 15360/25000 targeted cases
+processed 15424/25000 targeted cases
+processed 15488/25000 targeted cases
+processed 15552/25000 targeted cases
+processed 15616/25000 targeted cases
+processed 15680/25000 targeted cases
+processed 15744/25000 targeted cases
+processed 15808/25000 targeted cases
+processed 15872/25000 targeted cases
+processed 15936/25000 targeted cases
+processed 16000/25000 targeted cases
+processed 16064/25000 targeted cases
+processed 16128/25000 targeted cases
+processed 16192/25000 targeted cases
+processed 16256/25000 targeted cases
+processed 16320/25000 targeted cases
+processed 16384/25000 targeted cases
+processed 16448/25000 targeted cases
+processed 16512/25000 targeted cases
+processed 16576/25000 targeted cases
+processed 16640/25000 targeted cases
+processed 16704/25000 targeted cases
+processed 16768/25000 targeted cases
+processed 16832/25000 targeted cases
+processed 16896/25000 targeted cases
+processed 16960/25000 targeted cases
+processed 17024/25000 targeted cases
+processed 17088/25000 targeted cases
+processed 17152/25000 targeted cases
+processed 17216/25000 targeted cases
+processed 17280/25000 targeted cases
+processed 17344/25000 targeted cases
+processed 17408/25000 targeted cases
+processed 17472/25000 targeted cases
+processed 17536/25000 targeted cases
+processed 17600/25000 targeted cases
+processed 17664/25000 targeted cases
+processed 17728/25000 targeted cases
+processed 17792/25000 targeted cases
+processed 17856/25000 targeted cases
+processed 17920/25000 targeted cases
+processed 17984/25000 targeted cases
+processed 18048/25000 targeted cases
+processed 18112/25000 targeted cases
+processed 18176/25000 targeted cases
+processed 18240/25000 targeted cases
+processed 18304/25000 targeted cases
+processed 18368/25000 targeted cases
+processed 18432/25000 targeted cases
+processed 18496/25000 targeted cases
+processed 18560/25000 targeted cases
+processed 18624/25000 targeted cases
+processed 18688/25000 targeted cases
+processed 18752/25000 targeted cases
+processed 18816/25000 targeted cases
+processed 18880/25000 targeted cases
+processed 18944/25000 targeted cases
+processed 19008/25000 targeted cases
+processed 19072/25000 targeted cases
+processed 19136/25000 targeted cases
+processed 19200/25000 targeted cases
+processed 19264/25000 targeted cases
+processed 19328/25000 targeted cases
+processed 19392/25000 targeted cases
+processed 19456/25000 targeted cases
+processed 19520/25000 targeted cases
+processed 19584/25000 targeted cases
+processed 19648/25000 targeted cases
+processed 19712/25000 targeted cases
+processed 19776/25000 targeted cases
+processed 19840/25000 targeted cases
+processed 19904/25000 targeted cases
+processed 19968/25000 targeted cases
+processed 20032/25000 targeted cases
+processed 20096/25000 targeted cases
+processed 20160/25000 targeted cases
+processed 20224/25000 targeted cases
+processed 20288/25000 targeted cases
+processed 20352/25000 targeted cases
+processed 20416/25000 targeted cases
+processed 20480/25000 targeted cases
+processed 20544/25000 targeted cases
+processed 20608/25000 targeted cases
+processed 20672/25000 targeted cases
+processed 20736/25000 targeted cases
+processed 20800/25000 targeted cases
+processed 20864/25000 targeted cases
+processed 20928/25000 targeted cases
+processed 20992/25000 targeted cases
+processed 21056/25000 targeted cases
+processed 21120/25000 targeted cases
+processed 21184/25000 targeted cases
+processed 21248/25000 targeted cases
+processed 21312/25000 targeted cases
+processed 21376/25000 targeted cases
+processed 21440/25000 targeted cases
+processed 21504/25000 targeted cases
+processed 21568/25000 targeted cases
+processed 21632/25000 targeted cases
+processed 21696/25000 targeted cases
+processed 21760/25000 targeted cases
+processed 21824/25000 targeted cases
+processed 21888/25000 targeted cases
+processed 21952/25000 targeted cases
+processed 22016/25000 targeted cases
+processed 22080/25000 targeted cases
+processed 22144/25000 targeted cases
+processed 22208/25000 targeted cases
+processed 22272/25000 targeted cases
+processed 22336/25000 targeted cases
+processed 22400/25000 targeted cases
+processed 22464/25000 targeted cases
+processed 22528/25000 targeted cases
+processed 22592/25000 targeted cases
+processed 22656/25000 targeted cases
+processed 22720/25000 targeted cases
+processed 22784/25000 targeted cases
+processed 22848/25000 targeted cases
+processed 22912/25000 targeted cases
+processed 22976/25000 targeted cases
+processed 23040/25000 targeted cases
+processed 23104/25000 targeted cases
+processed 23168/25000 targeted cases
+processed 23232/25000 targeted cases
+processed 23296/25000 targeted cases
+processed 23360/25000 targeted cases
+processed 23424/25000 targeted cases
+processed 23488/25000 targeted cases
+processed 23552/25000 targeted cases
+processed 23616/25000 targeted cases
+processed 23680/25000 targeted cases
+processed 23744/25000 targeted cases
+processed 23808/25000 targeted cases
+processed 23872/25000 targeted cases
+processed 23936/25000 targeted cases
+processed 24000/25000 targeted cases
+processed 24064/25000 targeted cases
+processed 24128/25000 targeted cases
+processed 24192/25000 targeted cases
+processed 24256/25000 targeted cases
+processed 24320/25000 targeted cases
+processed 24384/25000 targeted cases
+processed 24448/25000 targeted cases
+processed 24512/25000 targeted cases
+processed 24576/25000 targeted cases
+processed 24640/25000 targeted cases
+processed 24704/25000 targeted cases
+processed 24768/25000 targeted cases
+processed 24832/25000 targeted cases
+processed 24896/25000 targeted cases
+processed 24960/25000 targeted cases
+processed 25000/25000 targeted cases
+wrote combined enhanced dataset: training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/training_features_enhanced.csv
+combined rows: 41446
+manifest: training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/dataset_manifest.json
+$ /usr/bin/python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11 --output-root training_results/model_selection_loop --architecture grouped_heads --hidden-dim 320 --dropout 0.075 --learning-rate 0.0006 --weight-decay 0.0001 --residual-penalty 0.003 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.1 --torch-seed 11 --batch-size 0 --component-loss-kind smooth_l1 --component-smooth-l1-beta 0.25 --grad-clip-norm 1.0 --lr-scheduler plateau --lr-plateau-factor 0.5 --lr-plateau-patience-evals 8 --min-learning-rate 1e-05 --search-root training_results/feature_regression_enhanced --baseline-metrics training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json --selection-config experiments/model_selection_weights.json --split-seed 7
+candidate: D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11
+family: enhanced
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/training_features_enhanced.csv
+features: 66
+output: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc
+epoch     1 train=1.621247 s3mag=0.000000 validation=1.864777 lr=0.0006
+epoch    25 train=0.635591 s3mag=0.000000 validation=0.812507 lr=0.0006
+epoch    50 train=0.250352 s3mag=0.000000 validation=0.360965 lr=0.0006
+epoch    75 train=0.159709 s3mag=0.000000 validation=0.247490 lr=0.0006
+epoch   100 train=0.128938 s3mag=0.000000 validation=0.206708 lr=0.0006
+epoch   125 train=0.111135 s3mag=0.000000 validation=0.182324 lr=0.0006
+epoch   150 train=0.098006 s3mag=0.000000 validation=0.163058 lr=0.0006
+epoch   175 train=0.085779 s3mag=0.000000 validation=0.145610 lr=0.0006
+epoch   200 train=0.074411 s3mag=0.000000 validation=0.130194 lr=0.0006
+epoch   225 train=0.064684 s3mag=0.000000 validation=0.117108 lr=0.0006
+epoch   250 train=0.057218 s3mag=0.000000 validation=0.106599 lr=0.0006
+epoch   275 train=0.051896 s3mag=0.000000 validation=0.099085 lr=0.0006
+epoch   300 train=0.047470 s3mag=0.000000 validation=0.092919 lr=0.0006
+epoch   325 train=0.043900 s3mag=0.000000 validation=0.088073 lr=0.0006
+epoch   350 train=0.040585 s3mag=0.000000 validation=0.083621 lr=0.0006
+epoch   375 train=0.037937 s3mag=0.000000 validation=0.080030 lr=0.0006
+epoch   400 train=0.035578 s3mag=0.000000 validation=0.077246 lr=0.0006
+epoch   425 train=0.033190 s3mag=0.000000 validation=0.073853 lr=0.0006
+epoch   450 train=0.031175 s3mag=0.000000 validation=0.071362 lr=0.0006
+epoch   475 train=0.029229 s3mag=0.000000 validation=0.068857 lr=0.0006
+epoch   500 train=0.027295 s3mag=0.000000 validation=0.066741 lr=0.0006
+epoch   525 train=0.025515 s3mag=0.000000 validation=0.064683 lr=0.0006
+epoch   550 train=0.024194 s3mag=0.000000 validation=0.062823 lr=0.0006
+epoch   575 train=0.022773 s3mag=0.000000 validation=0.060861 lr=0.0006
+epoch   600 train=0.021700 s3mag=0.000000 validation=0.059669 lr=0.0006
+epoch   625 train=0.020114 s3mag=0.000000 validation=0.058165 lr=0.0006
+epoch   650 train=0.018962 s3mag=0.000000 validation=0.056795 lr=0.0006
+epoch   675 train=0.017891 s3mag=0.000000 validation=0.055705 lr=0.0006
+epoch   700 train=0.017164 s3mag=0.000000 validation=0.054513 lr=0.0006
+epoch   725 train=0.016143 s3mag=0.000000 validation=0.053276 lr=0.0006
+epoch   750 train=0.015630 s3mag=0.000000 validation=0.052831 lr=0.0006
+epoch   775 train=0.014539 s3mag=0.000000 validation=0.051278 lr=0.0006
+epoch   800 train=0.013924 s3mag=0.000000 validation=0.050781 lr=0.0006
+epoch   825 train=0.013195 s3mag=0.000000 validation=0.049576 lr=0.0006
+epoch   850 train=0.012668 s3mag=0.000000 validation=0.049068 lr=0.0006
+epoch   875 train=0.011985 s3mag=0.000000 validation=0.048604 lr=0.0006
+epoch   900 train=0.011531 s3mag=0.000000 validation=0.047577 lr=0.0006
+epoch   925 train=0.011366 s3mag=0.000000 validation=0.046975 lr=0.0006
+epoch   950 train=0.010771 s3mag=0.000000 validation=0.046298 lr=0.0006
+epoch   975 train=0.010134 s3mag=0.000000 validation=0.046203 lr=0.0006
+epoch  1000 train=0.009673 s3mag=0.000000 validation=0.045734 lr=0.0006
+epoch  1025 train=0.009384 s3mag=0.000000 validation=0.044955 lr=0.0006
+epoch  1050 train=0.008872 s3mag=0.000000 validation=0.044562 lr=0.0006
+epoch  1075 train=0.008530 s3mag=0.000000 validation=0.044162 lr=0.0006
+epoch  1100 train=0.008461 s3mag=0.000000 validation=0.044046 lr=0.0006
+epoch  1125 train=0.007938 s3mag=0.000000 validation=0.043354 lr=0.0006
+epoch  1150 train=0.007595 s3mag=0.000000 validation=0.042973 lr=0.0006
+epoch  1175 train=0.007427 s3mag=0.000000 validation=0.042801 lr=0.0006
+epoch  1200 train=0.007089 s3mag=0.000000 validation=0.042007 lr=0.0006
+epoch  1225 train=0.006900 s3mag=0.000000 validation=0.041476 lr=0.0006
+epoch  1250 train=0.006668 s3mag=0.000000 validation=0.041083 lr=0.0006
+epoch  1275 train=0.006385 s3mag=0.000000 validation=0.041218 lr=0.0006
+epoch  1300 train=0.006193 s3mag=0.000000 validation=0.041057 lr=0.0006
+epoch  1325 train=0.006007 s3mag=0.000000 validation=0.040716 lr=0.0006
+epoch  1350 train=0.005900 s3mag=0.000000 validation=0.040219 lr=0.0006
+epoch  1375 train=0.005588 s3mag=0.000000 validation=0.039920 lr=0.0006
+epoch  1400 train=0.005426 s3mag=0.000000 validation=0.039852 lr=0.0006
+epoch  1425 train=0.005285 s3mag=0.000000 validation=0.039402 lr=0.0006
+epoch  1450 train=0.005197 s3mag=0.000000 validation=0.039594 lr=0.0006
+epoch  1475 train=0.004978 s3mag=0.000000 validation=0.039117 lr=0.0006
+epoch  1500 train=0.004855 s3mag=0.000000 validation=0.038941 lr=0.0006
+epoch  1525 train=0.004737 s3mag=0.000000 validation=0.038534 lr=0.0006
+epoch  1550 train=0.004594 s3mag=0.000000 validation=0.038484 lr=0.0006
+epoch  1575 train=0.004562 s3mag=0.000000 validation=0.038314 lr=0.0006
+epoch  1600 train=0.004427 s3mag=0.000000 validation=0.038075 lr=0.0006
+epoch  1625 train=0.004329 s3mag=0.000000 validation=0.037932 lr=0.0006
+epoch  1650 train=0.004252 s3mag=0.000000 validation=0.037494 lr=0.0006
+epoch  1675 train=0.004077 s3mag=0.000000 validation=0.037582 lr=0.0006
+epoch  1700 train=0.003984 s3mag=0.000000 validation=0.037366 lr=0.0006
+epoch  1725 train=0.003903 s3mag=0.000000 validation=0.037306 lr=0.0006
+epoch  1750 train=0.003824 s3mag=0.000000 validation=0.036946 lr=0.0006
+epoch  1775 train=0.003766 s3mag=0.000000 validation=0.037119 lr=0.0006
+epoch  1800 train=0.003693 s3mag=0.000000 validation=0.036883 lr=0.0006
+epoch  1825 train=0.003565 s3mag=0.000000 validation=0.036498 lr=0.0006
+epoch  1850 train=0.003540 s3mag=0.000000 validation=0.036687 lr=0.0006
+epoch  1875 train=0.003449 s3mag=0.000000 validation=0.036359 lr=0.0006
+epoch  1900 train=0.003410 s3mag=0.000000 validation=0.036312 lr=0.0006
+epoch  1925 train=0.003293 s3mag=0.000000 validation=0.036224 lr=0.0006
+epoch  1950 train=0.003224 s3mag=0.000000 validation=0.035970 lr=0.0006
+epoch  1975 train=0.003223 s3mag=0.000000 validation=0.035854 lr=0.0006
+epoch  2000 train=0.003135 s3mag=0.000000 validation=0.035906 lr=0.0006
+epoch  2025 train=0.003150 s3mag=0.000000 validation=0.035893 lr=0.0006
+epoch  2050 train=0.003059 s3mag=0.000000 validation=0.035657 lr=0.0006
+epoch  2075 train=0.002980 s3mag=0.000000 validation=0.035645 lr=0.0006
+epoch  2100 train=0.002959 s3mag=0.000000 validation=0.035548 lr=0.0006
+epoch  2125 train=0.002900 s3mag=0.000000 validation=0.035345 lr=0.0006
+epoch  2150 train=0.002877 s3mag=0.000000 validation=0.035373 lr=0.0006
+epoch  2175 train=0.002835 s3mag=0.000000 validation=0.035542 lr=0.0006
+epoch  2200 train=0.002778 s3mag=0.000000 validation=0.035027 lr=0.0006
+epoch  2225 train=0.002795 s3mag=0.000000 validation=0.035199 lr=0.0006
+epoch  2250 train=0.002699 s3mag=0.000000 validation=0.035411 lr=0.0006
+epoch  2275 train=0.002668 s3mag=0.000000 validation=0.035137 lr=0.0006
+epoch  2300 train=0.002643 s3mag=0.000000 validation=0.035081 lr=0.0006
+epoch  2325 train=0.002599 s3mag=0.000000 validation=0.034879 lr=0.0006
+epoch  2350 train=0.002541 s3mag=0.000000 validation=0.034582 lr=0.0006
+epoch  2375 train=0.002530 s3mag=0.000000 validation=0.034544 lr=0.0006
+epoch  2400 train=0.002525 s3mag=0.000000 validation=0.034814 lr=0.0006
+epoch  2425 train=0.002466 s3mag=0.000000 validation=0.034487 lr=0.0006
+epoch  2450 train=0.002493 s3mag=0.000000 validation=0.034438 lr=0.0006
+epoch  2475 train=0.002450 s3mag=0.000000 validation=0.034418 lr=0.0006
+epoch  2500 train=0.002386 s3mag=0.000000 validation=0.034163 lr=0.0006
+epoch  2525 train=0.002368 s3mag=0.000000 validation=0.034399 lr=0.0006
+epoch  2550 train=0.002328 s3mag=0.000000 validation=0.034121 lr=0.0006
+epoch  2575 train=0.002310 s3mag=0.000000 validation=0.033976 lr=0.0006
+epoch  2600 train=0.002273 s3mag=0.000000 validation=0.034152 lr=0.0006
+epoch  2625 train=0.002265 s3mag=0.000000 validation=0.034221 lr=0.0006
+epoch  2650 train=0.002235 s3mag=0.000000 validation=0.034090 lr=0.0006
+epoch  2675 train=0.002236 s3mag=0.000000 validation=0.034202 lr=0.0006
+epoch  2700 train=0.002200 s3mag=0.000000 validation=0.034084 lr=0.0006
+epoch  2725 train=0.002181 s3mag=0.000000 validation=0.033773 lr=0.0006
+epoch  2750 train=0.002175 s3mag=0.000000 validation=0.033589 lr=0.0006
+epoch  2775 train=0.002137 s3mag=0.000000 validation=0.033661 lr=0.0006
+epoch  2800 train=0.002146 s3mag=0.000000 validation=0.033924 lr=0.0006
+epoch  2825 train=0.002140 s3mag=0.000000 validation=0.034037 lr=0.0006
+epoch  2850 train=0.002100 s3mag=0.000000 validation=0.033437 lr=0.0006
+epoch  2875 train=0.002103 s3mag=0.000000 validation=0.033626 lr=0.0006
+epoch  2900 train=0.002073 s3mag=0.000000 validation=0.033969 lr=0.0006
+epoch  2925 train=0.002059 s3mag=0.000000 validation=0.033652 lr=0.0006
+epoch  2950 train=0.001973 s3mag=0.000000 validation=0.033235 lr=0.0006
+epoch  2975 train=0.001980 s3mag=0.000000 validation=0.033315 lr=0.0006
+epoch  3000 train=0.001966 s3mag=0.000000 validation=0.033639 lr=0.0006
+epoch  3025 train=0.001960 s3mag=0.000000 validation=0.033504 lr=0.0006
+epoch  3050 train=0.001924 s3mag=0.000000 validation=0.033328 lr=0.0006
+epoch  3075 train=0.001947 s3mag=0.000000 validation=0.033521 lr=0.0006
+epoch  3100 train=0.001936 s3mag=0.000000 validation=0.033175 lr=0.0006
+epoch  3125 train=0.001909 s3mag=0.000000 validation=0.033410 lr=0.0006
+epoch  3150 train=0.001888 s3mag=0.000000 validation=0.033355 lr=0.0006
+epoch  3175 train=0.001862 s3mag=0.000000 validation=0.033484 lr=0.0006
+epoch  3200 train=0.001888 s3mag=0.000000 validation=0.033026 lr=0.0006
+epoch  3225 train=0.001852 s3mag=0.000000 validation=0.033084 lr=0.0006
+epoch  3250 train=0.001853 s3mag=0.000000 validation=0.033428 lr=0.0006
+epoch  3275 train=0.001829 s3mag=0.000000 validation=0.033177 lr=0.0006
+epoch  3300 train=0.001832 s3mag=0.000000 validation=0.032820 lr=0.0006
+epoch  3325 train=0.001817 s3mag=0.000000 validation=0.033129 lr=0.0006
+epoch  3350 train=0.001793 s3mag=0.000000 validation=0.033076 lr=0.0006
+epoch  3375 train=0.001805 s3mag=0.000000 validation=0.033088 lr=0.0006
+epoch  3400 train=0.001793 s3mag=0.000000 validation=0.033314 lr=0.0006
+epoch  3425 train=0.001755 s3mag=0.000000 validation=0.033020 lr=0.0006
+epoch  3450 train=0.001751 s3mag=0.000000 validation=0.032859 lr=0.0006
+epoch  3475 train=0.001725 s3mag=0.000000 validation=0.032754 lr=0.0006
+epoch  3500 train=0.001741 s3mag=0.000000 validation=0.032726 lr=0.0006
+epoch  3525 train=0.001716 s3mag=0.000000 validation=0.032906 lr=0.0006
+epoch  3550 train=0.001710 s3mag=0.000000 validation=0.032914 lr=0.0006
+epoch  3575 train=0.001724 s3mag=0.000000 validation=0.032805 lr=0.0006
+epoch  3600 train=0.001696 s3mag=0.000000 validation=0.033070 lr=0.0006
+epoch  3625 train=0.001699 s3mag=0.000000 validation=0.032600 lr=0.0006
+epoch  3650 train=0.001671 s3mag=0.000000 validation=0.032914 lr=0.0006
+epoch  3675 train=0.001651 s3mag=0.000000 validation=0.032757 lr=0.0006
+epoch  3700 train=0.001645 s3mag=0.000000 validation=0.032819 lr=0.0006
+epoch  3725 train=0.001677 s3mag=0.000000 validation=0.032420 lr=0.0006
+epoch  3750 train=0.001608 s3mag=0.000000 validation=0.032399 lr=0.0006
+epoch  3775 train=0.001638 s3mag=0.000000 validation=0.032687 lr=0.0006
+epoch  3800 train=0.001654 s3mag=0.000000 validation=0.032673 lr=0.0006
+epoch  3825 train=0.001600 s3mag=0.000000 validation=0.032598 lr=0.0006
+epoch  3850 train=0.001613 s3mag=0.000000 validation=0.032558 lr=0.0006
+epoch  3875 train=0.001612 s3mag=0.000000 validation=0.032384 lr=0.0006
+epoch  3900 train=0.001584 s3mag=0.000000 validation=0.032462 lr=0.0006
+epoch  3925 train=0.001552 s3mag=0.000000 validation=0.032109 lr=0.0006
+epoch  3950 train=0.001577 s3mag=0.000000 validation=0.032341 lr=0.0006
+epoch  3975 train=0.001562 s3mag=0.000000 validation=0.032672 lr=0.0006
+epoch  4000 train=0.001601 s3mag=0.000000 validation=0.032440 lr=0.0006
+epoch  4025 train=0.001546 s3mag=0.000000 validation=0.032499 lr=0.0006
+epoch  4050 train=0.001520 s3mag=0.000000 validation=0.032230 lr=0.0006
+epoch  4075 train=0.001530 s3mag=0.000000 validation=0.032187 lr=0.0006
+epoch  4100 train=0.001532 s3mag=0.000000 validation=0.032353 lr=0.0006
+epoch  4125 train=0.001531 s3mag=0.000000 validation=0.032286 lr=0.0006
+epoch  4150 train=0.001568 s3mag=0.000000 validation=0.032093 lr=0.0006
+epoch  4175 train=0.001538 s3mag=0.000000 validation=0.031994 lr=0.0006
+epoch  4200 train=0.001546 s3mag=0.000000 validation=0.032162 lr=0.0006
+epoch  4225 train=0.001523 s3mag=0.000000 validation=0.032056 lr=0.0006
+epoch  4250 train=0.001488 s3mag=0.000000 validation=0.031980 lr=0.0006
+epoch  4275 train=0.001473 s3mag=0.000000 validation=0.032262 lr=0.0006
+epoch  4300 train=0.001491 s3mag=0.000000 validation=0.032250 lr=0.0006
+epoch  4325 train=0.001472 s3mag=0.000000 validation=0.032022 lr=0.0006
+epoch  4350 train=0.001469 s3mag=0.000000 validation=0.032385 lr=0.0006
+epoch  4375 train=0.001453 s3mag=0.000000 validation=0.032113 lr=0.0006
+epoch  4400 train=0.001442 s3mag=0.000000 validation=0.032098 lr=0.0006
+epoch  4425 train=0.001446 s3mag=0.000000 validation=0.032103 lr=0.0006
+epoch  4450 train=0.001431 s3mag=0.000000 validation=0.031991 lr=0.0006
+epoch  4475 train=0.001456 s3mag=0.000000 validation=0.031929 lr=0.0006
+epoch  4500 train=0.001430 s3mag=0.000000 validation=0.031922 lr=0.0006
+epoch  4525 train=0.001432 s3mag=0.000000 validation=0.031800 lr=0.0006
+epoch  4550 train=0.001447 s3mag=0.000000 validation=0.031765 lr=0.0006
+epoch  4575 train=0.001442 s3mag=0.000000 validation=0.031576 lr=0.0006
+epoch  4600 train=0.001439 s3mag=0.000000 validation=0.032060 lr=0.0006
+epoch  4625 train=0.001417 s3mag=0.000000 validation=0.032101 lr=0.0006
+epoch  4650 train=0.001399 s3mag=0.000000 validation=0.032010 lr=0.0006
+epoch  4675 train=0.001416 s3mag=0.000000 validation=0.031576 lr=0.0006
+epoch  4700 train=0.001427 s3mag=0.000000 validation=0.031980 lr=0.0006
+epoch  4725 train=0.001397 s3mag=0.000000 validation=0.031734 lr=0.0006
+epoch  4750 train=0.001399 s3mag=0.000000 validation=0.031798 lr=0.0006
+epoch  4775 train=0.001427 s3mag=0.000000 validation=0.031982 lr=0.0006
+epoch  4800 train=0.001348 s3mag=0.000000 validation=0.032104 lr=0.0006
+epoch  4825 train=0.001271 s3mag=0.000000 validation=0.031982 lr=0.0003
+epoch  4850 train=0.001267 s3mag=0.000000 validation=0.031702 lr=0.0003
+epoch  4875 train=0.001262 s3mag=0.000000 validation=0.031838 lr=0.0003
+epoch  4900 train=0.001256 s3mag=0.000000 validation=0.031873 lr=0.0003
+epoch  4925 train=0.001269 s3mag=0.000000 validation=0.031676 lr=0.0003
+epoch  4950 train=0.001262 s3mag=0.000000 validation=0.031835 lr=0.0003
+epoch  4975 train=0.001244 s3mag=0.000000 validation=0.031620 lr=0.0003
+epoch  5000 train=0.001249 s3mag=0.000000 validation=0.031548 lr=0.0003
+epoch  5025 train=0.001243 s3mag=0.000000 validation=0.031617 lr=0.0003
+epoch  5050 train=0.001240 s3mag=0.000000 validation=0.031592 lr=0.0003
+epoch  5075 train=0.001229 s3mag=0.000000 validation=0.031753 lr=0.0003
+epoch  5100 train=0.001235 s3mag=0.000000 validation=0.031535 lr=0.0003
+epoch  5125 train=0.001263 s3mag=0.000000 validation=0.031695 lr=0.0003
+epoch  5150 train=0.001234 s3mag=0.000000 validation=0.031512 lr=0.0003
+epoch  5175 train=0.001241 s3mag=0.000000 validation=0.031790 lr=0.0003
+epoch  5200 train=0.001243 s3mag=0.000000 validation=0.031521 lr=0.0003
+epoch  5225 train=0.001235 s3mag=0.000000 validation=0.031800 lr=0.0003
+epoch  5250 train=0.001237 s3mag=0.000000 validation=0.031784 lr=0.0003
+epoch  5275 train=0.001222 s3mag=0.000000 validation=0.031696 lr=0.0003
+epoch  5300 train=0.001233 s3mag=0.000000 validation=0.031837 lr=0.0003
+epoch  5325 train=0.001242 s3mag=0.000000 validation=0.031631 lr=0.0003
+epoch  5350 train=0.001228 s3mag=0.000000 validation=0.031659 lr=0.0003
+epoch  5375 train=0.001231 s3mag=0.000000 validation=0.031598 lr=0.0003
+epoch  5400 train=0.001175 s3mag=0.000000 validation=0.031625 lr=0.00015
+epoch  5425 train=0.001169 s3mag=0.000000 validation=0.031560 lr=0.00015
+epoch  5450 train=0.001177 s3mag=0.000000 validation=0.031553 lr=0.00015
+epoch  5475 train=0.001163 s3mag=0.000000 validation=0.031543 lr=0.00015
+epoch  5500 train=0.001165 s3mag=0.000000 validation=0.031333 lr=0.00015
+epoch  5525 train=0.001159 s3mag=0.000000 validation=0.031519 lr=0.00015
+epoch  5550 train=0.001160 s3mag=0.000000 validation=0.031570 lr=0.00015
+epoch  5575 train=0.001157 s3mag=0.000000 validation=0.031461 lr=0.00015
+epoch  5600 train=0.001163 s3mag=0.000000 validation=0.031526 lr=0.00015
+epoch  5625 train=0.001150 s3mag=0.000000 validation=0.031417 lr=0.00015
+epoch  5650 train=0.001155 s3mag=0.000000 validation=0.031681 lr=0.00015
+epoch  5675 train=0.001157 s3mag=0.000000 validation=0.031479 lr=0.00015
+epoch  5700 train=0.001159 s3mag=0.000000 validation=0.031552 lr=0.00015
+epoch  5725 train=0.001149 s3mag=0.000000 validation=0.031569 lr=0.00015
+epoch  5750 train=0.001132 s3mag=0.000000 validation=0.031496 lr=7.5e-05
+epoch  5775 train=0.001122 s3mag=0.000000 validation=0.031619 lr=7.5e-05
+epoch  5800 train=0.001121 s3mag=0.000000 validation=0.031428 lr=7.5e-05
+epoch  5825 train=0.001128 s3mag=0.000000 validation=0.031440 lr=7.5e-05
+epoch  5850 train=0.001120 s3mag=0.000000 validation=0.031485 lr=7.5e-05
+epoch  5875 train=0.001117 s3mag=0.000000 validation=0.031436 lr=7.5e-05
+epoch  5900 train=0.001122 s3mag=0.000000 validation=0.031444 lr=7.5e-05
+epoch  5925 train=0.001116 s3mag=0.000000 validation=0.031498 lr=7.5e-05
+epoch  5950 train=0.001123 s3mag=0.000000 validation=0.031566 lr=7.5e-05
+epoch  5975 train=0.001108 s3mag=0.000000 validation=0.031527 lr=3.75e-05
+epoch  6000 train=0.001106 s3mag=0.000000 validation=0.031545 lr=3.75e-05
+metrics: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/metrics_model_loop.json
+selection: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/selection_score.json
+weighted_score: 0.05608324462189698
+rejected: False []
+$ /usr/bin/python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23 --output-root training_results/model_selection_loop --architecture grouped_heads --hidden-dim 320 --dropout 0.075 --learning-rate 0.0006 --weight-decay 0.0001 --residual-penalty 0.003 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.1 --torch-seed 23 --batch-size 0 --component-loss-kind smooth_l1 --component-smooth-l1-beta 0.25 --grad-clip-norm 1.0 --lr-scheduler plateau --lr-plateau-factor 0.5 --lr-plateau-patience-evals 8 --min-learning-rate 1e-05 --search-root training_results/feature_regression_enhanced --baseline-metrics training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json --selection-config experiments/model_selection_weights.json --split-seed 7
+candidate: D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23
+family: enhanced
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/training_features_enhanced.csv
+features: 66
+output: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc
+epoch     1 train=1.391195 s3mag=0.000000 validation=1.635483 lr=0.0006
+epoch    25 train=0.540519 s3mag=0.000000 validation=0.743508 lr=0.0006
+epoch    50 train=0.222718 s3mag=0.000000 validation=0.338341 lr=0.0006
+epoch    75 train=0.152034 s3mag=0.000000 validation=0.237717 lr=0.0006
+epoch   100 train=0.122975 s3mag=0.000000 validation=0.199501 lr=0.0006
+epoch   125 train=0.105903 s3mag=0.000000 validation=0.174998 lr=0.0006
+epoch   150 train=0.091888 s3mag=0.000000 validation=0.154241 lr=0.0006
+epoch   175 train=0.079258 s3mag=0.000000 validation=0.135890 lr=0.0006
+epoch   200 train=0.067373 s3mag=0.000000 validation=0.119377 lr=0.0006
+epoch   225 train=0.058723 s3mag=0.000000 validation=0.107785 lr=0.0006
+epoch   250 train=0.052537 s3mag=0.000000 validation=0.098921 lr=0.0006
+epoch   275 train=0.047878 s3mag=0.000000 validation=0.092412 lr=0.0006
+epoch   300 train=0.043859 s3mag=0.000000 validation=0.087150 lr=0.0006
+epoch   325 train=0.040559 s3mag=0.000000 validation=0.082627 lr=0.0006
+epoch   350 train=0.037740 s3mag=0.000000 validation=0.079186 lr=0.0006
+epoch   375 train=0.035058 s3mag=0.000000 validation=0.075489 lr=0.0006
+epoch   400 train=0.032725 s3mag=0.000000 validation=0.072771 lr=0.0006
+epoch   425 train=0.030423 s3mag=0.000000 validation=0.069778 lr=0.0006
+epoch   450 train=0.028659 s3mag=0.000000 validation=0.067792 lr=0.0006
+epoch   475 train=0.026693 s3mag=0.000000 validation=0.065679 lr=0.0006
+epoch   500 train=0.025346 s3mag=0.000000 validation=0.063592 lr=0.0006
+epoch   525 train=0.023545 s3mag=0.000000 validation=0.062013 lr=0.0006
+epoch   550 train=0.021767 s3mag=0.000000 validation=0.059983 lr=0.0006
+epoch   575 train=0.020597 s3mag=0.000000 validation=0.058558 lr=0.0006
+epoch   600 train=0.019664 s3mag=0.000000 validation=0.057340 lr=0.0006
+epoch   625 train=0.018446 s3mag=0.000000 validation=0.056431 lr=0.0006
+epoch   650 train=0.017194 s3mag=0.000000 validation=0.054836 lr=0.0006
+epoch   675 train=0.016207 s3mag=0.000000 validation=0.053795 lr=0.0006
+epoch   700 train=0.015403 s3mag=0.000000 validation=0.052798 lr=0.0006
+epoch   725 train=0.014840 s3mag=0.000000 validation=0.051807 lr=0.0006
+epoch   750 train=0.013923 s3mag=0.000000 validation=0.050913 lr=0.0006
+epoch   775 train=0.013026 s3mag=0.000000 validation=0.049675 lr=0.0006
+epoch   800 train=0.012430 s3mag=0.000000 validation=0.049165 lr=0.0006
+epoch   825 train=0.012195 s3mag=0.000000 validation=0.048357 lr=0.0006
+epoch   850 train=0.011216 s3mag=0.000000 validation=0.047512 lr=0.0006
+epoch   875 train=0.010786 s3mag=0.000000 validation=0.047451 lr=0.0006
+epoch   900 train=0.010640 s3mag=0.000000 validation=0.046591 lr=0.0006
+epoch   925 train=0.009757 s3mag=0.000000 validation=0.046222 lr=0.0006
+epoch   950 train=0.009337 s3mag=0.000000 validation=0.045140 lr=0.0006
+epoch   975 train=0.009139 s3mag=0.000000 validation=0.044906 lr=0.0006
+epoch  1000 train=0.008907 s3mag=0.000000 validation=0.044279 lr=0.0006
+epoch  1025 train=0.008440 s3mag=0.000000 validation=0.044075 lr=0.0006
+epoch  1050 train=0.008000 s3mag=0.000000 validation=0.043529 lr=0.0006
+epoch  1075 train=0.007675 s3mag=0.000000 validation=0.043443 lr=0.0006
+epoch  1100 train=0.007569 s3mag=0.000000 validation=0.042774 lr=0.0006
+epoch  1125 train=0.007095 s3mag=0.000000 validation=0.042497 lr=0.0006
+epoch  1150 train=0.006968 s3mag=0.000000 validation=0.042174 lr=0.0006
+epoch  1175 train=0.006672 s3mag=0.000000 validation=0.042167 lr=0.0006
+epoch  1200 train=0.006456 s3mag=0.000000 validation=0.041885 lr=0.0006
+epoch  1225 train=0.006264 s3mag=0.000000 validation=0.041382 lr=0.0006
+epoch  1250 train=0.006064 s3mag=0.000000 validation=0.041053 lr=0.0006
+epoch  1275 train=0.005802 s3mag=0.000000 validation=0.040950 lr=0.0006
+epoch  1300 train=0.005746 s3mag=0.000000 validation=0.040178 lr=0.0006
+epoch  1325 train=0.005534 s3mag=0.000000 validation=0.040112 lr=0.0006
+epoch  1350 train=0.005396 s3mag=0.000000 validation=0.040057 lr=0.0006
+epoch  1375 train=0.005125 s3mag=0.000000 validation=0.039654 lr=0.0006
+epoch  1400 train=0.005014 s3mag=0.000000 validation=0.039537 lr=0.0006
+epoch  1425 train=0.004810 s3mag=0.000000 validation=0.038867 lr=0.0006
+epoch  1450 train=0.004703 s3mag=0.000000 validation=0.038621 lr=0.0006
+epoch  1475 train=0.004601 s3mag=0.000000 validation=0.038962 lr=0.0006
+epoch  1500 train=0.004559 s3mag=0.000000 validation=0.038677 lr=0.0006
+epoch  1525 train=0.004406 s3mag=0.000000 validation=0.038405 lr=0.0006
+epoch  1550 train=0.004239 s3mag=0.000000 validation=0.038143 lr=0.0006
+epoch  1575 train=0.004111 s3mag=0.000000 validation=0.037624 lr=0.0006
+epoch  1600 train=0.004057 s3mag=0.000000 validation=0.037732 lr=0.0006
+epoch  1625 train=0.003890 s3mag=0.000000 validation=0.037495 lr=0.0006
+epoch  1650 train=0.003841 s3mag=0.000000 validation=0.037563 lr=0.0006
+epoch  1675 train=0.003750 s3mag=0.000000 validation=0.036934 lr=0.0006
+epoch  1700 train=0.003695 s3mag=0.000000 validation=0.036969 lr=0.0006
+epoch  1725 train=0.003594 s3mag=0.000000 validation=0.036717 lr=0.0006
+epoch  1750 train=0.003535 s3mag=0.000000 validation=0.036668 lr=0.0006
+epoch  1775 train=0.003445 s3mag=0.000000 validation=0.036210 lr=0.0006
+epoch  1800 train=0.003433 s3mag=0.000000 validation=0.036237 lr=0.0006
+epoch  1825 train=0.003375 s3mag=0.000000 validation=0.036038 lr=0.0006
+epoch  1850 train=0.003284 s3mag=0.000000 validation=0.036137 lr=0.0006
+epoch  1875 train=0.003196 s3mag=0.000000 validation=0.035918 lr=0.0006
+epoch  1900 train=0.003131 s3mag=0.000000 validation=0.036045 lr=0.0006
+epoch  1925 train=0.003093 s3mag=0.000000 validation=0.035705 lr=0.0006
+epoch  1950 train=0.002978 s3mag=0.000000 validation=0.035658 lr=0.0006
+epoch  1975 train=0.002998 s3mag=0.000000 validation=0.035579 lr=0.0006
+epoch  2000 train=0.002958 s3mag=0.000000 validation=0.035787 lr=0.0006
+epoch  2025 train=0.002896 s3mag=0.000000 validation=0.035338 lr=0.0006
+epoch  2050 train=0.002836 s3mag=0.000000 validation=0.035240 lr=0.0006
+epoch  2075 train=0.002799 s3mag=0.000000 validation=0.034947 lr=0.0006
+epoch  2100 train=0.002747 s3mag=0.000000 validation=0.034955 lr=0.0006
+epoch  2125 train=0.002725 s3mag=0.000000 validation=0.034908 lr=0.0006
+epoch  2150 train=0.002656 s3mag=0.000000 validation=0.034888 lr=0.0006
+epoch  2175 train=0.002618 s3mag=0.000000 validation=0.034811 lr=0.0006
+epoch  2200 train=0.002584 s3mag=0.000000 validation=0.034697 lr=0.0006
+epoch  2225 train=0.002553 s3mag=0.000000 validation=0.034877 lr=0.0006
+epoch  2250 train=0.002550 s3mag=0.000000 validation=0.034621 lr=0.0006
+epoch  2275 train=0.002498 s3mag=0.000000 validation=0.034454 lr=0.0006
+epoch  2300 train=0.002463 s3mag=0.000000 validation=0.034525 lr=0.0006
+epoch  2325 train=0.002467 s3mag=0.000000 validation=0.034330 lr=0.0006
+epoch  2350 train=0.002396 s3mag=0.000000 validation=0.034442 lr=0.0006
+epoch  2375 train=0.002374 s3mag=0.000000 validation=0.033975 lr=0.0006
+epoch  2400 train=0.002348 s3mag=0.000000 validation=0.034152 lr=0.0006
+epoch  2425 train=0.002301 s3mag=0.000000 validation=0.033964 lr=0.0006
+epoch  2450 train=0.002286 s3mag=0.000000 validation=0.033951 lr=0.0006
+epoch  2475 train=0.002331 s3mag=0.000000 validation=0.033771 lr=0.0006
+epoch  2500 train=0.002287 s3mag=0.000000 validation=0.034174 lr=0.0006
+epoch  2525 train=0.002208 s3mag=0.000000 validation=0.033996 lr=0.0006
+epoch  2550 train=0.002194 s3mag=0.000000 validation=0.033535 lr=0.0006
+epoch  2575 train=0.002190 s3mag=0.000000 validation=0.033943 lr=0.0006
+epoch  2600 train=0.002166 s3mag=0.000000 validation=0.033974 lr=0.0006
+epoch  2625 train=0.002131 s3mag=0.000000 validation=0.033775 lr=0.0006
+epoch  2650 train=0.002131 s3mag=0.000000 validation=0.033697 lr=0.0006
+epoch  2675 train=0.002117 s3mag=0.000000 validation=0.033716 lr=0.0006
+epoch  2700 train=0.002078 s3mag=0.000000 validation=0.033473 lr=0.0006
+epoch  2725 train=0.002098 s3mag=0.000000 validation=0.033424 lr=0.0006
+epoch  2750 train=0.002034 s3mag=0.000000 validation=0.033315 lr=0.0006
+epoch  2775 train=0.002033 s3mag=0.000000 validation=0.033214 lr=0.0006
+epoch  2800 train=0.002013 s3mag=0.000000 validation=0.033356 lr=0.0006
+epoch  2825 train=0.001991 s3mag=0.000000 validation=0.033187 lr=0.0006
+epoch  2850 train=0.002011 s3mag=0.000000 validation=0.033398 lr=0.0006
+epoch  2875 train=0.001956 s3mag=0.000000 validation=0.032996 lr=0.0006
+epoch  2900 train=0.001965 s3mag=0.000000 validation=0.032747 lr=0.0006
+epoch  2925 train=0.001951 s3mag=0.000000 validation=0.032952 lr=0.0006
+epoch  2950 train=0.001921 s3mag=0.000000 validation=0.032916 lr=0.0006
+epoch  2975 train=0.001934 s3mag=0.000000 validation=0.032900 lr=0.0006
+epoch  3000 train=0.001924 s3mag=0.000000 validation=0.032952 lr=0.0006
+epoch  3025 train=0.001906 s3mag=0.000000 validation=0.032881 lr=0.0006
+epoch  3050 train=0.001870 s3mag=0.000000 validation=0.032992 lr=0.0006
+epoch  3075 train=0.001861 s3mag=0.000000 validation=0.032891 lr=0.0006
+epoch  3100 train=0.001859 s3mag=0.000000 validation=0.032516 lr=0.0006
+epoch  3125 train=0.001830 s3mag=0.000000 validation=0.032976 lr=0.0006
+epoch  3150 train=0.001823 s3mag=0.000000 validation=0.032762 lr=0.0006
+epoch  3175 train=0.001824 s3mag=0.000000 validation=0.032809 lr=0.0006
+epoch  3200 train=0.001806 s3mag=0.000000 validation=0.032583 lr=0.0006
+epoch  3225 train=0.001771 s3mag=0.000000 validation=0.032733 lr=0.0006
+epoch  3250 train=0.001767 s3mag=0.000000 validation=0.032503 lr=0.0006
+epoch  3275 train=0.001794 s3mag=0.000000 validation=0.032473 lr=0.0006
+epoch  3300 train=0.001742 s3mag=0.000000 validation=0.032516 lr=0.0006
+epoch  3325 train=0.001735 s3mag=0.000000 validation=0.032430 lr=0.0006
+epoch  3350 train=0.001727 s3mag=0.000000 validation=0.032395 lr=0.0006
+epoch  3375 train=0.001735 s3mag=0.000000 validation=0.032390 lr=0.0006
+epoch  3400 train=0.001701 s3mag=0.000000 validation=0.032469 lr=0.0006
+epoch  3425 train=0.001697 s3mag=0.000000 validation=0.032731 lr=0.0006
+epoch  3450 train=0.001686 s3mag=0.000000 validation=0.032293 lr=0.0006
+epoch  3475 train=0.001710 s3mag=0.000000 validation=0.032489 lr=0.0006
+epoch  3500 train=0.001668 s3mag=0.000000 validation=0.032333 lr=0.0006
+epoch  3525 train=0.001668 s3mag=0.000000 validation=0.032261 lr=0.0006
+epoch  3550 train=0.001637 s3mag=0.000000 validation=0.032246 lr=0.0006
+epoch  3575 train=0.001675 s3mag=0.000000 validation=0.032112 lr=0.0006
+epoch  3600 train=0.001618 s3mag=0.000000 validation=0.032064 lr=0.0006
+epoch  3625 train=0.001631 s3mag=0.000000 validation=0.032392 lr=0.0006
+epoch  3650 train=0.001642 s3mag=0.000000 validation=0.032035 lr=0.0006
+epoch  3675 train=0.001641 s3mag=0.000000 validation=0.031935 lr=0.0006
+epoch  3700 train=0.001624 s3mag=0.000000 validation=0.031999 lr=0.0006
+epoch  3725 train=0.001599 s3mag=0.000000 validation=0.032096 lr=0.0006
+epoch  3750 train=0.001583 s3mag=0.000000 validation=0.032424 lr=0.0006
+epoch  3775 train=0.001595 s3mag=0.000000 validation=0.032245 lr=0.0006
+epoch  3800 train=0.001568 s3mag=0.000000 validation=0.032147 lr=0.0006
+epoch  3825 train=0.001562 s3mag=0.000000 validation=0.032160 lr=0.0006
+epoch  3850 train=0.001581 s3mag=0.000000 validation=0.032384 lr=0.0006
+epoch  3875 train=0.001556 s3mag=0.000000 validation=0.032105 lr=0.0006
+epoch  3900 train=0.001558 s3mag=0.000000 validation=0.032078 lr=0.0006
+epoch  3925 train=0.001442 s3mag=0.000000 validation=0.032095 lr=0.0003
+epoch  3950 train=0.001440 s3mag=0.000000 validation=0.032027 lr=0.0003
+epoch  3975 train=0.001432 s3mag=0.000000 validation=0.031835 lr=0.0003
+epoch  4000 train=0.001411 s3mag=0.000000 validation=0.032005 lr=0.0003
+epoch  4025 train=0.001426 s3mag=0.000000 validation=0.031781 lr=0.0003
+epoch  4050 train=0.001415 s3mag=0.000000 validation=0.031914 lr=0.0003
+epoch  4075 train=0.001420 s3mag=0.000000 validation=0.031894 lr=0.0003
+epoch  4100 train=0.001395 s3mag=0.000000 validation=0.031840 lr=0.0003
+epoch  4125 train=0.001396 s3mag=0.000000 validation=0.031831 lr=0.0003
+epoch  4150 train=0.001381 s3mag=0.000000 validation=0.031780 lr=0.0003
+epoch  4175 train=0.001383 s3mag=0.000000 validation=0.031798 lr=0.0003
+epoch  4200 train=0.001412 s3mag=0.000000 validation=0.031784 lr=0.0003
+epoch  4225 train=0.001395 s3mag=0.000000 validation=0.031696 lr=0.0003
+epoch  4250 train=0.001385 s3mag=0.000000 validation=0.031860 lr=0.0003
+epoch  4275 train=0.001369 s3mag=0.000000 validation=0.031667 lr=0.0003
+epoch  4300 train=0.001385 s3mag=0.000000 validation=0.031787 lr=0.0003
+epoch  4325 train=0.001364 s3mag=0.000000 validation=0.031576 lr=0.0003
+epoch  4350 train=0.001393 s3mag=0.000000 validation=0.031776 lr=0.0003
+epoch  4375 train=0.001390 s3mag=0.000000 validation=0.031648 lr=0.0003
+epoch  4400 train=0.001386 s3mag=0.000000 validation=0.031736 lr=0.0003
+epoch  4425 train=0.001371 s3mag=0.000000 validation=0.031558 lr=0.0003
+epoch  4450 train=0.001370 s3mag=0.000000 validation=0.031491 lr=0.0003
+epoch  4475 train=0.001370 s3mag=0.000000 validation=0.031767 lr=0.0003
+epoch  4500 train=0.001364 s3mag=0.000000 validation=0.031838 lr=0.0003
+epoch  4525 train=0.001344 s3mag=0.000000 validation=0.031705 lr=0.0003
+epoch  4550 train=0.001350 s3mag=0.000000 validation=0.031783 lr=0.0003
+epoch  4575 train=0.001352 s3mag=0.000000 validation=0.031637 lr=0.0003
+epoch  4600 train=0.001351 s3mag=0.000000 validation=0.031699 lr=0.0003
+epoch  4625 train=0.001337 s3mag=0.000000 validation=0.031683 lr=0.0003
+epoch  4650 train=0.001357 s3mag=0.000000 validation=0.031760 lr=0.0003
+epoch  4675 train=0.001330 s3mag=0.000000 validation=0.031806 lr=0.0003
+epoch  4700 train=0.001286 s3mag=0.000000 validation=0.031708 lr=0.00015
+epoch  4725 train=0.001284 s3mag=0.000000 validation=0.031628 lr=0.00015
+epoch  4750 train=0.001273 s3mag=0.000000 validation=0.031391 lr=0.00015
+epoch  4775 train=0.001273 s3mag=0.000000 validation=0.031364 lr=0.00015
+epoch  4800 train=0.001263 s3mag=0.000000 validation=0.031520 lr=0.00015
+epoch  4825 train=0.001265 s3mag=0.000000 validation=0.031531 lr=0.00015
+epoch  4850 train=0.001267 s3mag=0.000000 validation=0.031601 lr=0.00015
+epoch  4875 train=0.001266 s3mag=0.000000 validation=0.031500 lr=0.00015
+epoch  4900 train=0.001268 s3mag=0.000000 validation=0.031516 lr=0.00015
+epoch  4925 train=0.001262 s3mag=0.000000 validation=0.031568 lr=0.00015
+epoch  4950 train=0.001279 s3mag=0.000000 validation=0.031464 lr=0.00015
+epoch  4975 train=0.001260 s3mag=0.000000 validation=0.031284 lr=0.00015
+epoch  5000 train=0.001257 s3mag=0.000000 validation=0.031298 lr=0.00015
+epoch  5025 train=0.001257 s3mag=0.000000 validation=0.031514 lr=0.00015
+epoch  5050 train=0.001250 s3mag=0.000000 validation=0.031463 lr=0.00015
+epoch  5075 train=0.001249 s3mag=0.000000 validation=0.031347 lr=0.00015
+epoch  5100 train=0.001253 s3mag=0.000000 validation=0.031301 lr=0.00015
+epoch  5125 train=0.001255 s3mag=0.000000 validation=0.031304 lr=0.00015
+epoch  5150 train=0.001244 s3mag=0.000000 validation=0.031427 lr=0.00015
+epoch  5175 train=0.001256 s3mag=0.000000 validation=0.031489 lr=0.00015
+epoch  5200 train=0.001251 s3mag=0.000000 validation=0.031445 lr=0.00015
+epoch  5225 train=0.001223 s3mag=0.000000 validation=0.031323 lr=7.5e-05
+epoch  5250 train=0.001220 s3mag=0.000000 validation=0.031488 lr=7.5e-05
+epoch  5275 train=0.001214 s3mag=0.000000 validation=0.031475 lr=7.5e-05
+epoch  5300 train=0.001214 s3mag=0.000000 validation=0.031423 lr=7.5e-05
+epoch  5325 train=0.001219 s3mag=0.000000 validation=0.031329 lr=7.5e-05
+epoch  5350 train=0.001218 s3mag=0.000000 validation=0.031296 lr=7.5e-05
+epoch  5375 train=0.001215 s3mag=0.000000 validation=0.031252 lr=7.5e-05
+epoch  5400 train=0.001212 s3mag=0.000000 validation=0.031410 lr=7.5e-05
+epoch  5425 train=0.001203 s3mag=0.000000 validation=0.031240 lr=7.5e-05
+epoch  5450 train=0.001219 s3mag=0.000000 validation=0.031401 lr=7.5e-05
+epoch  5475 train=0.001210 s3mag=0.000000 validation=0.031442 lr=7.5e-05
+epoch  5500 train=0.001208 s3mag=0.000000 validation=0.031334 lr=7.5e-05
+epoch  5525 train=0.001212 s3mag=0.000000 validation=0.031314 lr=7.5e-05
+epoch  5550 train=0.001213 s3mag=0.000000 validation=0.031350 lr=7.5e-05
+epoch  5575 train=0.001215 s3mag=0.000000 validation=0.031139 lr=7.5e-05
+epoch  5600 train=0.001212 s3mag=0.000000 validation=0.031318 lr=7.5e-05
+epoch  5625 train=0.001206 s3mag=0.000000 validation=0.031469 lr=7.5e-05
+epoch  5650 train=0.001210 s3mag=0.000000 validation=0.031318 lr=7.5e-05
+epoch  5675 train=0.001204 s3mag=0.000000 validation=0.031401 lr=7.5e-05
+epoch  5700 train=0.001202 s3mag=0.000000 validation=0.031379 lr=7.5e-05
+epoch  5725 train=0.001208 s3mag=0.000000 validation=0.031453 lr=7.5e-05
+epoch  5750 train=0.001199 s3mag=0.000000 validation=0.031330 lr=7.5e-05
+epoch  5775 train=0.001196 s3mag=0.000000 validation=0.031290 lr=7.5e-05
+epoch  5800 train=0.001204 s3mag=0.000000 validation=0.031409 lr=7.5e-05
+epoch  5825 train=0.001186 s3mag=0.000000 validation=0.031317 lr=3.75e-05
+epoch  5850 train=0.001182 s3mag=0.000000 validation=0.031284 lr=3.75e-05
+epoch  5875 train=0.001180 s3mag=0.000000 validation=0.031341 lr=3.75e-05
+epoch  5900 train=0.001180 s3mag=0.000000 validation=0.031273 lr=3.75e-05
+epoch  5925 train=0.001178 s3mag=0.000000 validation=0.031275 lr=3.75e-05
+epoch  5950 train=0.001179 s3mag=0.000000 validation=0.031264 lr=3.75e-05
+epoch  5975 train=0.001186 s3mag=0.000000 validation=0.031352 lr=3.75e-05
+epoch  6000 train=0.001181 s3mag=0.000000 validation=0.031310 lr=3.75e-05
+metrics: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/metrics_model_loop.json
+selection: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/selection_score.json
+weighted_score: 0.056556352070317825
+rejected: False []
+$ /usr/bin/python3 scripts/run_model_selection_candidate.py --family enhanced --candidate-id D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37 --output-root training_results/model_selection_loop --architecture grouped_heads --hidden-dim 320 --dropout 0.075 --learning-rate 0.0006 --weight-decay 0.0001 --residual-penalty 0.003 --max-epochs 6000 --eval-every 25 --patience-epochs 1000 --easy-regression-limit 0.1 --torch-seed 37 --batch-size 0 --component-loss-kind smooth_l1 --component-smooth-l1-beta 0.25 --grad-clip-norm 1.0 --lr-scheduler plateau --lr-plateau-factor 0.5 --lr-plateau-patience-evals 8 --min-learning-rate 1e-05 --search-root training_results/feature_regression_enhanced --baseline-metrics training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json --selection-config experiments/model_selection_weights.json --split-seed 7
+candidate: D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37
+family: enhanced
+source CSV: /content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/training_features_enhanced.csv
+features: 66
+output: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc
+epoch     1 train=1.526519 s3mag=0.000000 validation=1.812783 lr=0.0006
+epoch    25 train=0.573715 s3mag=0.000000 validation=0.762998 lr=0.0006
+epoch    50 train=0.229898 s3mag=0.000000 validation=0.339964 lr=0.0006
+epoch    75 train=0.155156 s3mag=0.000000 validation=0.242930 lr=0.0006
+epoch   100 train=0.126355 s3mag=0.000000 validation=0.203936 lr=0.0006
+epoch   125 train=0.109453 s3mag=0.000000 validation=0.180765 lr=0.0006
+epoch   150 train=0.095923 s3mag=0.000000 validation=0.161332 lr=0.0006
+epoch   175 train=0.083414 s3mag=0.000000 validation=0.143465 lr=0.0006
+epoch   200 train=0.072383 s3mag=0.000000 validation=0.128141 lr=0.0006
+epoch   225 train=0.062449 s3mag=0.000000 validation=0.114932 lr=0.0006
+epoch   250 train=0.055997 s3mag=0.000000 validation=0.106493 lr=0.0006
+epoch   275 train=0.050851 s3mag=0.000000 validation=0.099208 lr=0.0006
+epoch   300 train=0.046790 s3mag=0.000000 validation=0.093634 lr=0.0006
+epoch   325 train=0.043399 s3mag=0.000000 validation=0.088706 lr=0.0006
+epoch   350 train=0.040360 s3mag=0.000000 validation=0.084329 lr=0.0006
+epoch   375 train=0.037365 s3mag=0.000000 validation=0.080224 lr=0.0006
+epoch   400 train=0.035102 s3mag=0.000000 validation=0.077220 lr=0.0006
+epoch   425 train=0.032755 s3mag=0.000000 validation=0.074281 lr=0.0006
+epoch   450 train=0.030632 s3mag=0.000000 validation=0.071605 lr=0.0006
+epoch   475 train=0.028591 s3mag=0.000000 validation=0.068896 lr=0.0006
+epoch   500 train=0.027103 s3mag=0.000000 validation=0.066445 lr=0.0006
+epoch   525 train=0.025159 s3mag=0.000000 validation=0.064600 lr=0.0006
+epoch   550 train=0.023586 s3mag=0.000000 validation=0.062854 lr=0.0006
+epoch   575 train=0.022336 s3mag=0.000000 validation=0.061097 lr=0.0006
+epoch   600 train=0.020952 s3mag=0.000000 validation=0.059449 lr=0.0006
+epoch   625 train=0.020086 s3mag=0.000000 validation=0.058681 lr=0.0006
+epoch   650 train=0.018728 s3mag=0.000000 validation=0.056872 lr=0.0006
+epoch   675 train=0.017801 s3mag=0.000000 validation=0.055722 lr=0.0006
+epoch   700 train=0.016750 s3mag=0.000000 validation=0.054691 lr=0.0006
+epoch   725 train=0.015600 s3mag=0.000000 validation=0.052837 lr=0.0006
+epoch   750 train=0.015025 s3mag=0.000000 validation=0.052466 lr=0.0006
+epoch   775 train=0.014081 s3mag=0.000000 validation=0.051153 lr=0.0006
+epoch   800 train=0.013460 s3mag=0.000000 validation=0.050731 lr=0.0006
+epoch   825 train=0.012704 s3mag=0.000000 validation=0.049599 lr=0.0006
+epoch   850 train=0.012354 s3mag=0.000000 validation=0.049031 lr=0.0006
+epoch   875 train=0.011913 s3mag=0.000000 validation=0.048661 lr=0.0006
+epoch   900 train=0.011176 s3mag=0.000000 validation=0.047980 lr=0.0006
+epoch   925 train=0.010671 s3mag=0.000000 validation=0.047052 lr=0.0006
+epoch   950 train=0.010462 s3mag=0.000000 validation=0.046965 lr=0.0006
+epoch   975 train=0.010192 s3mag=0.000000 validation=0.046160 lr=0.0006
+epoch  1000 train=0.009452 s3mag=0.000000 validation=0.045578 lr=0.0006
+epoch  1025 train=0.008969 s3mag=0.000000 validation=0.045386 lr=0.0006
+epoch  1050 train=0.008626 s3mag=0.000000 validation=0.044918 lr=0.0006
+epoch  1075 train=0.008314 s3mag=0.000000 validation=0.044328 lr=0.0006
+epoch  1100 train=0.007992 s3mag=0.000000 validation=0.043975 lr=0.0006
+epoch  1125 train=0.007695 s3mag=0.000000 validation=0.043501 lr=0.0006
+epoch  1150 train=0.007428 s3mag=0.000000 validation=0.043391 lr=0.0006
+epoch  1175 train=0.007136 s3mag=0.000000 validation=0.042704 lr=0.0006
+epoch  1200 train=0.006913 s3mag=0.000000 validation=0.042456 lr=0.0006
+epoch  1225 train=0.006697 s3mag=0.000000 validation=0.042197 lr=0.0006
+epoch  1250 train=0.006459 s3mag=0.000000 validation=0.041969 lr=0.0006
+epoch  1275 train=0.006247 s3mag=0.000000 validation=0.041739 lr=0.0006
+epoch  1300 train=0.006069 s3mag=0.000000 validation=0.041634 lr=0.0006
+epoch  1325 train=0.005860 s3mag=0.000000 validation=0.041345 lr=0.0006
+epoch  1350 train=0.005638 s3mag=0.000000 validation=0.040808 lr=0.0006
+epoch  1375 train=0.005537 s3mag=0.000000 validation=0.040855 lr=0.0006
+epoch  1400 train=0.005339 s3mag=0.000000 validation=0.040494 lr=0.0006
+epoch  1425 train=0.005152 s3mag=0.000000 validation=0.039904 lr=0.0006
+epoch  1450 train=0.005079 s3mag=0.000000 validation=0.040421 lr=0.0006
+epoch  1475 train=0.004952 s3mag=0.000000 validation=0.039823 lr=0.0006
+epoch  1500 train=0.004781 s3mag=0.000000 validation=0.039539 lr=0.0006
+epoch  1525 train=0.004636 s3mag=0.000000 validation=0.039158 lr=0.0006
+epoch  1550 train=0.004477 s3mag=0.000000 validation=0.039188 lr=0.0006
+epoch  1575 train=0.004406 s3mag=0.000000 validation=0.038830 lr=0.0006
+epoch  1600 train=0.004294 s3mag=0.000000 validation=0.038812 lr=0.0006
+epoch  1625 train=0.004194 s3mag=0.000000 validation=0.038885 lr=0.0006
+epoch  1650 train=0.004099 s3mag=0.000000 validation=0.038876 lr=0.0006
+epoch  1675 train=0.004005 s3mag=0.000000 validation=0.038690 lr=0.0006
+epoch  1700 train=0.003923 s3mag=0.000000 validation=0.038422 lr=0.0006
+epoch  1725 train=0.003799 s3mag=0.000000 validation=0.038263 lr=0.0006
+epoch  1750 train=0.003730 s3mag=0.000000 validation=0.038025 lr=0.0006
+epoch  1775 train=0.003624 s3mag=0.000000 validation=0.037870 lr=0.0006
+epoch  1800 train=0.003592 s3mag=0.000000 validation=0.037871 lr=0.0006
+epoch  1825 train=0.003551 s3mag=0.000000 validation=0.037654 lr=0.0006
+epoch  1850 train=0.003468 s3mag=0.000000 validation=0.037824 lr=0.0006
+epoch  1875 train=0.003419 s3mag=0.000000 validation=0.037570 lr=0.0006
+epoch  1900 train=0.003388 s3mag=0.000000 validation=0.037442 lr=0.0006
+epoch  1925 train=0.003261 s3mag=0.000000 validation=0.037187 lr=0.0006
+epoch  1950 train=0.003165 s3mag=0.000000 validation=0.037195 lr=0.0006
+epoch  1975 train=0.003144 s3mag=0.000000 validation=0.037227 lr=0.0006
+epoch  2000 train=0.003115 s3mag=0.000000 validation=0.037252 lr=0.0006
+epoch  2025 train=0.003041 s3mag=0.000000 validation=0.036877 lr=0.0006
+epoch  2050 train=0.002996 s3mag=0.000000 validation=0.036947 lr=0.0006
+epoch  2075 train=0.002988 s3mag=0.000000 validation=0.036667 lr=0.0006
+epoch  2100 train=0.002903 s3mag=0.000000 validation=0.036740 lr=0.0006
+epoch  2125 train=0.002904 s3mag=0.000000 validation=0.037024 lr=0.0006
+epoch  2150 train=0.002811 s3mag=0.000000 validation=0.036482 lr=0.0006
+epoch  2175 train=0.002757 s3mag=0.000000 validation=0.036426 lr=0.0006
+epoch  2200 train=0.002751 s3mag=0.000000 validation=0.036403 lr=0.0006
+epoch  2225 train=0.002692 s3mag=0.000000 validation=0.036426 lr=0.0006
+epoch  2250 train=0.002698 s3mag=0.000000 validation=0.036592 lr=0.0006
+epoch  2275 train=0.002657 s3mag=0.000000 validation=0.036559 lr=0.0006
+epoch  2300 train=0.002615 s3mag=0.000000 validation=0.036087 lr=0.0006
+epoch  2325 train=0.002571 s3mag=0.000000 validation=0.036199 lr=0.0006
+epoch  2350 train=0.002550 s3mag=0.000000 validation=0.036234 lr=0.0006
+epoch  2375 train=0.002509 s3mag=0.000000 validation=0.036025 lr=0.0006
+epoch  2400 train=0.002440 s3mag=0.000000 validation=0.036066 lr=0.0006
+epoch  2425 train=0.002479 s3mag=0.000000 validation=0.036318 lr=0.0006
+epoch  2450 train=0.002408 s3mag=0.000000 validation=0.036393 lr=0.0006
+epoch  2475 train=0.002408 s3mag=0.000000 validation=0.036295 lr=0.0006
+epoch  2500 train=0.002339 s3mag=0.000000 validation=0.035847 lr=0.0006
+epoch  2525 train=0.002316 s3mag=0.000000 validation=0.035679 lr=0.0006
+epoch  2550 train=0.002298 s3mag=0.000000 validation=0.035615 lr=0.0006
+epoch  2575 train=0.002283 s3mag=0.000000 validation=0.035617 lr=0.0006
+epoch  2600 train=0.002257 s3mag=0.000000 validation=0.035878 lr=0.0006
+epoch  2625 train=0.002214 s3mag=0.000000 validation=0.035702 lr=0.0006
+epoch  2650 train=0.002197 s3mag=0.000000 validation=0.035824 lr=0.0006
+epoch  2675 train=0.002202 s3mag=0.000000 validation=0.035825 lr=0.0006
+epoch  2700 train=0.002203 s3mag=0.000000 validation=0.035546 lr=0.0006
+epoch  2725 train=0.002149 s3mag=0.000000 validation=0.035344 lr=0.0006
+epoch  2750 train=0.002118 s3mag=0.000000 validation=0.035507 lr=0.0006
+epoch  2775 train=0.002123 s3mag=0.000000 validation=0.035612 lr=0.0006
+epoch  2800 train=0.002087 s3mag=0.000000 validation=0.035501 lr=0.0006
+epoch  2825 train=0.002074 s3mag=0.000000 validation=0.035103 lr=0.0006
+epoch  2850 train=0.002107 s3mag=0.000000 validation=0.035758 lr=0.0006
+epoch  2875 train=0.002058 s3mag=0.000000 validation=0.035331 lr=0.0006
+epoch  2900 train=0.002037 s3mag=0.000000 validation=0.035269 lr=0.0006
+epoch  2925 train=0.002010 s3mag=0.000000 validation=0.035123 lr=0.0006
+epoch  2950 train=0.002003 s3mag=0.000000 validation=0.035237 lr=0.0006
+epoch  2975 train=0.001983 s3mag=0.000000 validation=0.035359 lr=0.0006
+epoch  3000 train=0.001931 s3mag=0.000000 validation=0.035003 lr=0.0006
+epoch  3025 train=0.001919 s3mag=0.000000 validation=0.035261 lr=0.0006
+epoch  3050 train=0.001944 s3mag=0.000000 validation=0.034849 lr=0.0006
+epoch  3075 train=0.001908 s3mag=0.000000 validation=0.034902 lr=0.0006
+epoch  3100 train=0.001909 s3mag=0.000000 validation=0.035058 lr=0.0006
+epoch  3125 train=0.001903 s3mag=0.000000 validation=0.034876 lr=0.0006
+epoch  3150 train=0.001894 s3mag=0.000000 validation=0.034926 lr=0.0006
+epoch  3175 train=0.001885 s3mag=0.000000 validation=0.035028 lr=0.0006
+epoch  3200 train=0.001862 s3mag=0.000000 validation=0.034998 lr=0.0006
+epoch  3225 train=0.001850 s3mag=0.000000 validation=0.034990 lr=0.0006
+epoch  3250 train=0.001896 s3mag=0.000000 validation=0.034741 lr=0.0006
+epoch  3275 train=0.001863 s3mag=0.000000 validation=0.035155 lr=0.0006
+epoch  3300 train=0.001811 s3mag=0.000000 validation=0.034761 lr=0.0006
+epoch  3325 train=0.001816 s3mag=0.000000 validation=0.034688 lr=0.0006
+epoch  3350 train=0.001766 s3mag=0.000000 validation=0.034568 lr=0.0006
+epoch  3375 train=0.001762 s3mag=0.000000 validation=0.034475 lr=0.0006
+epoch  3400 train=0.001784 s3mag=0.000000 validation=0.034622 lr=0.0006
+epoch  3425 train=0.001746 s3mag=0.000000 validation=0.034543 lr=0.0006
+epoch  3450 train=0.001757 s3mag=0.000000 validation=0.034667 lr=0.0006
+epoch  3475 train=0.001730 s3mag=0.000000 validation=0.034143 lr=0.0006
+epoch  3500 train=0.001704 s3mag=0.000000 validation=0.034330 lr=0.0006
+epoch  3525 train=0.001723 s3mag=0.000000 validation=0.034545 lr=0.0006
+epoch  3550 train=0.001704 s3mag=0.000000 validation=0.034581 lr=0.0006
+epoch  3575 train=0.001684 s3mag=0.000000 validation=0.034436 lr=0.0006
+epoch  3600 train=0.001669 s3mag=0.000000 validation=0.034226 lr=0.0006
+epoch  3625 train=0.001687 s3mag=0.000000 validation=0.034616 lr=0.0006
+epoch  3650 train=0.001686 s3mag=0.000000 validation=0.034276 lr=0.0006
+epoch  3675 train=0.001662 s3mag=0.000000 validation=0.034435 lr=0.0006
+epoch  3700 train=0.001647 s3mag=0.000000 validation=0.034535 lr=0.0006
+epoch  3725 train=0.001545 s3mag=0.000000 validation=0.034011 lr=0.0003
+epoch  3750 train=0.001527 s3mag=0.000000 validation=0.034075 lr=0.0003
+epoch  3775 train=0.001514 s3mag=0.000000 validation=0.034061 lr=0.0003
+epoch  3800 train=0.001509 s3mag=0.000000 validation=0.034144 lr=0.0003
+epoch  3825 train=0.001517 s3mag=0.000000 validation=0.033871 lr=0.0003
+epoch  3850 train=0.001506 s3mag=0.000000 validation=0.034206 lr=0.0003
+epoch  3875 train=0.001514 s3mag=0.000000 validation=0.033784 lr=0.0003
+epoch  3900 train=0.001486 s3mag=0.000000 validation=0.033967 lr=0.0003
+epoch  3925 train=0.001486 s3mag=0.000000 validation=0.033987 lr=0.0003
+epoch  3950 train=0.001482 s3mag=0.000000 validation=0.034016 lr=0.0003
+epoch  3975 train=0.001503 s3mag=0.000000 validation=0.034012 lr=0.0003
+epoch  4000 train=0.001467 s3mag=0.000000 validation=0.033909 lr=0.0003
+epoch  4025 train=0.001451 s3mag=0.000000 validation=0.033770 lr=0.0003
+epoch  4050 train=0.001455 s3mag=0.000000 validation=0.033569 lr=0.0003
+epoch  4075 train=0.001473 s3mag=0.000000 validation=0.033495 lr=0.0003
+epoch  4100 train=0.001464 s3mag=0.000000 validation=0.033764 lr=0.0003
+epoch  4125 train=0.001464 s3mag=0.000000 validation=0.033771 lr=0.0003
+epoch  4150 train=0.001453 s3mag=0.000000 validation=0.033639 lr=0.0003
+epoch  4175 train=0.001455 s3mag=0.000000 validation=0.033938 lr=0.0003
+epoch  4200 train=0.001452 s3mag=0.000000 validation=0.033729 lr=0.0003
+epoch  4225 train=0.001455 s3mag=0.000000 validation=0.033704 lr=0.0003
+epoch  4250 train=0.001448 s3mag=0.000000 validation=0.033746 lr=0.0003
+epoch  4275 train=0.001424 s3mag=0.000000 validation=0.033555 lr=0.0003
+epoch  4300 train=0.001432 s3mag=0.000000 validation=0.033595 lr=0.0003
+epoch  4325 train=0.001384 s3mag=0.000000 validation=0.033620 lr=0.00015
+epoch  4350 train=0.001377 s3mag=0.000000 validation=0.033647 lr=0.00015
+epoch  4375 train=0.001368 s3mag=0.000000 validation=0.033704 lr=0.00015
+epoch  4400 train=0.001380 s3mag=0.000000 validation=0.033673 lr=0.00015
+epoch  4425 train=0.001363 s3mag=0.000000 validation=0.033618 lr=0.00015
+epoch  4450 train=0.001359 s3mag=0.000000 validation=0.033584 lr=0.00015
+epoch  4475 train=0.001351 s3mag=0.000000 validation=0.033567 lr=0.00015
+epoch  4500 train=0.001351 s3mag=0.000000 validation=0.033439 lr=0.00015
+epoch  4525 train=0.001363 s3mag=0.000000 validation=0.033451 lr=0.00015
+epoch  4550 train=0.001358 s3mag=0.000000 validation=0.033523 lr=0.00015
+epoch  4575 train=0.001358 s3mag=0.000000 validation=0.033378 lr=0.00015
+epoch  4600 train=0.001346 s3mag=0.000000 validation=0.033590 lr=0.00015
+epoch  4625 train=0.001343 s3mag=0.000000 validation=0.033294 lr=0.00015
+epoch  4650 train=0.001346 s3mag=0.000000 validation=0.033416 lr=0.00015
+epoch  4675 train=0.001349 s3mag=0.000000 validation=0.033535 lr=0.00015
+epoch  4700 train=0.001340 s3mag=0.000000 validation=0.033489 lr=0.00015
+epoch  4725 train=0.001336 s3mag=0.000000 validation=0.033413 lr=0.00015
+epoch  4750 train=0.001335 s3mag=0.000000 validation=0.033590 lr=0.00015
+epoch  4775 train=0.001336 s3mag=0.000000 validation=0.033430 lr=0.00015
+epoch  4800 train=0.001334 s3mag=0.000000 validation=0.033369 lr=0.00015
+epoch  4825 train=0.001344 s3mag=0.000000 validation=0.033381 lr=0.00015
+epoch  4850 train=0.001334 s3mag=0.000000 validation=0.033386 lr=0.00015
+epoch  4875 train=0.001303 s3mag=0.000000 validation=0.033363 lr=7.5e-05
+epoch  4900 train=0.001311 s3mag=0.000000 validation=0.033289 lr=7.5e-05
+epoch  4925 train=0.001302 s3mag=0.000000 validation=0.033283 lr=7.5e-05
+epoch  4950 train=0.001301 s3mag=0.000000 validation=0.033365 lr=7.5e-05
+epoch  4975 train=0.001300 s3mag=0.000000 validation=0.033378 lr=7.5e-05
+epoch  5000 train=0.001301 s3mag=0.000000 validation=0.033405 lr=7.5e-05
+epoch  5025 train=0.001295 s3mag=0.000000 validation=0.033424 lr=7.5e-05
+epoch  5050 train=0.001300 s3mag=0.000000 validation=0.033286 lr=7.5e-05
+epoch  5075 train=0.001288 s3mag=0.000000 validation=0.033399 lr=7.5e-05
+epoch  5100 train=0.001291 s3mag=0.000000 validation=0.033358 lr=7.5e-05
+epoch  5125 train=0.001285 s3mag=0.000000 validation=0.033299 lr=7.5e-05
+epoch  5150 train=0.001295 s3mag=0.000000 validation=0.033288 lr=7.5e-05
+epoch  5175 train=0.001279 s3mag=0.000000 validation=0.033304 lr=3.75e-05
+epoch  5200 train=0.001272 s3mag=0.000000 validation=0.033310 lr=3.75e-05
+epoch  5225 train=0.001273 s3mag=0.000000 validation=0.033286 lr=3.75e-05
+epoch  5250 train=0.001274 s3mag=0.000000 validation=0.033236 lr=3.75e-05
+epoch  5275 train=0.001275 s3mag=0.000000 validation=0.033252 lr=3.75e-05
+epoch  5300 train=0.001267 s3mag=0.000000 validation=0.033287 lr=3.75e-05
+epoch  5325 train=0.001270 s3mag=0.000000 validation=0.033246 lr=3.75e-05
+epoch  5350 train=0.001265 s3mag=0.000000 validation=0.033195 lr=3.75e-05
+epoch  5375 train=0.001270 s3mag=0.000000 validation=0.033266 lr=3.75e-05
+epoch  5400 train=0.001271 s3mag=0.000000 validation=0.033304 lr=3.75e-05
+epoch  5425 train=0.001270 s3mag=0.000000 validation=0.033271 lr=3.75e-05
+epoch  5450 train=0.001266 s3mag=0.000000 validation=0.033313 lr=3.75e-05
+epoch  5475 train=0.001267 s3mag=0.000000 validation=0.033297 lr=3.75e-05
+epoch  5500 train=0.001261 s3mag=0.000000 validation=0.033340 lr=3.75e-05
+epoch  5525 train=0.001266 s3mag=0.000000 validation=0.033280 lr=3.75e-05
+epoch  5550 train=0.001263 s3mag=0.000000 validation=0.033289 lr=3.75e-05
+epoch  5575 train=0.001266 s3mag=0.000000 validation=0.033238 lr=3.75e-05
+epoch  5600 train=0.001263 s3mag=0.000000 validation=0.033330 lr=1.87e-05
+epoch  5625 train=0.001259 s3mag=0.000000 validation=0.033289 lr=1.87e-05
+epoch  5650 train=0.001256 s3mag=0.000000 validation=0.033293 lr=1.87e-05
+epoch  5675 train=0.001256 s3mag=0.000000 validation=0.033260 lr=1.87e-05
+epoch  5700 train=0.001257 s3mag=0.000000 validation=0.033249 lr=1.87e-05
+epoch  5725 train=0.001256 s3mag=0.000000 validation=0.033270 lr=1.87e-05
+epoch  5750 train=0.001250 s3mag=0.000000 validation=0.033275 lr=1.87e-05
+epoch  5775 train=0.001254 s3mag=0.000000 validation=0.033273 lr=1.87e-05
+epoch  5800 train=0.001253 s3mag=0.000000 validation=0.033213 lr=1.87e-05
+epoch  5825 train=0.001253 s3mag=0.000000 validation=0.033227 lr=1e-05
+epoch  5850 train=0.001249 s3mag=0.000000 validation=0.033265 lr=1e-05
+epoch  5875 train=0.001251 s3mag=0.000000 validation=0.033310 lr=1e-05
+epoch  5900 train=0.001249 s3mag=0.000000 validation=0.033292 lr=1e-05
+epoch  5925 train=0.001247 s3mag=0.000000 validation=0.033283 lr=1e-05
+epoch  5950 train=0.001251 s3mag=0.000000 validation=0.033291 lr=1e-05
+epoch  5975 train=0.001250 s3mag=0.000000 validation=0.033296 lr=1e-05
+epoch  6000 train=0.001250 s3mag=0.000000 validation=0.033260 lr=1e-05
+metrics: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/metrics_model_loop.json
+selection: training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/selection_score.json
+weighted_score: 0.057768715779082144
+rejected: False []
+batch manifest: training_results/model_selection_batches/v3_smoothl1_seed_repeat_batch_20260611_072634_utc/batch_manifest.json
+batch status: complete
+
+$ git config user.name 'Colab Regression Worker'
+
+$ git config user.email colab-regression-worker@users.noreply.github.com
+
+$ git add --force -- colab_worker_logs/colab_worker_cycle_11_20260606_031253_utc.json colab_worker_logs/colab_worker_cycle_02_20260609_052644_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_093303_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_023703_utc.json colab_worker_logs/colab_worker_cycle_08_20260610_073227_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_083240_utc.json colab_worker_logs/colab_worker_cycle_01_20260610_072842_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_103119_utc.json colab_worker_logs/colab_worker_cycle_06_20260610_073123_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025104_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_031340_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_030728_utc.json colab_worker_logs/colab_worker_cycle_01_20260610_053359_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025747_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_082717_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260611_071658_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_023631_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025556_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_024431_utc.json colab_worker_logs/colab_worker_cycle_05_20260610_073051_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_031120_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_030555_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_033038_utc.json colab_worker_logs/colab_worker_cycle_09_20260606_032952_utc.json colab_worker_logs/colab_worker_cycle_02_20260610_072915_utc.json colab_worker_logs/colab_worker_cycle_02_20260607_051122_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_032736_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_032605_utc.json colab_worker_logs/colab_worker_cycle_08_20260609_074535_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025627_utc.json colab_worker_logs/colab_worker_cycle_07_20260609_071247_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025512_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_031034_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_024637_utc.json colab_worker_logs/colab_worker_cycle_08_20260610_063311_utc.json colab_worker_logs/colab_worker_cycle_03_20260607_052303_utc.json colab_worker_logs/colab_worker_cycle_03_20260610_053503_utc.json colab_worker_logs/colab_worker_cycle_08_20260610_053743_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025207_utc.json colab_worker_logs/colab_worker_cycle_06_20260610_053639_utc.json colab_worker_logs/colab_worker_cycle_07_20260610_073155_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_032349_utc.json colab_worker_logs/colab_worker_cycle_04_20260610_063103_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_103337_utc.json colab_worker_logs/colab_worker_cycle_01_20260607_045916_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_082108_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_215736_utc.json colab_worker_logs/colab_worker_cycle_01_20260607_044108_utc.json colab_worker_logs/colab_worker_cycle_03_20260610_063031_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_023529_utc.json colab_worker_logs/colab_worker_cycle_06_20260609_065223_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_031207_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_102529_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025741_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_033208_utc.json colab_worker_logs/colab_worker_cycle_03_20260609_054659_utc.json colab_worker_logs/colab_worker_cycle_05_20260607_055253_utc.json colab_worker_logs/colab_worker_cycle_05_20260609_065150_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_030509_utc.json colab_worker_logs/colab_worker_cycle_01_20260609_051905_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_025632_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_215550_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_103610_utc.json colab_worker_logs/colab_worker_cycle_02_20260610_062959_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_030901_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_024606_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025239_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025550_utc.json colab_worker_logs/colab_worker_cycle_06_20260610_063207_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_024503_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_102045_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_083052_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260607_045023_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_032650_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_082600_utc.json colab_worker_logs/colab_worker_cycle_06_20260606_221756_utc.json colab_worker_logs/colab_worker_cycle_01_20260610_062926_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_024534_utc.json colab_worker_logs/colab_worker_cycle_07_20260610_053711_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_082256_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_025518_utc.json colab_worker_logs/colab_worker_cycle_12_20260606_083701_utc.json colab_worker_logs/colab_worker_cycle_01_20260609_045237_utc.json colab_worker_logs/colab_worker_cycle_03_20260610_072947_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_082905_utc.json colab_worker_logs/colab_worker_cycle_04_20260609_061642_utc.json colab_worker_logs/colab_worker_cycle_06_20260607_062752_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_083544_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260609_051234_utc.json colab_worker_logs/colab_worker_cycle_07_20260610_063238_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_030947_utc.json colab_worker_logs/colab_worker_cycle_04_20260607_053830_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_082413_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_030814_utc.json colab_worker_logs/colab_worker_cycle_05_20260610_053607_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_032821_utc.json colab_worker_logs/colab_worker_cycle_07_20260606_222305_utc.json colab_worker_logs/colab_worker_cycle_04_20260610_053535_utc.json colab_worker_logs/colab_worker_cycle_10_20260606_083357_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_025710_utc.json colab_worker_logs/colab_worker_cycle_04_20260610_073019_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_220000_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260606_215106_utc.json colab_worker_logs/uno_feature_regression_enhanced_dataset_bootstrap_executed_20260610_051440_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_032434_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_030642_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_025136_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_221217_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_025310_utc.json colab_worker_logs/colab_worker_cycle_05_20260606_023734_utc.json colab_worker_logs/colab_worker_notebook_smoke_executed_20260606_025704_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_222844_utc.json colab_worker_logs/colab_worker_cycle_05_20260610_063135_utc.json colab_worker_logs/colab_worker_cycle_02_20260606_023600_utc.json colab_worker_logs/colab_worker_cycle_03_20260606_032519_utc.json colab_worker_logs/colab_worker_cycle_01_20260606_081951_utc.json colab_worker_logs/colab_worker_cycle_08_20260606_032907_utc.json colab_worker_logs/colab_worker_cycle_11_20260606_033123_utc.json colab_worker_logs/colab_worker_cycle_02_20260610_053431_utc.json colab_worker_logs/colab_worker_cycle_04_20260606_220638_utc.json colab_worker_logs/colab_worker_20260610_051439_utc.log colab_worker_logs/colab_worker_20260610_054732_utc.log colab_worker_logs/colab_worker_20260607_044106_utc.log colab_worker_logs/colab_worker_20260610_065204_utc.log colab_worker_logs/colab_worker_20260606_102044_utc.log colab_worker_logs/colab_worker_20260606_215105_utc.log colab_worker_logs/colab_worker_20260607_045022_utc.log colab_worker_logs/colab_worker_20260610_055057_utc.log colab_worker_logs/colab_worker_20260609_045236_utc.log colab_worker_logs/colab_worker_20260609_051233_utc.log colab_worker_logs/colab_worker_20260611_071658_utc.log training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/dataset_manifest.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/targeted25k_audit.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/new_targeted_label_summary.csv training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/label_summary.csv training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260610_051450_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260607_045033_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260611_071708_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v2_coupled16k_stratified_dropout_20260609_051244_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/feature_columns_enhanced.json training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260607_045410_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4b_a1_b2_s3_topup14k_20260609_052343_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v4_a1_b2_s3_20260609_051644_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/C1__S3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/S3_x__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/S3_y__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/C1__S3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/S3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/A3_x__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/S3_x__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/S3_y__A3_x_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/C1__A3_y_hist2d.png training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260611_072105_utc/hard_target_histograms/C1__A3_x_hist2d.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/run_manifest_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/metrics_model_loop.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/metrics_model_loop.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/metrics_model_loop.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/per_target_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/vector_diagnostics.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/selection_score.json training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/selection_score.json training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/selection_score.json training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/model_registry_model_loop.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/training_history_summary.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/target_scale_summary.csv training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/training_history_summary.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/target_scale_summary.csv training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/training_history_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/target_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/training_history_summary.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/target_scale_summary.csv training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/feature_scale_summary.csv training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_20260607_054212_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p10_20260610_055058_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.05_validation_protocol_20260606_220507_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.10_validation_protocol_20260606_221043_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_targeted25k_20260607_060416_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed37_20260611_074903_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_v4b25k_20260609_060646_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_targeted25k_20260607_061703_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width256_lr4e-4_dropout0.10_targeted25k_20260607_052920_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr8e-4_dropout0.075_validation_protocol_20260606_222710_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width256_lr6e-4_dropout0.075_targeted25k_20260607_051606_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_targeted25k_20260607_050604_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_mse_20260610_070127_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215654_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr4e-4_dropout0.075_validation_protocol_20260606_221623_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed11_20260611_072635_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_bin_diag_20260609_070101_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_seeded_fullbatch_mse_20260610_065206_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_20260610_060019_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr8e-4_dropout0.075_targeted25k_20260607_055328_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width192_lr6e-4_dropout0.075_validation_protocol_20260606_222131_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p50_20260610_061003_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/training_history_model_loop.png training_results/model_selection_loop/D66_architectureD_width128_lr6e-4_respen1e-3_rerun_validation_protocol_20260606_215909_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr6e-4_dropout0.05_20260606_103035_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr8e-4_dropout0.075_v4b25k_20260609_063940_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.10_v4b25k_20260609_062923_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v4b25k_20260609_053654_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_20260606_103252_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_minibatch4096_plateau_clip_mse_20260610_072047_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr8e-4_dropout0.05_rerun_validation_protocol_20260606_215459_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width384_lr6e-4_dropout0.075_v4b25k_20260609_061715_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_w0p25_high2_20260610_061945_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_s3magloss_20260610_052422_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/training_history_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/prediction_scatter_model_loop.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/S3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/S3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/S3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/B2_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/B2_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/B2_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/A3_angle_error_vs_true_magnitude.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/A3_pred_vs_true_angle.png training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_seed23_20260611_073754_utc/plots/vector_diagnostics/A3_pred_vs_true_magnitude.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/training_history_model_loop.png training_results/model_selection_loop/D66_width128_lr4e-4_dropout0.05_20260606_102435_utc/prediction_scatter_model_loop.png training_results/model_selection_batches/v3_smoothl1_seed_repeat_batch_20260611_072634_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063135_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_072947_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063310_utc/batch_manifest.json training_results/model_selection_batches/v4b25k_grouped_head_batch_live_20260609_061715_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053535_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063031_utc/batch_manifest.json training_results/model_selection_batches/v4b25k_grouped_head_batch_live_20260609_065223_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063206_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073227_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073155_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063238_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_072915_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_051440_utc/batch_manifest.json training_results/model_selection_batches/targeted25k_architecture_batch_live_20260607_055327_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_062959_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_055057_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053711_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073019_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073051_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053607_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053503_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073123_utc/batch_manifest.json training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063103_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053431_utc/batch_manifest.json training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_065205_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053639_utc/batch_manifest.json training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053743_utc/batch_manifest.json training_results/model_selection_batches/v3_smoothl1_seed_repeat_batch_20260611_072634_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063135_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_072947_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063310_utc/batch_summary.csv training_results/model_selection_batches/v4b25k_grouped_head_batch_live_20260609_061715_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053535_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063031_utc/batch_summary.csv training_results/model_selection_batches/v4b25k_grouped_head_batch_live_20260609_065223_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063206_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073227_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073155_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063238_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_072915_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_051440_utc/batch_summary.csv training_results/model_selection_batches/targeted25k_architecture_batch_live_20260607_055327_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_062959_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_055057_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053711_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073019_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073051_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053607_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053503_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_073123_utc/batch_summary.csv training_results/model_selection_batches/v3_s3_magnitude_loss_weight_batch_20260610_063103_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053431_utc/batch_summary.csv training_results/model_selection_batches/v3_optimizer_stability_batch_20260610_065205_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053639_utc/batch_summary.csv training_results/model_selection_batches/s3magloss_data_scale_decision_20260610_053743_utc/batch_summary.csv colab_worker_logs/colab_worker_cycle_01_20260611_080014_utc.json
