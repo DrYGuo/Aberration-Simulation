@@ -14,6 +14,7 @@ checkpoints. This script therefore has two modes:
 from __future__ import annotations
 
 import argparse
+import csv
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -128,6 +129,37 @@ def load_prediction_npz(run_dir: Path) -> tuple[np.ndarray, np.ndarray, list[str
     return y_true, y_pred, target_columns
 
 
+def load_audit_csv(run_dir: Path) -> dict[str, Any] | None:
+    path = run_dir / "s3_magnitude_metric_audit_validation.csv"
+    if not path.exists():
+        return None
+    import numpy as np
+
+    with path.open() as handle:
+        rows = list(csv.DictReader(handle))
+    if not rows:
+        return None
+
+    def column(name: str) -> np.ndarray:
+        return np.asarray([float(row[name]) for row in rows], dtype=float)
+
+    return {
+        "path": str(path),
+        "n": len(rows),
+        "true_x": column("true_s3_x"),
+        "true_y": column("true_s3_y"),
+        "pred_x": column("pred_s3_x"),
+        "pred_y": column("pred_s3_y"),
+        "true_mag": column("true_s3_magnitude"),
+        "pred_mag": column("pred_s3_magnitude"),
+        "magnitude_error": column("magnitude_error"),
+        "vector_residual": column("vector_residual_magnitude"),
+        "angle_error_deg": column("angle_error_deg"),
+        "high_mask": np.asarray([str(row["high_s3_bin"]).lower() == "true" for row in rows], dtype=bool),
+        "vector_scale": float(rows[0]["vector_scale"]),
+    }
+
+
 def plot_audit(
     output_dir: Path,
     run_key: str,
@@ -190,6 +222,43 @@ def plot_audit(
     return outputs
 
 
+def plot_audit_from_csv(output_dir: Path, run_key: str, audit: dict[str, Any]) -> list[str]:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    plot_dir = output_dir / "plots"
+    plot_dir.mkdir(parents=True, exist_ok=True)
+    outputs: list[str] = []
+
+    def scatter(path: Path, x: np.ndarray, y: np.ndarray, xlabel: str, ylabel: str, title: str, identity: bool = False) -> None:
+        fig, ax = plt.subplots(figsize=(4.2, 3.5))
+        ax.scatter(x, y, s=8, alpha=0.5)
+        if identity and len(x) and len(y):
+            low = float(min(np.min(x), np.min(y)))
+            high = float(max(np.max(x), np.max(y)))
+            ax.plot([low, high], [low, high], "k--", linewidth=0.8)
+        else:
+            ax.axhline(0.0, color="k", linestyle="--", linewidth=0.8)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title, fontsize=10)
+        ax.grid(alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(path, dpi=120)
+        plt.close(fig)
+        outputs.append(str(path))
+
+    high_mask = audit["high_mask"]
+    scatter(plot_dir / f"{run_key}_S3_x_pred_vs_true.png", audit["true_x"], audit["pred_x"], "true S3_x", "pred S3_x", f"{run_key}: S3_x", True)
+    scatter(plot_dir / f"{run_key}_S3_y_pred_vs_true.png", audit["true_y"], audit["pred_y"], "true S3_y", "pred S3_y", f"{run_key}: S3_y", True)
+    scatter(plot_dir / f"{run_key}_S3_mag_pred_vs_true_all.png", audit["true_mag"], audit["pred_mag"], "true |S3|", "pred |S3|", f"{run_key}: |S3| all", True)
+    scatter(plot_dir / f"{run_key}_S3_mag_pred_vs_true_high.png", audit["true_mag"][high_mask], audit["pred_mag"][high_mask], "true |S3|", "pred |S3|", f"{run_key}: |S3| high bin", True)
+    scatter(plot_dir / f"{run_key}_S3_mag_residual_vs_true_mag.png", audit["true_mag"], audit["magnitude_error"], "true |S3|", "pred |S3| - true |S3|", f"{run_key}: magnitude residual")
+    scatter(plot_dir / f"{run_key}_S3_vector_residual_vs_true_mag.png", audit["true_mag"], audit["vector_residual"], "true |S3|", "vector residual magnitude", f"{run_key}: vector residual")
+    scatter(plot_dir / f"{run_key}_S3_angle_error_vs_true_mag.png", audit["true_mag"], audit["angle_error_deg"], "true |S3|", "angle error deg", f"{run_key}: angle error")
+    return outputs
+
+
 def copy_existing_s3_plots(run_dir: Path, output_dir: Path, run_key: str) -> list[str]:
     plot_dir = output_dir / "plots"
     plot_dir.mkdir(parents=True, exist_ok=True)
@@ -213,6 +282,7 @@ def audit_run(run_key: str, run_dir: Path, output_dir: Path) -> dict[str, Any]:
     vector = load_json(run_dir / "vector_diagnostics.json")
     manifest = load_json(run_dir / "run_manifest_model_loop.json")
     selection = load_json(run_dir / "selection_score.json")
+    audit_csv = load_audit_csv(run_dir)
     prediction_data = load_prediction_npz(run_dir)
     result: dict[str, Any] = {
         "run_key": run_key,
@@ -227,6 +297,7 @@ def audit_run(run_key: str, run_dir: Path, output_dir: Path) -> dict[str, Any]:
             if path.exists()
         ],
         "has_raw_validation_predictions": prediction_data is not None,
+        "has_s3_audit_csv": audit_csv is not None,
         "weighted_score": selection.get("weighted_score"),
         "dataset": manifest.get("dataset", {}),
         "existing_plots_copied": copy_existing_s3_plots(run_dir, output_dir, run_key),
@@ -243,6 +314,33 @@ def audit_run(run_key: str, run_dir: Path, output_dir: Path) -> dict[str, Any]:
     }
 
     if prediction_data is None:
+        if audit_csv is not None:
+            import numpy as np
+
+            high_mask = audit_csv["high_mask"]
+            angle_error_high = np.abs(audit_csv["angle_error_deg"][high_mask])
+            result["audit_mode"] = "s3_audit_csv_recompute"
+            result["files_read"].append(str(audit_csv["path"]))
+            result["computed"] = {
+                "formula": "true_mag = sqrt(S3_x^2 + S3_y^2); pred_mag = sqrt(pred_S3_x^2 + pred_S3_y^2)",
+                "high_bin": "true_mag > 0.7 * vector_scale",
+                "vector_scale": audit_csv["vector_scale"],
+                "all_magnitude": fit_stats(audit_csv["true_mag"], audit_csv["pred_mag"]),
+                "high_magnitude": fit_stats(audit_csv["true_mag"][high_mask], audit_csv["pred_mag"][high_mask]),
+                "component_slopes": {
+                    "S3_x_all": fit_stats(audit_csv["true_x"], audit_csv["pred_x"]),
+                    "S3_y_all": fit_stats(audit_csv["true_y"], audit_csv["pred_y"]),
+                    "S3_x_high": fit_stats(audit_csv["true_x"][high_mask], audit_csv["pred_x"][high_mask]),
+                    "S3_y_high": fit_stats(audit_csv["true_y"][high_mask], audit_csv["pred_y"][high_mask]),
+                },
+                "high_angle": {
+                    "mean_abs_angle_error_deg": float(np.mean(angle_error_high)) if len(angle_error_high) else None,
+                    "p95_abs_angle_error_deg": float(np.quantile(angle_error_high, 0.95)) if len(angle_error_high) >= 2 else None,
+                    "n": int(len(angle_error_high)),
+                },
+            }
+            result["generated_plots"] = plot_audit_from_csv(output_dir, run_key, audit_csv)
+            return result
         result["audit_mode"] = "compact_artifact_limited"
         result["limitation"] = (
             "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, "
@@ -324,17 +422,18 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "",
         "## Stored Metric Comparison",
         "",
-        "| run | has raw predictions | weighted score | high n | stored high OLS slope | stored high MAE | stored high bias | stored high RMSE | high angle mean deg | high angle p95 deg |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| run | has raw predictions | has S3 audit CSV | weighted score | high n | stored high OLS slope | stored high MAE | stored high bias | stored high RMSE | high angle mean deg | high angle p95 deg |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for run in payload["runs"]:
         high = run["stored_vector_diagnostics"].get("high_bin", {})
         mag = high.get("magnitude", {})
         angle = high.get("angle", {})
         lines.append(
-            "| {run} | {raw} | {score} | {n} | {slope} | {mae} | {bias} | {rmse} | {angle_mean} | {angle_p95} |".format(
+            "| {run} | {raw} | {csv} | {score} | {n} | {slope} | {mae} | {bias} | {rmse} | {angle_mean} | {angle_p95} |".format(
                 run=run["run_key"],
                 raw=run["has_raw_validation_predictions"],
+                csv=run.get("has_s3_audit_csv", False),
                 score=fmt(run.get("weighted_score")),
                 n=fmt(high.get("n"), 0),
                 slope=fmt(mag.get("magnitude_slope")),
@@ -348,14 +447,24 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.extend(["", "## Full Recompute Tables", ""])
     full_runs = [run for run in payload["runs"] if run.get("computed")]
     if not full_runs:
-        lines.append("No run folder contained `validation_predictions_s3_audit.npz`, so through-origin slopes and component slopes could not be recomputed from saved predictions in this local audit.")
+        lines.append("No run folder contained `validation_predictions_s3_audit.npz` or `s3_magnitude_metric_audit_validation.csv`, so through-origin slopes and component slopes could not be recomputed from saved predictions in this local audit.")
     else:
+        lines.append("### Magnitude")
+        lines.append("")
         lines.append("| run | subset | OLS slope | intercept | through-origin slope | corr | R2 | MAE | bias | RMSE | n |")
         lines.append("|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
         for run in full_runs:
             computed = run["computed"]
             for subset in ["all_magnitude", "high_magnitude"]:
                 stats = computed[subset]
+                lines.append(
+                    f"| {run['run_key']} | {subset} | {fmt(stats['ols_slope'])} | {fmt(stats['ols_intercept'])} | {fmt(stats['through_origin_slope'])} | {fmt(stats['correlation'])} | {fmt(stats['r2'])} | {fmt(stats['mae'])} | {fmt(stats['bias'])} | {fmt(stats['rmse'])} | {fmt(stats['n'], 0)} |"
+                )
+        lines.extend(["", "### Components", ""])
+        lines.append("| run | component subset | OLS slope | intercept | through-origin slope | corr | R2 | MAE | bias | RMSE | n |")
+        lines.append("|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+        for run in full_runs:
+            for subset, stats in run["computed"].get("component_slopes", {}).items():
                 lines.append(
                     f"| {run['run_key']} | {subset} | {fmt(stats['ols_slope'])} | {fmt(stats['ols_intercept'])} | {fmt(stats['through_origin_slope'])} | {fmt(stats['correlation'])} | {fmt(stats['r2'])} | {fmt(stats['mae'])} | {fmt(stats['bias'])} | {fmt(stats['rmse'])} | {fmt(stats['n'], 0)} |"
                 )
@@ -383,9 +492,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
             "",
             "B. Code inspection shows it is an OLS-with-intercept slope from `np.polyfit(true_magnitude, pred_magnitude, 1)`. The current compact JSON does not store the intercept, so the intercept cannot be recovered without raw predictions.",
             "",
-            "C. The through-origin slope cannot be computed from the current compact artifacts because raw validation predictions are not pushed.",
+            "C. The through-origin slope is computed when `s3_magnitude_metric_audit_validation.csv` or raw validation predictions are available; otherwise it cannot be recovered from historical compact artifacts.",
             "",
-            "D. Component slopes for `S3_x` and `S3_y` cannot be computed from current compact artifacts for the same reason. Existing component scatter plots are images only.",
+            "D. Component slopes for `S3_x` and `S3_y` are computed from the S3 audit CSV when present. For older compact-only runs, existing component scatter plots are images only.",
             "",
             "E. A low OLS slope could be affected by high-bin range restriction and nonzero intercept, but this cannot be confirmed or rejected without raw predictions and the intercept.",
             "",

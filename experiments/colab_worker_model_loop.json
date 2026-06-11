@@ -1,6 +1,6 @@
 {
-  "description": "Real model-selection loop. This config generates the v5 S3-tail training-only expansion, audits S3 feature saturation, then retrains the SmoothL1 plateau/clip champion on the expanded dataset.",
-  "config_id": "v5-s3-tail60k-smoothl1-retrain",
+  "description": "Diagnostic-only model loop. This config reruns the v3 SmoothL1 champion and v5 S3-tail champion with compact S3 validation audit CSV output, then generates the S3 magnitude-slope audit report.",
+  "config_id": "s3-magnitude-metric-audit-rerun",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v5_s3_tail60k_workflow.sh"
+    "scripts/run_colab_s3_metric_audit_workflow.sh"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
@@ -24,6 +24,9 @@
     "training_results/feature_regression_enhanced/**/hard_target_histograms/*.png",
     "training_results/model_selection_reports/s3_feature_saturation_audit_*.md",
     "training_results/model_selection_reports/s3_feature_saturation_audit_*.json",
+    "training_results/model_selection_reports/s3_magnitude_metric_audit_*.md",
+    "training_results/model_selection_reports/s3_magnitude_metric_audit_*/*.json",
+    "training_results/model_selection_reports/s3_magnitude_metric_audit_*/plots/*.png",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
     "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",
@@ -31,6 +34,7 @@
     "training_results/model_selection_loop/**/vector_diagnostics.json",
     "training_results/model_selection_loop/**/*failure*.json",
     "training_results/model_selection_loop/**/selection*.json",
+    "training_results/model_selection_loop/**/s3_magnitude_metric_audit_validation.csv",
     "training_results/model_selection_loop/**/model_registry*.csv",
     "training_results/model_selection_loop/**/*summary.csv",
     "training_results/model_selection_loop/**/*.png",

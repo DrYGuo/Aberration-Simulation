@@ -590,6 +590,80 @@ def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> 
         writer.writerows(rows)
 
 
+def write_s3_magnitude_metric_audit_csv(
+    path: Path,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    rows: list[dict[str, str]],
+    target_columns: list[str],
+    validation_index: np.ndarray,
+    vector_diag: dict[str, Any],
+) -> None:
+    s3_x_index = target_columns.index("S3_x")
+    s3_y_index = target_columns.index("S3_y")
+    s3_diag = vector_diag["vector_pairs"]["S3"]
+    vector_scale = float(s3_diag["magnitude"]["vector_scale"])
+    high_threshold = 0.7 * max(vector_scale, 1e-8)
+    audit_rows: list[dict[str, Any]] = []
+    for validation_position, row_index in enumerate(validation_index):
+        row_i = int(row_index)
+        true_x = float(y_true[row_i, s3_x_index])
+        true_y = float(y_true[row_i, s3_y_index])
+        pred_x = float(y_pred[row_i, s3_x_index])
+        pred_y = float(y_pred[row_i, s3_y_index])
+        true_mag = float(np.hypot(true_x, true_y))
+        pred_mag = float(np.hypot(pred_x, pred_y))
+        true_angle = float(np.rad2deg(np.arctan2(true_y, true_x)))
+        pred_angle = float(np.rad2deg(np.arctan2(pred_y, pred_x)))
+        angle_error = float((pred_angle - true_angle + 180.0) % 360.0 - 180.0)
+        audit_rows.append(
+            {
+                "validation_position": validation_position,
+                "row_index": row_i,
+                "sweep_label": rows[row_i].get("sweep_label", ""),
+                "dataset_version": rows[row_i].get("dataset_version", ""),
+                "true_s3_x": true_x,
+                "true_s3_y": true_y,
+                "pred_s3_x": pred_x,
+                "pred_s3_y": pred_y,
+                "true_s3_magnitude": true_mag,
+                "pred_s3_magnitude": pred_mag,
+                "magnitude_error": pred_mag - true_mag,
+                "vector_residual_magnitude": float(np.hypot(pred_x - true_x, pred_y - true_y)),
+                "true_s3_angle_deg": true_angle,
+                "pred_s3_angle_deg": pred_angle,
+                "angle_error_deg": angle_error,
+                "vector_scale": vector_scale,
+                "high_s3_threshold": high_threshold,
+                "high_s3_bin": true_mag > high_threshold,
+            }
+        )
+    write_csv(
+        path,
+        audit_rows,
+        [
+            "validation_position",
+            "row_index",
+            "sweep_label",
+            "dataset_version",
+            "true_s3_x",
+            "true_s3_y",
+            "pred_s3_x",
+            "pred_s3_y",
+            "true_s3_magnitude",
+            "pred_s3_magnitude",
+            "magnitude_error",
+            "vector_residual_magnitude",
+            "true_s3_angle_deg",
+            "pred_s3_angle_deg",
+            "angle_error_deg",
+            "vector_scale",
+            "high_s3_threshold",
+            "high_s3_bin",
+        ],
+    )
+
+
 def write_scale_summary(path: Path, names: list[str], data: np.ndarray) -> None:
     rows = []
     for i, name in enumerate(names):
@@ -1185,6 +1259,16 @@ def main() -> int:
     vector_diagnostics_path = output_dir / "vector_diagnostics.json"
     vector_diagnostics_path.write_text(json.dumps(vector_diag, indent=2) + "\n")
     plot_vector_diagnostics(output_dir, y, y_pred, TARGET_COLUMNS, validation_index, vector_diag)
+    s3_magnitude_metric_audit_path = output_dir / "s3_magnitude_metric_audit_validation.csv"
+    write_s3_magnitude_metric_audit_csv(
+        s3_magnitude_metric_audit_path,
+        y,
+        y_pred,
+        rows,
+        TARGET_COLUMNS,
+        validation_index,
+        vector_diag,
+    )
 
     baseline_path = args.baseline_metrics or default_baseline_metrics(csv_path, args.family)
     baseline = json.loads(baseline_path.read_text()) if baseline_path and baseline_path.exists() else None
@@ -1257,6 +1341,7 @@ def main() -> int:
         "selection_score_path": str(output_dir / "selection_score.json"),
         "per_target_diagnostics_path": str(output_dir / "per_target_diagnostics.json"),
         "vector_diagnostics_path": str(vector_diagnostics_path),
+        "s3_magnitude_metric_audit_path": str(s3_magnitude_metric_audit_path),
     }
     (output_dir / "run_manifest_model_loop.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
