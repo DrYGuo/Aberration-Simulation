@@ -1,8 +1,138 @@
 # Model Evolution
 
-This file tracks the feature-to-coefficient regression architectures and the
-reason for each change. Per-run numeric details are saved by the notebooks in
-`run_manifest*.json` and summarized in `model_registry*.csv`.
+This file tracks the feature-to-coefficient regression architectures, the
+reason for each change, and the minimum information needed to reproduce a run.
+Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
+summarized in `model_registry*.csv`.
+
+## 2026-06-11 Current Model-Loop Status
+
+Current champion:
+
+- Dataset: `enhanced_v5_s3_tail60k`
+- Parent dataset: `enhanced_v3_targeted25k`
+- Dataset run:
+  - `training_results/feature_regression_enhanced/enhanced_v5_s3_tail60k_20260611_084005_utc`
+- Total rows: `57,446`
+- Training-only appended rows: `41,000`
+  - `25,000` v3 targeted rows
+  - `16,000` v5 high-S3-tail rows
+- Feature family: 66 enhanced harmonic-summary features
+- Architecture: grouped-head residual MLP
+- Width: 320
+- Learning rate: `6e-4`
+- Dropout: `0.075`
+- Optimizer path: AdamW, SmoothL1 component loss, gradient clipping, plateau LR scheduler
+- Split seed: `7`
+- Current best run:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc`
+
+Comparison against the previous v3 SmoothL1 champion:
+
+| Metric | v3 SmoothL1 champion | v5 S3-tail seed23 | Direction |
+|---|---:|---:|---|
+| weighted score | `0.05568` | `0.05102` | better |
+| true hard-target normalized MAE | `0.02770` | `0.02581` | better |
+| overall normalized MAE | `0.02057` | `0.01900` | better |
+| overall p95 | `0.07983` | `0.07336` | better |
+| blind normalized MAE | `0.01509` | `0.01408` | better |
+| stress normalized MAE | `0.01536` | `0.01341` | better |
+| B2 magnitude MAE | `0.0887` | `0.0798` | better |
+| A3 magnitude MAE | `2.154` | `1.967` | better |
+| high-S3 magnitude MAE | `9.54` | `8.20` | better |
+| high-S3 magnitude bias | `-7.68` | `-6.39` | better |
+| high-S3 magnitude slope | `0.721` | `0.709` | not improved |
+| high-S3 mean angle error | `5.48 deg` | `4.39 deg` | better |
+| high-S3 p95 angle error | `23.40 deg` | `16.95 deg` | better |
+
+Interpretation:
+
+- The v5 high-S3-tail expansion is a real model improvement overall.
+- It improved high-S3 magnitude MAE, bias, RMSE, and angular diagnostics.
+- It did not fix the high-S3 magnitude compression slope. The slope remained
+  near `0.7`, below the desired `0.8+` direction.
+- The S3 feature-saturation audit indicates that current 66-feature high-S3
+  descriptors have weak linear response in the high-S3 tail:
+  - `Eq43_S3_value_magnitude` high-S3 feature-vs-true slope: `0.0388`
+  - high-S3 R2: `0.066`
+- The requested radial-band, radially weighted, and contour/radius m=2 features
+  are not present in the current CSV. This supports feature engineering before
+  increasing the dataset directly to `100k`.
+
+Benchmark caveat:
+
+- The appended v5 rows are correctly marked `dataset_split_hint=training_only`.
+- The blind split stayed identical to the previous champion.
+- Validation/stress were not perfectly identical: one parent row moved from
+  stress to validation (`validation 1976 -> 1977`, `stress 3098 -> 3097`).
+- Before the next major comparison, lock validation/blind/stress row IDs
+  explicitly rather than relying only on stable row hashing.
+
+Next decision:
+
+- Do not jump to `100k` rows yet.
+- Keep the v5 seed23 run as the current champion.
+- Next controlled work should add high-S3-sensitive features, then rerun the
+  same grouped-head SmoothL1 architecture on the v5 dataset with exactly locked
+  validation/blind/stress benchmarks.
+
+## 2026-06-10 Automated Model-Loop Status
+
+Current baseline:
+
+- Dataset: `enhanced_v3_targeted25k`
+- Feature family: 66 enhanced summary features
+- Architecture: grouped-head residual MLP
+- Width: 320
+- Learning rate: `6e-4`
+- Dropout: `0.075`
+- Split seed: `7`
+- Reference run:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc`
+
+Key baseline metrics:
+
+- Weighted selection score: `0.05945`
+- True hard-target normalized MAE: `0.02947`
+- Validation overall normalized MAE: `0.02188`
+- Blind/stress normalized MAE: `0.01575` / `0.01648`
+- High-S3 magnitude MAE/bias/slope: `10.84` / `-8.77` / `0.671`
+- C1 validation MAE/RMSE/p95: `3.17` / `5.45` / `11.28`
+
+Findings from S3 magnitude-loss tests:
+
+- Strong S3 magnitude loss improved high-S3 magnitude MAE/bias but damaged
+  overall, hard-target, B2, A3, and C1 behavior.
+- Weaker S3 magnitude-loss variants gave partial high-S3 improvement, but none
+  clearly replaced the v3 baseline:
+  - `w0.10`: weighted score `0.05936`, high-S3 slope `0.703`, but worse hard,
+    overall, blind/stress, and C1 metrics.
+  - `w0.25_high2`: high-S3 slope `0.718` and slightly better blind/stress, but
+    worse overall and C1 metrics.
+- Conclusion: S3 compression is real, but a standalone S3 magnitude penalty
+  trades off against C1 and other vector targets. Do not promote these runs as
+  the new baseline.
+
+Current training-path interpretation:
+
+- The candidate runner currently trains the selected v3 model with full-batch
+  AdamW. Row shuffling has no effect unless mini-batch training is enabled.
+- Training component loss is already much lower than validation loss, so the
+  bottleneck is generalization, not fitting the training rows.
+- The next controlled change should test optimizer stability on the fixed v3
+  dataset before changing feature count or generating 50k/100k data.
+
+Next queued direction:
+
+- Keep dataset and feature set fixed.
+- Add optimizer/stability candidates:
+  - reproducible torch/numpy seed
+  - optional mini-batch shuffling
+  - gradient clipping
+  - ReduceLROnPlateau learning-rate decay
+  - SmoothL1 component-loss candidate for heavy-tail C1/S3 errors
+- Promote a candidate only if validation, blind, stress, C1, S3, B2, and A3
+  diagnostics improve or remain within the accepted regression gates.
 
 ## Current Goal
 
@@ -103,44 +233,392 @@ Latest observed configuration:
 
 Latest observed behavior:
 
-- Deterministic single-coefficient sweeps remain good.
-- B2 and A2 are acceptable.
-- A1 phase behavior is reasonable, but amplitude/vector errors remain nonzero.
-- Large coupled full-random cases remain poor.
-- S3/C32 and A3 errors grow strongly at high amplitudes.
-- Train error is also large in the difficult coupled regions, so this is not
-  only overfitting.
+- Run inspected from local Colab download:
+  - `Downloads from Colab/feature_regression_enhanced/`
+  - run family: `enhanced_coupled10k`
+  - input features: 66
+  - hidden width: 128
+  - best epoch: 3075
+  - best weighted test MSE: about `0.0614`
+- Test MAE improved versus Architecture B on every target:
+  - `C1`: `12.29 -> 4.93`
+  - `C3`: `0.068 -> 0.033`
+  - `A1_x/A1_y`: about `3.5-3.6 -> 1.4`
+  - `B2_x/B2_y`: about `0.16-0.17 -> 0.09`
+  - `A2_x/A2_y`: about `0.49-0.51 -> 0.19-0.21`
+  - `S3_x/S3_y`: about `6.9-7.1 -> 4.5-4.7`
+  - `A3_x/A3_y`: about `7.0-7.2 -> 1.7-1.8`
+- Remaining weak regions:
+  - `coupled_full_random`: train MAE about `1.47`, test MAE about `4.27`
+  - `coupled_sparse_random`: train MAE about `1.12`, test MAE about `2.77`
+  - `S3` high-amplitude bins: test vector RMSE about `22.9`
+  - `A3` high-amplitude bins: test vector RMSE about `8.1`
 
 Interpretation:
 
-- Adding more features and a larger model did not solve the fully coupled
-  high-amplitude regime.
-- The current feature set may be insufficient for unique recovery in the most
-  coupled region, or the regression target should be decomposed into staged or
-  physics-guided subproblems.
+- Adding raw line-characteristic harmonics was a clear improvement.
+- The present failure is now primarily generalization on fully coupled and
+  sparse coupled random cases, especially high-amplitude `S3` and mixed
+  `C1/S3/A3` behavior.
+- The train-test gap is real in the difficult random regimes. The next change
+  should improve data coverage and regularization before increasing model size.
+
+## Architecture D: Enhanced V2 Generalization Run
+
+Location:
+
+- `notebooks/uno_feature_regression_enhanced.ipynb`
+
+Decision:
+
+Use the enhanced 66-feature representation from Architecture C, but change the
+next Colab experiment to test generalization rather than capacity.
+
+Changes for the next run:
+
+- Run name prefix:
+  - `enhanced_v2_coupled16k_stratified_dropout_`
+- Increase random coupled cases from `10,000` to `16,000`.
+- Put most of the additional cases into the weak regimes:
+  - `coupled_full_random`: `2500 -> 5000`
+  - `coupled_sparse_random`: `500 -> 3000`
+  - `coupled_C1_A1_C3_A2_random`: `1500 -> 2000`
+  - `coupled_A3_S3_random`: `1000 -> 1500`
+- Keep deterministic anchor sweeps unchanged.
+- Use a train/test split stratified by `sweep_label` so every label contributes
+  to the test split.
+- Add mild dropout (`0.05`) to the residual MLP.
+- Keep hidden width at 128, early stopping, weighted target loss, and the same
+  66 enhanced feature columns.
+
+Notebook run modes:
+
+- Full Architecture D run:
+  - Rerun sections 5-10 in `notebooks/uno_feature_regression_enhanced.ipynb`.
+  - This regenerates a new `16,000`-random-case enhanced feature table and then
+    trains the v2 model.
+- Existing-CSV model-only run:
+  - Use section 12 in the same notebook.
+  - Set `RUN_EXISTING_CSV_V2_RERUN = True`.
+  - This reuses an existing `training_features_enhanced.csv` and tests the v2
+    stratified/dropout trainer without running new probe simulations.
+  - Run name prefix:
+    - `enhanced_v2_existingcsv_stratified_dropout_`
+  - This mode is useful for quickly testing the split/training change on a
+    previously generated enhanced feature table, but it does not test the
+    `16,000` random-case data change.
+
+Purpose:
+
+- Test whether the Architecture C train-test gap is mainly data coverage and
+  regularization, not insufficient model capacity.
+- Make the test split more stable and easier to compare across model runs.
+
+Primary success criteria:
+
+- Lower test MAE/RMSE on `coupled_full_random` and `coupled_sparse_random`.
+- Lower high-amplitude `S3` and `A3` amplitude-bin vector RMSE.
+- Maintain the Architecture C gains on `A1`, `A2`, `B2`, and `C3`.
+- Avoid a larger train-test gap than Architecture C.
+
+Latest observed Architecture D results:
+
+- Downloaded result inspected:
+  - `enhanced_v2_existingcsv_stratified_dropout_20260604_061258_utc_feature_regression_enhanced_results.zip`
+- Source dataset:
+  - `enhanced_v2_coupled16k_stratified_dropout_20260604_060559_utc`
+  - `16,446` rows, `13,158` train, `3,288` test
+  - CSV SHA-256: `8cb91ef4ae645529fcd222b2ab18888cd03adb83c9fa121a77b5db9c2d05b9c4`
+- Training:
+  - best epoch: `7750`
+  - best weighted test MSE: about `0.0396`
+- Compared with Architecture C, the hard random regimes improved:
+  - `coupled_full_random` test MAE: `4.27 -> 3.01`
+  - `coupled_sparse_random` test MAE: `2.77 -> 1.81`
+  - `coupled_C1_A1_C3_A2_random` test MAE: `1.74 -> 1.21`
+- Target-level tradeoff:
+  - `C1` test MAE improved: `4.93 -> 3.46`
+  - `S3_x/S3_y` improved: about `4.5-4.7 -> 4.1-4.2`
+  - `A2_x/A2_y` regressed slightly: about `0.19-0.21 -> 0.22`
+  - `A3_x/A3_y` regressed: about `1.7-1.8 -> 2.1`
+- Interpretation:
+  - The v2 data/split/dropout change improved the intended hard coupled cases.
+  - The cost was worse `A3` and slightly worse `A2`.
+  - Next improvement should target high-amplitude `S3` without sacrificing `A3`,
+    likely with target-group heads or loss weights adjusted separately for
+    `A3` versus `S3`.
+
+## Architecture E: Raw-Angle Feature Regressor
+
+Location:
+
+- `notebooks/uno_feature_regression_raw_angles.ipynb`
+
+Decision:
+
+Test whether direct angular samples of the Uno line-profile characteristics
+carry useful information that is lost when the curves are compressed into
+low-order harmonic features.
+
+Important implementation detail:
+
+- `extract_line_profiles_from_stack()` treats `num_lines` as including the
+  duplicated `180 deg` endpoint and then drops that endpoint.
+- With `PROFILE_STEP_DEGREES = 10`, the raw-angle notebook uses 18 unique line
+  orientations:
+  - `0, 10, 20, ..., 170 deg`
+- The nonduplicated raw-angle feature count is therefore:
+  - `18 angles * 3 characteristics * 2 focus states = 108`
+- The total input dimension is:
+  - `12 collapsed Uno features + 108 raw-angle features = 120`
+
+Feature representation:
+
+- Keep the original 12 collapsed Uno features.
+- Add raw angular samples for:
+  - `Xigma(theta_k)`
+  - `Mu(theta_k)`
+  - `Rho(theta_k)`
+- Keep under-focus and over-focus separate:
+  - `under_Xigma_theta_000`, ...
+  - `over_Rho_theta_170`, ...
+
+Training setup:
+
+- Same v2 random-case distribution as Architecture D:
+  - `16,000` random coupled cases
+  - extra full-random and sparse-random cases
+- Same stratified split by `sweep_label`.
+- Same weighted loss, dropout, early stopping, hidden width, and diagnostics.
+- Run name prefix:
+  - `rawangle18_v1_coupled16k_stratified_dropout_`
+- Output root:
+  - `training_results/feature_regression_raw_angles/`
+
+Purpose:
+
+- Compare raw orientation-sample features against the 66-feature harmonic
+  enhanced model on the same data-generation regime.
+- If raw-angle features improve `S3`, `A3`, and full-random cases, then the
+  harmonic compression is losing useful coupled-case information.
+- If they do not improve those cases, the remaining issue is more likely model
+  structure, target coupling, or non-uniqueness.
+
+Primary success criteria:
+
+- Beat Architecture D on:
+  - high-amplitude `S3` vector RMSE
+  - high-amplitude `A3` vector RMSE
+  - `coupled_full_random` test MAE/RMSE
+  - `coupled_sparse_random` test MAE/RMSE
+- Avoid regressing easy targets such as `C3`, `B2`, and `A2`.
+
+Latest observed Architecture E results:
+
+- Downloaded result inspected:
+  - `Downloads from Colab/feature_regression_enhanced/rawangle18_v1_coupled16k_stratified_dropout_20260604_070648_utc_feature_regression_raw_angles_results.zip`
+- Additional model-only rerun inspected:
+  - `Downloads from Colab/feature_regression_enhanced/rawangle18_existingcsv_stratified_dropout_20260604_071338_utc_feature_regression_raw_angles_results.zip`
+- Run identity:
+  - run name: `rawangle18_v1_coupled16k_stratified_dropout_20260604_070648_utc`
+  - Git commit: `ba7c485`
+  - device: `cuda`
+- Dataset and model:
+  - `16,446` rows, `13,158` train, `3,288` test
+  - input features: `120`
+  - hidden width: `128`
+  - dropout: `0.05`
+  - best epoch: `7875`
+  - best weighted test MSE: about `0.0397`
+- Compared with Architecture D, raw-angle features were mixed rather than a
+  clear improvement:
+  - overall test MAE/RMSE: `1.027/2.519 -> 1.090/2.592`
+  - `coupled_full_random` test MAE improved slightly: `3.006 -> 2.964`
+  - `coupled_sparse_random` test MAE regressed: `1.810 -> 1.867`
+  - `C1` test MAE improved slightly: `3.462 -> 3.357`
+  - `A1`, `B2`, and `A3` mostly regressed.
+  - `A2` was essentially unchanged.
+  - `S3` vector RMSE improved slightly: `12.337 -> 11.887`
+  - `A3` vector RMSE regressed: `5.505 -> 5.832`
+- The additional model-only rerun used the same source CSV:
+  - source run: `rawangle18_v1_coupled16k_stratified_dropout_20260604_070648_utc`
+  - source CSV SHA-256:
+    `963de4c3bec82419e546751215a38d271afc9c8a5365ce5bd35a86afa26b8ce0`
+  - best epoch: `7875`
+  - best weighted test MSE: about `0.0413`
+  - overall test MAE/RMSE: `1.088/2.605`
+  - `coupled_full_random` test MAE: `3.047`
+  - `coupled_sparse_random` test MAE: `1.887`
+  - `S3` vector RMSE: `12.334`
+  - `A3` vector RMSE: `5.799`
+- Interpretation:
+  - The 120-feature raw-angle representation did not beat the 66-feature
+    harmonic-summary representation overall.
+  - Direct angular samples appear to help `C1`, full-random cases, and `S3`
+    vector error only marginally.
+  - The model-only rerun is slightly worse than the first raw-angle training
+    run, so ordinary reruns of this architecture are not moving the bottleneck.
+  - The model-only rerun zip is not self-contained because it does not include
+    `training_features_raw_angles.csv`; it is reproducible only together with
+    the source full-run archive named above, whose CSV hash is recorded in the
+    rerun manifest.
+  - The larger input dimension likely adds redundant/noisy orientation samples
+    that the same 128-wide residual model does not use efficiently.
+  - The next architecture should keep the 66-feature representation as the
+    baseline and test model structure or target grouping, not simply add more
+    raw angular inputs.
 
 ## Current Working Hypotheses
 
 - The feature values are useful and monotonic in one-coefficient sweeps.
 - Coupled random cases reveal cross-talk between feature values.
-- Fully coupled high-amplitude A3/S3/C1 cases are the present bottleneck.
-- The next architecture should not simply be larger; it should encode more
-  structure, such as staged prediction, coefficient-group heads, or additional
-  probe-shape/profile features.
+- Fully coupled high-amplitude `A3`/`S3`/`C1` cases are the present bottleneck.
+- More samples in the weak regimes plus mild regularization should be tested
+  before adding another larger neural network.
+- Architecture E shows that raw angular samples alone are not enough to solve
+  the remaining coupled-case errors.
+- The next architecture should encode more structure, such as staged prediction,
+  coefficient-group heads, or calibrated correction heads, before adding more
+  redundant profile-shape inputs.
+
+## Reproducibility and Tracking Standard
+
+Every model-producing notebook must write one timestamped run folder and one zip
+for that folder. The zip is the artifact to download from Colab.
+
+Required run folder naming:
+
+- Include the architecture/run family, key dataset size, and UTC timestamp.
+- Example: `enhanced_v2_coupled16k_stratified_dropout_YYYYMMDD_HHMMSS_utc`.
+
+Required files inside each run folder:
+
+- Training data table:
+  - `training_features.csv` or `training_features_enhanced.csv`
+- Feature columns:
+  - `feature_columns*.json`
+- Model output:
+  - `*.pt`
+- Metrics:
+  - `metrics*.json`
+  - `history*.csv`
+  - `predictions*.csv`
+  - diagnostic CSVs such as amplitude-bin summaries
+- Plots:
+  - training-history plot
+  - prediction-scatter plot
+- Normalization:
+  - `normalization*.json`
+- Model summary:
+  - `model_summary*.txt`
+- Run manifest:
+  - `run_manifest*.json`
+
+Required manifest fields:
+
+- Run identity:
+  - run name
+  - UTC creation time
+  - Git commit
+  - notebook/model architecture family
+- Runtime:
+  - Python version
+  - platform
+  - device
+- Dataset:
+  - CSV path
+  - CSV SHA-256
+  - row count
+  - train/test count
+  - label counts
+  - random seed and random-case counts
+  - batch size and profile-extraction settings
+- Features and targets:
+  - feature column names
+  - target column names
+  - target vector convention
+- Training:
+  - train/test split strategy
+  - train/test split seed
+  - model dimensions
+  - dropout and target weights when used
+  - optimizer settings
+  - maximum epochs, early-stopping patience, best epoch
+  - best validation/test score used for checkpoint restore
+
+Required registry behavior:
+
+- Append one row per run to `model_registry.csv` or
+  `model_registry_enhanced.csv`.
+- Include the registry CSV in the downloaded zip.
+- Include enough summary metrics to compare runs without opening every manifest.
+
+Random number generation:
+
+- Random case generation and train/test splitting should keep explicit seeds in
+  the manifest.
+- Exact bitwise reproducibility is not required because Colab/GPU operations and
+  PyTorch kernels may still be nondeterministic.
 
 ## Candidate Next Steps
 
 - Add a linear/ridge baseline to quantify how much the neural residual improves
   over direct calibrated inversion.
-- Train grouped heads:
+- Train grouped heads on top of the 66-feature Architecture D baseline:
   - scalar head for C1/C3,
   - low-order harmonic head for A1/B2/A2,
   - high-order harmonic head for S3/A3.
-- Add direct line-profile samples or compressed profile coefficients as model
-  inputs, not only scalar feature values.
+- Optionally test a hybrid `66 + selected raw angles` model only after checking
+  feature importance from Architecture E.
 - Train curriculum-style:
   - one-coefficient sweeps,
   - weak coupled cases,
   - high-amplitude full coupled cases.
 - Evaluate uniqueness using nearest-neighbor distances in feature space before
   increasing model capacity again.
+
+## Automated Colab Loop Policy
+
+Initial real-loop mode:
+
+- Use existing cached/downloaded feature CSVs first. This tests model structure,
+  preprocessing, and hyperparameters before spending GPU time regenerating probe
+  simulations.
+- Use a one-hour command timeout per Colab worker cycle for now. Revisit this
+  limit before starting longer simulation-heavy loops.
+- Do not rerun the same model/config silently. The Colab worker records and
+  compares config fingerprints; when `require_new_config_each_cycle` is true it
+  waits for a changed config before the next cycle.
+
+Model-selection rule:
+
+- Use a weighted selection score rather than overall average error alone.
+- Prioritize:
+  - `coupled_full_random`
+  - `coupled_sparse_random`
+  - `S3_x`, `S3_y`
+  - `A3_x`, `A3_y`
+- Allow small regressions on easier targets, but reject a candidate if easy
+  target MAE regresses by more than about `5-10%` versus the current baseline.
+- The helper script is:
+  - `scripts/select_regression_model.py`
+
+Artifact policy:
+
+- Keep large artifacts out of GitHub:
+  - `.pt` models
+  - checkpoints
+  - large training CSVs
+  - prediction CSVs
+  - large result folders
+- Push only compact artifacts:
+  - worker manifests
+  - run manifests
+  - small metrics JSON files
+  - registry CSV rows
+  - compact diagnostic CSV summaries
+  - small plots
+- Colab disk was observed with enough headroom for caching, but duplicate
+  simulations should still be avoided. Cached datasets should be identified by
+  coefficient case table, profile/focus settings, feature extractor version,
+  target convention, and CSV SHA-256.
