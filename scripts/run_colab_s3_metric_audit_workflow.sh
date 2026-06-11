@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DONE_MARKER="colab_worker_logs/s3_metric_audit_done.json"
+DONE_MARKER="colab_worker_logs/s3_metric_and_loss_gap_audit_done.json"
 if [ -f "$DONE_MARKER" ]; then
-  echo "S3 metric audit rerun already completed; marker exists at $DONE_MARKER"
+  echo "S3 metric and loss-gap audit rerun already completed; marker exists at $DONE_MARKER"
   exit 0
 fi
 
@@ -87,6 +87,11 @@ python3 scripts/audit_s3_magnitude_metric.py \
   --run v3_smoothl1_audit="$V3_RUN" \
   --run v5_s3tail60k_seed23_audit="$V5_RUN"
 
+python3 scripts/audit_training_validation_loss_gap.py \
+  --include-default-runs \
+  --run "$V3_RUN" \
+  --run "$V5_RUN"
+
 mkdir -p colab_worker_logs
 python3 - <<'PY'
 import json
@@ -94,12 +99,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 Path("colab_worker_logs").mkdir(exist_ok=True)
-Path("colab_worker_logs/s3_metric_audit_done.json").write_text(
+Path("colab_worker_logs/s3_metric_and_loss_gap_audit_done.json").write_text(
     json.dumps(
         {
             "status": "complete",
             "created_utc": datetime.now(timezone.utc).isoformat(),
             "workflow": "scripts/run_colab_s3_metric_audit_workflow.sh",
+            "diagnostics": [
+                "s3_magnitude_metric_audit",
+                "training_validation_loss_gap_audit",
+            ],
         },
         indent=2,
     )

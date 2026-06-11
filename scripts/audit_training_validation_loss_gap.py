@@ -277,6 +277,13 @@ def dataset_csv_for_version(dataset_version: str | None) -> Path | None:
     hinted = DATASET_CSV_HINTS.get(dataset_version)
     if hinted and Path(hinted).exists():
         return Path(hinted)
+    training_results_candidates = sorted(
+        Path("training_results/feature_regression_enhanced").glob(
+            f"*{dataset_version}*/training_features_enhanced.csv"
+        )
+    )
+    if training_results_candidates:
+        return training_results_candidates[-1]
     candidates = sorted(Path("Downloads from Colab").glob(f"**/*{dataset_version}*/training_features_enhanced.csv"))
     return candidates[-1] if candidates else None
 
@@ -736,6 +743,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", action="append", type=Path, default=None, help="Run folder to audit; may be repeated.")
     parser.add_argument(
+        "--include-default-runs",
+        action="store_true",
+        help="When --run is supplied, also include the standard historical comparison runs.",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
         default=Path("training_results/model_selection_reports"),
@@ -746,7 +758,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    run_dirs = args.run if args.run else [Path(path) for path in DEFAULT_RUNS]
+    run_dirs = []
+    if args.include_default_runs or not args.run:
+        run_dirs.extend(Path(path) for path in DEFAULT_RUNS)
+    if args.run:
+        run_dirs.extend(args.run)
     report_path, json_path = generate_report(args.output_root, run_dirs)
     print("report:", report_path)
     print("json:", json_path)

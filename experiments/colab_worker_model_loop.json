@@ -1,6 +1,6 @@
 {
-  "description": "Diagnostic-only model loop. This config reruns the v3 SmoothL1 champion and v5 S3-tail champion with compact S3 validation audit CSV output, then generates the S3 magnitude-slope audit report.",
-  "config_id": "s3-magnitude-metric-audit-rerun",
+  "description": "Diagnostic-only model loop. This config reruns the v3 SmoothL1 champion and v5 S3-tail champion with compact S3 validation audit CSV output, then generates both the S3 magnitude-slope audit and train-validation loss-gap audit reports.",
+  "config_id": "s3-magnitude-and-loss-gap-audit-rerun",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -27,6 +27,9 @@
     "training_results/model_selection_reports/s3_magnitude_metric_audit_*.md",
     "training_results/model_selection_reports/s3_magnitude_metric_audit_*/*.json",
     "training_results/model_selection_reports/s3_magnitude_metric_audit_*/plots/*.png",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_*.md",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_*/*.json",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_*/plots/*.png",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
     "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",
