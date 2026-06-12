@@ -683,20 +683,78 @@ def write_scale_summary(path: Path, names: list[str], data: np.ndarray) -> None:
     write_csv(path, rows, ["name", "mean", "std", "min", "max", "p01", "p99", "near_constant"])
 
 
+def finite_history_values(history: list[dict[str, float]], key: str) -> tuple[list[float], list[float]]:
+    epochs: list[float] = []
+    values: list[float] = []
+    for row in history:
+        value = row.get(key)
+        if value is None:
+            continue
+        if not np.isfinite(float(value)):
+            continue
+        epochs.append(float(row["epoch"]))
+        values.append(float(value))
+    return epochs, values
+
+
 def plot_history(path: Path, history: list[dict[str, float]]) -> None:
     if not history:
         return
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot([row["epoch"] for row in history], [row["train_loss"] for row in history], label="train")
-    validation_key = "validation_loss" if "validation_loss" in history[0] else "test_loss"
-    ax.plot([row["epoch"] for row in history], [row[validation_key] for row in history], label="validation")
-    ax.set_yscale("log")
-    ax.set_xlabel("epoch")
-    ax.set_ylabel("weighted scaled MSE")
-    ax.legend()
-    ax.grid(alpha=0.3)
+    fig, axes = plt.subplots(3, 1, figsize=(8, 9), sharex=True)
+
+    mse_curves = [
+        ("train_weighted_mse", "train all"),
+        ("train_parent_weighted_mse", "train parent"),
+        ("train_training_only_weighted_mse", "train training_only"),
+        ("validation_weighted_mse", "validation"),
+        ("blind_weighted_mse", "blind"),
+        ("stress_weighted_mse", "stress"),
+    ]
+    for key, label in mse_curves:
+        epochs, values = finite_history_values(history, key)
+        if values:
+            axes[0].plot(epochs, values, label=label)
+    axes[0].set_yscale("log")
+    axes[0].set_ylabel("weighted scaled MSE")
+    axes[0].set_title("Eval-mode weighted MSE by split/source")
+    axes[0].legend(fontsize=8, ncol=2)
+    axes[0].grid(alpha=0.3)
+
+    objective_curves = [
+        ("train_total_objective", "train total objective"),
+        ("train_component_smoothl1", "train component SmoothL1"),
+        ("validation_component_smoothl1", "validation component SmoothL1"),
+        ("train_s3_magnitude_loss", "train S3 magnitude loss"),
+    ]
+    for key, label in objective_curves:
+        epochs, values = finite_history_values(history, key)
+        if values:
+            axes[1].plot(epochs, values, label=label)
+    axes[1].set_yscale("log")
+    axes[1].set_ylabel("loss")
+    axes[1].set_title("Objective diagnostics")
+    axes[1].legend(fontsize=8, ncol=2)
+    axes[1].grid(alpha=0.3)
+
+    ratio_epochs = []
+    ratios = []
+    for row in history:
+        train_value = row.get("train_weighted_mse", row.get("train_loss"))
+        validation_value = row.get("validation_weighted_mse", row.get("validation_loss", row.get("test_loss")))
+        if train_value is None or validation_value is None or float(train_value) <= 0:
+            continue
+        ratio_epochs.append(float(row["epoch"]))
+        ratios.append(float(validation_value) / float(train_value))
+    if ratios:
+        axes[2].plot(ratio_epochs, ratios, label="validation/train weighted MSE")
+        axes[2].legend(fontsize=8)
+    axes[2].set_xlabel("epoch")
+    axes[2].set_ylabel("ratio")
+    axes[2].set_title("Gap diagnostic")
+    axes[2].grid(alpha=0.3)
+
     fig.tight_layout()
     fig.savefig(path, dpi=140)
     plt.close(fig)
@@ -1038,6 +1096,49 @@ def main() -> int:
     y_train = torch.tensor(yn[train_index], device=device)
     x_validation = torch.tensor(Xn[validation_index], device=device)
     y_validation = torch.tensor(yn[validation_index], device=device)
+    split_tensors: dict[str, tuple[Any, Any]] = {
+        "train": (x_train, y_train),
+        "validation": (x_validation, y_validation),
+        "blind": (
+            torch.tensor(Xn[split_indices["blind"]], device=device),
+            torch.tensor(yn[split_indices["blind"]], device=device),
+        ),
+        "stress": (
+            torch.tensor(Xn[split_indices["stress"]], device=device),
+            torch.tensor(yn[split_indices["stress"]], device=device),
+        ),
+    }
+    train_parent_positions = np.asarray(
+        [
+            position
+            for position, row_index in enumerate(train_index)
+            if str(rows[int(row_index)].get(DATASET_SPLIT_HINT_FIELD, "")).strip() != TRAINING_ONLY_HINT
+        ],
+        dtype=np.int64,
+    )
+    train_training_only_positions = np.asarray(
+        [
+            position
+            for position, row_index in enumerate(train_index)
+            if str(rows[int(row_index)].get(DATASET_SPLIT_HINT_FIELD, "")).strip() == TRAINING_ONLY_HINT
+        ],
+        dtype=np.int64,
+    )
+    train_source_tensors: dict[str, tuple[Any, Any] | None] = {
+        "parent": (
+            (x_train[torch.tensor(train_parent_positions, device=device)], y_train[torch.tensor(train_parent_positions, device=device)])
+            if len(train_parent_positions)
+            else None
+        ),
+        "training_only": (
+            (
+                x_train[torch.tensor(train_training_only_positions, device=device)],
+                y_train[torch.tensor(train_training_only_positions, device=device)],
+            )
+            if len(train_training_only_positions)
+            else None
+        ),
+    }
 
     history: list[dict[str, float]] = []
     best_state = None
@@ -1105,7 +1206,29 @@ def main() -> int:
             model.eval()
             with torch.no_grad():
                 train_pred_eval = model(x_train)
-                train_loss = float(weighted_mse(train_pred_eval, y_train, target_weights).detach().cpu())
+                train_weighted_mse = float(weighted_mse(train_pred_eval, y_train, target_weights).detach().cpu())
+                train_component_loss_eval = float(
+                    weighted_component_loss(
+                        train_pred_eval,
+                        y_train,
+                        target_weights,
+                        loss_kind=args.component_loss_kind,
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                    )
+                    .detach()
+                    .cpu()
+                )
+                train_component_smoothl1 = float(
+                    weighted_component_loss(
+                        train_pred_eval,
+                        y_train,
+                        target_weights,
+                        loss_kind="smooth_l1",
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                    )
+                    .detach()
+                    .cpu()
+                )
                 train_s3_mag_loss_eval = float(
                     s3_magnitude_loss(
                         train_pred_eval,
@@ -1122,32 +1245,94 @@ def main() -> int:
                     .detach()
                     .cpu()
                 )
-                validation_loss = float(weighted_mse(model(x_validation), y_validation, target_weights).detach().cpu())
+                train_residual_penalty_eval = float(
+                    (args.residual_penalty * torch.mean(model.residual(x_train) ** 2)).detach().cpu()
+                )
+                train_total_objective = (
+                    train_component_loss_eval
+                    + train_s3_mag_loss_eval
+                    + train_residual_penalty_eval
+                )
+                validation_pred_eval = model(x_validation)
+                validation_weighted_mse = float(
+                    weighted_mse(validation_pred_eval, y_validation, target_weights).detach().cpu()
+                )
+                validation_component_loss_eval = float(
+                    weighted_component_loss(
+                        validation_pred_eval,
+                        y_validation,
+                        target_weights,
+                        loss_kind=args.component_loss_kind,
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                    )
+                    .detach()
+                    .cpu()
+                )
+                validation_component_smoothl1 = float(
+                    weighted_component_loss(
+                        validation_pred_eval,
+                        y_validation,
+                        target_weights,
+                        loss_kind="smooth_l1",
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                    )
+                    .detach()
+                    .cpu()
+                )
+                split_weighted_mse: dict[str, float] = {
+                    "train": train_weighted_mse,
+                    "validation": validation_weighted_mse,
+                }
+                for split_name in ["blind", "stress"]:
+                    xs, ys = split_tensors[split_name]
+                    split_weighted_mse[split_name] = float(weighted_mse(model(xs), ys, target_weights).detach().cpu())
+                train_source_weighted_mse: dict[str, float | None] = {"parent": None, "training_only": None}
+                for source_name, tensors in train_source_tensors.items():
+                    if tensors is None:
+                        continue
+                    xs, ys = tensors
+                    train_source_weighted_mse[source_name] = float(
+                        weighted_mse(model(xs), ys, target_weights).detach().cpu()
+                    )
                 current_lr = float(optimizer.param_groups[0]["lr"])
             history.append(
                 {
                     "epoch": epoch,
-                    "train_loss": train_loss,
-                    "validation_loss": validation_loss,
+                    "train_loss": train_weighted_mse,
+                    "validation_loss": validation_weighted_mse,
+                    "train_weighted_mse": train_weighted_mse,
+                    "validation_weighted_mse": validation_weighted_mse,
+                    "blind_weighted_mse": split_weighted_mse["blind"],
+                    "stress_weighted_mse": split_weighted_mse["stress"],
+                    "train_parent_weighted_mse": train_source_weighted_mse["parent"],
+                    "train_training_only_weighted_mse": train_source_weighted_mse["training_only"],
+                    "train_component_loss": train_component_loss_eval,
+                    "validation_component_loss": validation_component_loss_eval,
+                    "train_component_smoothl1": train_component_smoothl1,
+                    "validation_component_smoothl1": validation_component_smoothl1,
                     "train_s3_magnitude_loss": train_s3_mag_loss_eval,
-                    "train_total_objective_loss": epoch_total_loss / max(n_train_rows, 1),
+                    "train_residual_penalty": train_residual_penalty_eval,
+                    "train_total_objective": train_total_objective,
+                    "train_total_objective_loss": train_total_objective,
+                    "train_epoch_objective_loss": epoch_total_loss / max(n_train_rows, 1),
                     "learning_rate": current_lr,
                 }
             )
             print(
-                f"epoch {epoch:5d} train={train_loss:.6f} "
-                f"s3mag={train_s3_mag_loss_eval:.6f} validation={validation_loss:.6f} "
+                f"epoch {epoch:5d} train_mse={train_weighted_mse:.6f} "
+                f"val_mse={validation_weighted_mse:.6f} blind_mse={split_weighted_mse['blind']:.6f} "
+                f"stress_mse={split_weighted_mse['stress']:.6f} objective={train_total_objective:.6f} "
                 f"lr={current_lr:.3g}"
             )
-            if validation_loss < best_validation_loss:
-                best_validation_loss = validation_loss
+            if validation_weighted_mse < best_validation_loss:
+                best_validation_loss = validation_weighted_mse
                 best_epoch = epoch
                 best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
                 epochs_since_best = 0
             else:
                 epochs_since_best += args.eval_every
             if scheduler is not None:
-                scheduler.step(validation_loss)
+                scheduler.step(validation_weighted_mse)
             if epochs_since_best >= args.patience_epochs:
                 print("early stopping at epoch", epoch)
                 break
@@ -1290,8 +1475,21 @@ def main() -> int:
             "epoch",
             "train_loss",
             "validation_loss",
+            "train_weighted_mse",
+            "validation_weighted_mse",
+            "blind_weighted_mse",
+            "stress_weighted_mse",
+            "train_parent_weighted_mse",
+            "train_training_only_weighted_mse",
+            "train_component_loss",
+            "validation_component_loss",
+            "train_component_smoothl1",
+            "validation_component_smoothl1",
             "train_s3_magnitude_loss",
+            "train_residual_penalty",
+            "train_total_objective",
             "train_total_objective_loss",
+            "train_epoch_objective_loss",
             "learning_rate",
         ],
     )
