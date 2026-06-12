@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-12T04:17:49.247924+00:00",
+  "workflow": "scripts/run_colab_v5_logging_s3magloss_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v5_s3_tail60k_20260612_033423_utc/training_features_enhanced.csv",
+  "runs": {
+    "v5_logging_ref_seed23": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_logging_ref_seed23_20260612_033746_utc",
+    "v5_s3magloss_w0p05_seed23": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_s3magloss_w0p05_seed23_20260612_035101_utc",
+    "v5_s3magloss_w0p10_seed23": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_s3magloss_w0p10_seed23_20260612_040418_utc"
+  },
+  "diagnostics": [
+    "repaired_training_history_logging",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ]
+}
