@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-12T07:44:51.238801+00:00",
+  "workflow": "scripts/run_colab_v7_c1_gap125k_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v7_c1_gap125k_20260612_063338_utc/training_features_enhanced.csv",
+  "runs": {
+    "v7_c1_gap125k_seed23": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed23_20260612_063900_utc",
+    "v7_c1_gap125k_seed7": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed7_20260612_071130_utc"
+  },
+  "diagnostics": [
+    "batch_summary_C1_fields",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit",
+    "vector_diagnostics"
+  ]
+}
