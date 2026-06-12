@@ -5,6 +5,109 @@ reason for each change, and the minimum information needed to reproduce a run.
 Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
 summarized in `model_registry*.csv`.
 
+## 2026-06-12 Current Model-Loop Status
+
+Current baseline:
+
+- Dataset: `enhanced_v6_benchmark_gap100k`
+- Parent dataset: `enhanced_v5_s3_tail60k`
+- Dataset run:
+  - `training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260612_051040_utc`
+- Total rows: `100,446`
+- Training rows / validation / blind / stress:
+  - `93,011 / 1,979 / 2,371 / 3,085`
+- Feature family: 66 enhanced harmonic-summary features
+- Architecture: grouped-head residual MLP
+- Width: 320
+- Learning rate: `6e-4`
+- Dropout: `0.075`
+- Optimizer path: AdamW, SmoothL1 component loss, gradient clipping, plateau LR scheduler
+- Split seed: `7`
+- Current baseline runs:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed7_20260612_054505_utc`
+
+Comparison against the v5 S3-tail reference:
+
+| Metric | v5 seed23 | v6 seed23 | v6 seed7 | Direction |
+|---|---:|---:|---:|---|
+| weighted score | `0.05102` | `0.03690` | `0.03714` | better |
+| true hard-target normalized MAE | `0.02581` | `0.01850` | `0.01865` | better |
+| validation normalized MAE | `0.01900` | `0.01394` | `0.01404` | better |
+| blind normalized MAE | `0.01408` | `0.01085` | `0.01092` | better |
+| stress normalized MAE | `0.01341` | `0.01018` | `0.01038` | better |
+| high-S3 magnitude MAE | `8.20` | `6.27` | `5.96` | better |
+| high-S3 magnitude bias | `-6.39` | `-4.65` | `-4.40` | better |
+| high-S3 magnitude slope | `0.709` | `0.799` | `0.812` | better |
+| B2 magnitude MAE | `0.0798` | `0.0601` | `0.0615` | better |
+| A3 magnitude MAE | `1.967` | `1.401` | `1.374` | better |
+
+Interpretation:
+
+- The benchmark-gap-aware v6 expansion is a clear improvement and replaces v5
+  as the current baseline family.
+- Reject the standalone S3 magnitude-loss direction as the main path. It moved
+  selected high-S3 metrics but traded off against overall and B2/A3 behavior.
+- The useful data expansion was not generic scale-up; it added rows resembling
+  hard parent validation/stress regimes while preserving the same architecture
+  and loss.
+
+Rejected follow-up:
+
+- Dataset: `enhanced_v7_c1_gap125k`
+- Dataset run:
+  - `training_results/feature_regression_enhanced/enhanced_v7_c1_gap125k_20260612_063338_utc`
+- Total rows: `125,946`
+- Added rows: `25,500` C1-focused training-only rows
+- Candidate runs:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed23_20260612_063900_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed7_20260612_071130_utc`
+
+v7 result:
+
+| Metric | v6 seed23 | v7 seed23 | v7 seed7 | Direction |
+|---|---:|---:|---:|---|
+| weighted score | `0.03690` | `0.03752` | `0.03791` | worse |
+| validation C1 MAE | `1.77` | `1.82` | `1.89` | worse |
+| blind C1 MAE | `1.22` | `1.28` | `1.28` | worse |
+| stress C1 MAE | `1.20` | `1.28` | `1.32` | worse |
+| high-S3 magnitude MAE | `6.27` | `6.10` | `6.20` | mixed/slightly better |
+| high-S3 magnitude slope | `0.799` | `0.847` | `0.893` | better |
+| B2 magnitude MAE | `0.0601` | `0.0620` | `0.0624` | worse |
+| A3 magnitude MAE | `1.401` | `1.378` | `1.406` | mixed |
+
+Decision:
+
+- Do not promote v7.
+- More C1-coupled rows did not improve C1, so C1 is likely feature-limited or
+  identifiability-limited rather than simply data-limited.
+- This is scientifically plausible because C1 is inferred from the difference
+  of features measured under large imposed under/over defocus offsets. The
+  residual C1 signal can be a weak incremental perturbation on top of the large
+  defocused probe geometry.
+
+Benchmark caveat:
+
+- v6/v7 appended rows were marked `dataset_split_hint=training_only`.
+- The stress split still changed by one row (`3,085 -> 3,084`) when v7 was
+  appended. This indicates the stress threshold is still recomputed from all
+  rows, including training-only rows.
+- Before the next scientific comparison, freeze validation/blind/stress row
+  membership explicitly or compute split thresholds only from unhinted parent
+  benchmark rows.
+
+Next controlled step:
+
+- Do not run another data expansion first.
+- Implement fixed benchmark split membership.
+- Add a C1 sensitivity audit by C1 magnitude bin and coupling label.
+- Add explicit under/over defocus-difference features, especially:
+  - `over_Xigma_mean - under_Xigma_mean`
+  - normalized defocus difference for `Xigma`, `Mu`, and `Rho`
+  - selected under/over harmonic differences and ratios
+- Run a v8 no-new-simulation feature batch on the existing v6 dataset before
+  deciding whether any further data expansion is justified.
+
 ## 2026-06-11 Current Model-Loop Status
 
 Current champion:

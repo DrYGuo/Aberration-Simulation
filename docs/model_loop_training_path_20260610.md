@@ -97,3 +97,70 @@ Benchmark note:
 - The blind split stayed identical.
 - Validation/stress shifted by one parent row, so future serious comparisons
   should explicitly persist benchmark row IDs.
+
+## 2026-06-12 Update
+
+The next two data-scale experiments were completed through the Colab worker.
+
+### v6 Benchmark-Gap 100k
+
+v6 appended `43,000` benchmark-gap-aware hard-regime training-only rows to the
+v5 S3-tail dataset, producing `100,446` total rows.
+
+Current baseline runs:
+
+- `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc`
+- `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed7_20260612_054505_utc`
+
+Compared with v5 seed23:
+
+- Weighted score improved: `0.05102 -> 0.03690` / `0.03714`.
+- True hard-target normalized MAE improved: `0.02581 -> 0.01850` / `0.01865`.
+- Blind/stress normalized MAE improved to about `0.0109` / `0.0102-0.0104`.
+- High-S3 magnitude MAE improved: `8.20 -> 6.27` / `5.96`.
+- High-S3 magnitude slope improved: `0.709 -> 0.799` / `0.812`.
+- B2/A3 vector magnitude MAE improved to about `0.060-0.062` / `1.37-1.40`.
+
+Decision: promote the v6 seed-repeat family as the current baseline.
+
+### v7 C1-Gap 125k
+
+v7 appended `25,500` C1-focused training-only rows to v6, producing `125,946`
+total rows.
+
+Candidate runs:
+
+- `D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed23_20260612_063900_utc`
+- `D66_grouped_width320_lr6e-4_dropout0.075_v7c1gap125k_seed7_20260612_071130_utc`
+
+Compared with v6 seed23:
+
+- Weighted score worsened: `0.03690 -> 0.03752` / `0.03791`.
+- Validation C1 MAE worsened: `1.77 -> 1.82` / `1.89`.
+- Blind C1 MAE worsened: `1.22 -> 1.28` / `1.28`.
+- Stress C1 MAE worsened: `1.20 -> 1.28` / `1.32`.
+- High-S3 slope improved, but this does not compensate for C1 and weighted-score
+  regression.
+
+Decision: reject v7 as a model-improvement direction.
+
+### Interpretation
+
+C1 now appears less like a data-volume problem and more like an
+observability/feature-identifiability problem. The simulations use large
+under/over defocus offsets, and C1 is inferred mainly from differences in
+defocused probe features such as `Xigma`. The residual C1 signal can be a weak
+incremental perturbation on top of the imposed defocus geometry, so simply
+adding more C1-coupled rows is not sufficient.
+
+### Next Controlled Work
+
+Do not run another data expansion first. The next model-loop patch should:
+
+- freeze validation/blind/stress row membership explicitly;
+- fix the stress-threshold issue that moved one row between v6 and v7;
+- add C1 sensitivity diagnostics by C1 magnitude bin and coupling label;
+- add explicit under/over defocus-difference features, including raw and
+  normalized differences for `Xigma`, `Mu`, `Rho`, and selected harmonics;
+- run a no-new-simulation v8 feature batch on the existing v6 data before
+  deciding whether more simulations are justified.

@@ -1,11 +1,11 @@
 # Current Project State
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 
 ## Stable Commit
 
-- Current GitHub `main` commit: `9d41407`
-- Current regression-prep commit: `066c808`
+- Latest evaluated Colab result commit: `537c92d`
+- Documentation in this file reflects the evaluated Colab results through that commit.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
@@ -33,7 +33,8 @@ small plots, and concise reports.
 - Raw-angle regression notebook: `notebooks/uno_feature_regression_raw_angles.ipynb`
 - Colab model-selection worker notebook: `notebooks/colab_worker_model_loop.ipynb`
 - Colab worker config: `experiments/colab_worker_model_loop.json`
-- Current model-selection batch config: `configs/model_selection_batch_v5_s3_tail60k.json`
+- Latest completed model-selection batch config: `configs/model_selection_batch_v7_c1_gap125k.json`
+- Current Colab worker config: `experiments/colab_worker_model_loop.json`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
@@ -98,14 +99,16 @@ Model decisions, run history, and the reproducibility/tracking standard are in
 
 ## Current Regression State
 
-Current champion:
+Current baseline:
 
 - Run:
-  - `D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc`
+  - seed-repeat check: `D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed7_20260612_054505_utc`
 - Dataset:
-  - `enhanced_v5_s3_tail60k_20260611_084005_utc`
-  - `57,446` total rows
-  - `16,000` new high-S3-tail training-only rows appended to v3
+  - `enhanced_v6_benchmark_gap100k_20260612_051040_utc`
+  - `100,446` total rows
+  - `43,000` benchmark-gap-aware hard-regime training-only rows appended to v5
+  - train/validation/blind/stress: `93,011 / 1,979 / 2,371 / 3,085`
 - Feature family:
   - 66 enhanced harmonic-summary features
 - Model:
@@ -118,35 +121,42 @@ Current champion:
   - plateau LR scheduler
   - split seed `7`
 
-Key metrics for the current champion:
+Key metrics for the current baseline:
 
-- Weighted score: `0.05102`
-- True hard-target normalized MAE: `0.02581`
-- Overall validation normalized MAE: `0.01900`
-- Blind/stress normalized MAE: `0.01408` / `0.01341`
-- B2/A3 magnitude MAE: `0.0798` / `1.967`
-- High-S3 magnitude MAE/bias/slope: `8.20` / `-6.39` / `0.709`
-- High-S3 mean/p95 angle error: `4.39 deg` / `16.95 deg`
+- Weighted score: `0.03690` for seed23, `0.03714` for seed7
+- True hard-target normalized MAE: `0.01850` / `0.01865`
+- Overall validation normalized MAE: `0.01394` / `0.01404`
+- Blind/stress normalized MAE: `0.01085` / `0.01018` for seed23
+- B2/A3 magnitude MAE: `0.0601` / `1.401` for seed23
+- High-S3 magnitude MAE/bias/slope:
+  - seed23: `6.27` / `-4.65` / `0.799`
+  - seed7: `5.96` / `-4.40` / `0.812`
+- C1 validation/blind/stress MAE for seed23:
+  - `1.77` / `1.22` / `1.20`
 
 Current interpretation:
 
-- The v5 S3-tail expansion improved overall regression, blind/stress metrics,
-  B2/A3 vector metrics, and high-S3 magnitude MAE/bias.
-- The high-S3 magnitude slope remains compressed near `0.7`, so more data alone
-  has not solved S3 calibration.
-- The S3 feature saturation audit shows weak high-S3 linear response for the
-  current Eq. 43-like and h2 harmonic features. The current CSV does not contain
-  radial-band, radially weighted, or contour/radius m=2 features.
-- The next step should be high-S3-sensitive feature engineering with locked
-  validation/blind/stress row IDs, not immediate expansion to `100k` rows.
+- The v6 benchmark-gap-aware expansion is the current best result and replaces
+  v5 as the baseline family.
+- Standalone S3 magnitude-loss is rejected as the main direction.
+- The v7 C1-focused expansion to `125,946` rows is rejected:
+  - weighted score worsened: `0.03690 -> 0.03752` / `0.03791`
+  - validation C1 MAE worsened: `1.77 -> 1.82` / `1.89`
+  - blind/stress C1 MAE also worsened.
+- C1 is likely feature-limited or identifiability-limited in the current
+  representation. This is plausible because C1 is inferred from differences
+  between features measured under large imposed under/over defocus offsets.
+- The next step should be no-new-simulation feature/split infrastructure:
+  fixed benchmark split membership, C1 sensitivity diagnostics, and explicit
+  under/over defocus-difference features.
 
 Benchmark caveat:
 
-- v5 appended rows are marked `dataset_split_hint=training_only`.
-- Blind split remained identical to the previous champion.
-- Validation/stress changed by one parent row, so future comparisons should
-  write and reuse explicit benchmark row IDs instead of relying only on stable
-  hashing.
+- Appended rows are marked `dataset_split_hint=training_only`.
+- Validation/blind/stress are intended to come only from parent benchmark rows.
+- Stress split still changed by one row between v6 and v7 (`3,085 -> 3,084`),
+  so future comparisons must explicitly freeze benchmark row membership or
+  compute split thresholds only from unhinted parent rows.
 
 ## Recent Interpretation
 
