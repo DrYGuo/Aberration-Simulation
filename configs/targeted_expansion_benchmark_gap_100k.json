@@ -1,0 +1,57 @@
+{
+  "description": "Append 43000 benchmark-gap-aware hard-regime training-only rows to the v5 S3-tail dataset, producing roughly 100k total rows. New rows are weighted toward hard parent validation/stress regimes rather than generic easy cases.",
+  "dataset_version": "enhanced_v6_benchmark_gap100k",
+  "parent_dataset_version": "enhanced_v5_s3_tail60k",
+  "expected_parent_rows": 57446,
+  "expected_new_training_only_rows": 43000,
+  "expected_total_rows": 100446,
+  "case_counts": {
+    "coupled_full_random": 9000,
+    "coupled_sparse_random": 9000,
+    "coupled_C1_A1_C3_A2_random": 5000,
+    "coupled_C1_C3_A2_random": 4000,
+    "coupled_C1_C3_S3_random": 3500,
+    "coupled_C3_A3_S3_random": 3500,
+    "coupled_A1_B2_S3_random": 3000,
+    "coupled_A3_S3_random": 2500,
+    "coupled_B2_S3_random": 2000,
+    "coupled_A1_S3_random": 1500
+  },
+  "sampling": {
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "coupled_C1_C3_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "keep_existing_validation_blind_stress_benchmarks": true,
+    "split_seed": 7,
+    "diagnostic_only_until_validated": false
+  },
+  "decision_note": {
+    "purpose": "Test whether adding data similar to hard parent validation/stress regimes improves generalization without relying on S3 magnitude-loss.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_logging_ref_seed23_20260612_033746_utc",
+    "rejected_direction": "S3 magnitude-loss as main direction",
+    "priority_regimes": [
+      "coupled_full_random",
+      "coupled_sparse_random",
+      "coupled_C1_A1_C3_A2_random",
+      "coupled_C1_C3_A2_random",
+      "coupled_C1_C3_S3_random",
+      "coupled_C3_A3_S3_random",
+      "coupled_A1_B2_S3_random"
+    ],
+    "success_rule": "Promote only if weighted score, true hard-target normalized MAE, validation/blind/stress normalized MAE, and hard-regime label metrics improve without material B2/A3/C1 regression."
+  }
+}

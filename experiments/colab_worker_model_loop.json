@@ -1,6 +1,6 @@
 {
-  "description": "Model-loop batch using repaired history logging. This config reruns the v5 S3-tail champion as a clean logging reference, then tests two mild S3 magnitude-loss candidates on the same cached v5 dataset and writes compact comparison diagnostics.",
-  "config_id": "v5-logging-s3magloss-batch",
+  "description": "Benchmark-gap-aware 100k model-loop batch. This config expands the v5 S3-tail dataset with hard-regime training-only rows that resemble difficult parent validation/stress cases, then reruns the current best architecture without S3 magnitude-loss.",
+  "config_id": "v6-benchmark-gap100k-batch",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v5_logging_s3magloss_workflow.sh"
+    "scripts/run_colab_v6_benchmark_gap100k_workflow.sh"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
@@ -51,7 +51,7 @@
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
-  "command_timeout_seconds": 10800,
+  "command_timeout_seconds": 14400,
   "artifact_max_bytes": 1500000,
   "artifact_blocked_suffixes": [
     ".pt",
