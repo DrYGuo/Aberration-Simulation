@@ -249,6 +249,7 @@ def randomize(
     *,
     sparse: bool = False,
     s3_amp_range: tuple[float, float] | None = None,
+    c1_magnitude_bins: tuple[tuple[float, float], ...] | None = None,
 ) -> dict[str, Any]:
     def uniform(low: float, high: float) -> float:
         return float(rng.uniform(low, high))
@@ -261,7 +262,12 @@ def randomize(
 
     active_probability = 0.85 if sparse else 1.0
     if "C1" in fields:
-        params["C1"] = uniform(-100.0, 100.0)
+        if c1_magnitude_bins:
+            low, high = c1_magnitude_bins[int(rng.integers(0, len(c1_magnitude_bins)))]
+            magnitude = uniform(low, high)
+            params["C1"] = magnitude if rng.random() < 0.5 else -magnitude
+        else:
+            params["C1"] = uniform(-100.0, 100.0)
     if "C3" in fields:
         params["C3"] = uniform(0.05, 2.0)
     if "A1" in fields:
@@ -322,13 +328,38 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
             raise ValueError(f"invalid S3 tail amplitude range: {s3_amp_range}")
     s3_tail_labels = set(s3_tail.get("labels", [])) if isinstance(s3_tail, dict) else set()
     force_s3_in_sparse = bool(s3_tail.get("force_s3_in_sparse", False)) if isinstance(s3_tail, dict) else False
+    c1_balanced = sampling.get("c1_balanced", {}) if isinstance(sampling, dict) else {}
+    c1_balanced_enabled = bool(c1_balanced.get("enabled", False)) if isinstance(c1_balanced, dict) else False
+    c1_balanced_labels = set(c1_balanced.get("labels", [])) if isinstance(c1_balanced, dict) else set()
+    c1_magnitude_bins: tuple[tuple[float, float], ...] | None = None
+    if c1_balanced_enabled:
+        raw_bins = c1_balanced.get("magnitude_bins", [[0.0, 10.0], [10.0, 40.0], [40.0, 75.0], [75.0, 100.0]])
+        parsed_bins: list[tuple[float, float]] = []
+        for item in raw_bins:
+            if not isinstance(item, (list, tuple)) or len(item) != 2:
+                raise ValueError(f"invalid C1 magnitude bin: {item!r}")
+            low, high = float(item[0]), float(item[1])
+            if low < 0 or high <= low or high > 100.0:
+                raise ValueError(f"invalid C1 magnitude bin range: {(low, high)}")
+            parsed_bins.append((low, high))
+        if not parsed_bins:
+            raise ValueError("C1 balanced sampling requires at least one magnitude bin")
+        c1_magnitude_bins = tuple(parsed_bins)
     field_sets = {
         "S3_high_random": ("S3",),
         "coupled_full_random": ALL_FIELDS,
+        "coupled_C1_A1_random": ("C1", "A1"),
+        "coupled_C1_A2_random": ("C1", "A2"),
+        "coupled_C1_A3_random": ("C1", "A3"),
+        "coupled_C1_B2_random": ("C1", "B2"),
+        "coupled_C1_S3_random": ("C1", "S3"),
+        "coupled_C1_A1_C3_random": ("C1", "A1", "C3"),
+        "coupled_C1_A1_S3_random": ("C1", "A1", "S3"),
         "coupled_C1_C3_random": ("C1", "C3"),
         "coupled_C1_C3_A2_random": ("C1", "C3", "A2"),
         "coupled_C1_A1_C3_A2_random": ("C1", "A1", "C3", "A2"),
         "coupled_C1_C3_S3_random": ("C1", "C3", "S3"),
+        "coupled_C1_A3_S3_random": ("C1", "A3", "S3"),
         "coupled_A1_S3_random": ("A1", "S3"),
         "coupled_B2_S3_random": ("B2", "S3"),
         "coupled_A1_B2_S3_random": ("A1", "B2", "S3"),
@@ -346,6 +377,7 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
             params = dict(BASELINE_PARAMETERS)
             params["sweep_label"] = label
             label_s3_range = s3_amp_range if s3_tail_enabled and label in s3_tail_labels else None
+            label_c1_bins = c1_magnitude_bins if c1_balanced_enabled and label in c1_balanced_labels else None
             if label == "coupled_sparse_random":
                 active_count = int(rng.integers(2, min(5, len(ALL_FIELDS)) + 1))
                 if s3_tail_enabled and force_s3_in_sparse:
@@ -354,9 +386,26 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
                     fields = ("S3", *tuple(rng.choice(available, size=other_count, replace=False)))
                 else:
                     fields = tuple(rng.choice(ALL_FIELDS, size=active_count, replace=False))
-                cases.append(randomize(params, fields, rng, sparse=True, s3_amp_range=label_s3_range))
+                cases.append(
+                    randomize(
+                        params,
+                        fields,
+                        rng,
+                        sparse=True,
+                        s3_amp_range=label_s3_range,
+                        c1_magnitude_bins=label_c1_bins,
+                    )
+                )
             else:
-                cases.append(randomize(params, field_sets[label], rng, s3_amp_range=label_s3_range))
+                cases.append(
+                    randomize(
+                        params,
+                        field_sets[label],
+                        rng,
+                        s3_amp_range=label_s3_range,
+                        c1_magnitude_bins=label_c1_bins,
+                    )
+                )
     rng.shuffle(cases)
     return cases
 

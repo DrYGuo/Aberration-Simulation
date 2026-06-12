@@ -3,8 +3,12 @@ set -euo pipefail
 
 DONE_MARKER="colab_worker_logs/v6_benchmark_gap100k_batch_done.json"
 if [ -f "$DONE_MARKER" ]; then
-  echo "v6 benchmark-gap 100k batch already completed; marker exists at $DONE_MARKER"
-  exit 0
+  MARKER_V6_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+  if [ -n "$MARKER_V6_CSV" ]; then
+    echo "v6 benchmark-gap 100k batch already completed; marker exists at $DONE_MARKER"
+    exit 0
+  fi
+  echo "v6 done marker exists, but the large v6 CSV is absent; continuing to rebuild cached data."
 fi
 
 mkdir -p colab_worker_logs

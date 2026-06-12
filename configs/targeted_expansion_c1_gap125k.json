@@ -1,0 +1,67 @@
+{
+  "description": "Append 25500 C1-focused hard-regime training-only rows to the v6 benchmark-gap dataset, producing roughly 126k total rows. This tests whether the remaining C1 error is data-coverage limited while keeping the validation/blind/stress benchmarks fixed.",
+  "dataset_version": "enhanced_v7_c1_gap125k",
+  "parent_dataset_version": "enhanced_v6_benchmark_gap100k",
+  "expected_parent_rows": 100446,
+  "expected_new_training_only_rows": 25500,
+  "expected_total_rows": 125946,
+  "case_counts": {
+    "coupled_C1_C3_random": 3500,
+    "coupled_C1_A1_random": 3000,
+    "coupled_C1_A2_random": 2500,
+    "coupled_C1_S3_random": 2500,
+    "coupled_C1_A3_random": 2000,
+    "coupled_C1_A1_C3_random": 2500,
+    "coupled_C1_C3_A2_random": 2500,
+    "coupled_C1_A1_C3_A2_random": 2500,
+    "coupled_C1_C3_S3_random": 2000,
+    "coupled_C1_A1_S3_random": 1500,
+    "coupled_C1_B2_random": 1000
+  },
+  "sampling": {
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_C1_C3_random",
+        "coupled_C1_A1_random",
+        "coupled_C1_A2_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A3_random",
+        "coupled_C1_A1_C3_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_B2_random"
+      ]
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "keep_existing_validation_blind_stress_benchmarks": true,
+    "split_seed": 7,
+    "diagnostic_only_until_validated": false
+  },
+  "decision_note": {
+    "purpose": "Test the next bottleneck after v6: C1 validation/stress error. Keep architecture and optimizer fixed so the only scientific change is targeted C1 coverage.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc",
+    "fixed_architecture_and_optimizer": true,
+    "priority_regimes": [
+      "coupled_C1_C3_random",
+      "coupled_C1_A1_random",
+      "coupled_C1_A2_random",
+      "coupled_C1_S3_random",
+      "coupled_C1_A1_C3_random",
+      "coupled_C1_C3_A2_random",
+      "coupled_C1_A1_C3_A2_random",
+      "coupled_C1_C3_S3_random"
+    ],
+    "success_rule": "Promote only if C1 validation/blind/stress MAE and p95 improve without degrading the v6 weighted score, S3 high-magnitude metrics, B2/A3 vector diagnostics, or easy targets materially."
+  }
+}

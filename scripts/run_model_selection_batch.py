@@ -64,11 +64,33 @@ def selection_summary(path: Path | None) -> dict[str, Any]:
             metrics = load_json(Path(metrics_path))
         except (OSError, json.JSONDecodeError):
             metrics = {}
+        c1_metrics = metrics.get("targets", {}).get("C1", {}) if isinstance(metrics, dict) else {}
+        for key in [
+            "mae",
+            "rmse",
+            "p95_abs_error",
+            "bias",
+            "normalized_mae",
+            "normalized_p95_abs_error",
+        ]:
+            if key in c1_metrics:
+                summary[f"C1_{key}"] = c1_metrics[key]
         splits = metrics.get("splits", {}) if isinstance(metrics, dict) else {}
         for split_name in ["validation", "blind", "stress"]:
             split = splits.get(split_name, {}) if isinstance(splits, dict) else {}
             if "overall_normalized_mae" in split:
                 summary[f"{split_name}_normalized_mae"] = split["overall_normalized_mae"]
+            split_c1 = split.get("targets", {}).get("C1", {}) if isinstance(split, dict) else {}
+            for key in [
+                "mae",
+                "rmse",
+                "p95_abs_error",
+                "bias",
+                "normalized_mae",
+                "normalized_p95_abs_error",
+            ]:
+                if key in split_c1:
+                    summary[f"{split_name}_C1_{key}"] = split_c1[key]
     vector_path = path.parent / "vector_diagnostics.json"
     if vector_path.exists():
         try:
@@ -316,6 +338,30 @@ def main() -> int:
             "validation_normalized_mae",
             "blind_normalized_mae",
             "stress_normalized_mae",
+            "C1_mae",
+            "C1_rmse",
+            "C1_p95_abs_error",
+            "C1_bias",
+            "C1_normalized_mae",
+            "C1_normalized_p95_abs_error",
+            "validation_C1_mae",
+            "validation_C1_rmse",
+            "validation_C1_p95_abs_error",
+            "validation_C1_bias",
+            "validation_C1_normalized_mae",
+            "validation_C1_normalized_p95_abs_error",
+            "blind_C1_mae",
+            "blind_C1_rmse",
+            "blind_C1_p95_abs_error",
+            "blind_C1_bias",
+            "blind_C1_normalized_mae",
+            "blind_C1_normalized_p95_abs_error",
+            "stress_C1_mae",
+            "stress_C1_rmse",
+            "stress_C1_p95_abs_error",
+            "stress_C1_bias",
+            "stress_C1_normalized_mae",
+            "stress_C1_normalized_p95_abs_error",
             "S3_high_magnitude_mae",
             "S3_high_magnitude_bias",
             "S3_high_magnitude_slope",
