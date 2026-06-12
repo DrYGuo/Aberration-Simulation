@@ -402,6 +402,22 @@ def fmt(value: Any, digits: int = 4) -> str:
 
 
 def write_markdown(path: Path, payload: dict[str, Any]) -> None:
+    full_runs = [run for run in payload["runs"] if run.get("computed")]
+    compact_only_runs = [run for run in payload["runs"] if not run.get("computed")]
+    limitation_lines = []
+    if compact_only_runs:
+        limitation_lines.append(
+            "Compact-only historical runs do not include raw predictions or checkpoints, so intercepts, "
+            "through-origin slopes, component slopes, and residual plots cannot be recomputed for those runs."
+        )
+    if full_runs:
+        limitation_lines.append(
+            "Runs with `s3_magnitude_metric_audit_validation.csv` are fully recomputed below, including "
+            "OLS intercepts, through-origin slopes, component slopes, and residual plots."
+        )
+    if not limitation_lines:
+        limitation_lines.append(payload["artifact_limitation"])
+
     lines = [
         "# S3 Magnitude Metric Audit",
         "",
@@ -418,7 +434,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "",
         "## Artifact Limitation",
         "",
-        payload["artifact_limitation"],
+        " ".join(limitation_lines),
         "",
         "## Stored Metric Comparison",
         "",
@@ -445,7 +461,6 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
             )
         )
     lines.extend(["", "## Full Recompute Tables", ""])
-    full_runs = [run for run in payload["runs"] if run.get("computed")]
     if not full_runs:
         lines.append("No run folder contained `validation_predictions_s3_audit.npz` or `s3_magnitude_metric_audit_validation.csv`, so through-origin slopes and component slopes could not be recomputed from saved predictions in this local audit.")
     else:
@@ -490,21 +505,21 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
             "",
             "A. The stored high-S3 magnitude slope near `0.71` is present in `vector_diagnostics.json` and the batch summary for the v5 seed23 run.",
             "",
-            "B. Code inspection shows it is an OLS-with-intercept slope from `np.polyfit(true_magnitude, pred_magnitude, 1)`. The current compact JSON does not store the intercept, so the intercept cannot be recovered without raw predictions.",
+            "B. Code inspection shows it is an OLS-with-intercept slope from `np.polyfit(true_magnitude, pred_magnitude, 1)`. The intercept is recovered for runs with `s3_magnitude_metric_audit_validation.csv`; compact-only historical runs cannot provide it.",
             "",
             "C. The through-origin slope is computed when `s3_magnitude_metric_audit_validation.csv` or raw validation predictions are available; otherwise it cannot be recovered from historical compact artifacts.",
             "",
             "D. Component slopes for `S3_x` and `S3_y` are computed from the S3 audit CSV when present. For older compact-only runs, existing component scatter plots are images only.",
             "",
-            "E. A low OLS slope could be affected by high-bin range restriction and nonzero intercept, but this cannot be confirmed or rejected without raw predictions and the intercept.",
+            "E. A low OLS slope can be affected by high-bin range restriction and nonzero intercept. Runs with the S3 audit CSV provide enough data to distinguish OLS-with-intercept behavior from through-origin/component slopes.",
             "",
-            "F. Whether magnitude bias becomes more negative at larger true `|S3|` requires residual-vs-true-magnitude data; current compact artifacts do not contain the raw residuals.",
+            "F. Whether magnitude bias becomes more negative at larger true `|S3|` requires residual-vs-true-magnitude data. This is available for runs with the S3 audit CSV and unavailable for compact-only historical runs.",
             "",
-            "G. The feature-bottleneck conclusion should be treated as plausible but not final until the full magnitude-slope audit is run with raw validation predictions or compact S3 audit arrays.",
+            "G. Feature-bottleneck conclusions should be based on the full recompute rows when available, not on the high-bin OLS slope alone.",
             "",
             "## Recommendation",
             "",
-            "Before feature engineering, run one non-training diagnostic pass on Colab that saves compact `validation_predictions_s3_audit.npz` or an equivalent small S3-only audit CSV for the v3/v5 runs. Then rerun this script to compute through-origin slopes, component slopes, intercepts, residual plots, and decide whether the `0.71` slope is a real compression effect or an OLS/intercept artifact.",
+            "Use the recomputed S3 audit CSV metrics when deciding whether S3 magnitude-loss candidates improve high-S3 magnitude MAE and bias without damaging component slopes or blind/stress performance.",
         ]
     )
     path.write_text("\n".join(lines) + "\n")

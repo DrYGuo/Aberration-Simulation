@@ -1,6 +1,6 @@
 {
-  "description": "Diagnostic-only model loop. This config reruns the v3 SmoothL1 champion and v5 S3-tail champion with compact S3 validation audit CSV output, then generates both the S3 magnitude-slope audit and train-validation loss-gap audit reports.",
-  "config_id": "s3-magnitude-and-loss-gap-audit-rerun",
+  "description": "Model-loop batch using repaired history logging. This config reruns the v5 S3-tail champion as a clean logging reference, then tests two mild S3 magnitude-loss candidates on the same cached v5 dataset and writes compact comparison diagnostics.",
+  "config_id": "v5-logging-s3magloss-batch",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_s3_metric_audit_workflow.sh"
+    "scripts/run_colab_v5_logging_s3magloss_workflow.sh"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
