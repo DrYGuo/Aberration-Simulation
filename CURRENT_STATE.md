@@ -35,6 +35,10 @@ small plots, and concise reports.
 - Colab worker config: `experiments/colab_worker_model_loop.json`
 - Latest completed model-selection batch config: `configs/model_selection_batch_v7_c1_gap125k.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
+- Next queued model-selection batch config:
+  - `configs/model_selection_batch_v8_defocus_difference_features.json`
+- Prepared but inactive 250k expansion config:
+  - `configs/targeted_expansion_v9_250k.json`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
@@ -149,6 +153,11 @@ Current interpretation:
 - The next step should be no-new-simulation feature/split infrastructure:
   fixed benchmark split membership, C1 sensitivity diagnostics, and explicit
   under/over defocus-difference features.
+- This v8 work is now queued in the Colab worker. It uses the existing v6 CSV,
+  creates no-simulation defocus-difference feature variants, reruns a fixed-split
+  66-feature baseline, and tests basic/full defocus-difference feature sets.
+- The next data expansion is prepared as a 250k config, but it is not active
+  until v8 results are reviewed.
 
 Benchmark caveat:
 

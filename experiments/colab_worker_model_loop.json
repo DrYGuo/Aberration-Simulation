@@ -1,6 +1,6 @@
 {
-  "description": "C1-gap model-loop batch. This config expands the v6 benchmark-gap dataset with C1-focused training-only rows, then reruns the current best architecture without changing the loss or optimizer.",
-  "config_id": "v7-c1-gap125k-batch",
+  "description": "Fixed-split defocus-difference feature batch. This config uses existing v6 data, materializes no-simulation defocus-difference feature variants, audits C1 feature sensitivity, and reruns the current best architecture.",
+  "config_id": "v8-defocus-difference-features",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v7_c1_gap125k_workflow.sh"
+    "scripts/run_colab_v8_defocus_difference_workflow.sh"
   ],
   "result_globs": [
     "colab_worker_logs/*.json",
@@ -30,6 +30,10 @@
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*.md",
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*/*.json",
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*/plots/*.png",
+    "training_results/model_selection_reports/c1_feature_sensitivity_*.md",
+    "training_results/model_selection_reports/c1_feature_sensitivity_*/*.json",
+    "training_results/model_selection_reports/c1_feature_sensitivity_*/*.csv",
+    "training_results/model_selection_reports/c1_feature_sensitivity_*/plots/*.png",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
     "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",

@@ -231,10 +231,20 @@ def four_way_benchmark_split(
         "S3",
         "A3",
     }
+    benchmark_eligible = np.asarray(
+        [
+            str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() != TRAINING_ONLY_HINT
+            for row in rows
+        ],
+        dtype=bool,
+    )
     target_abs = np.abs(y)
     scales = np.asarray([DEFAULT_TARGET_PHYSICAL_SCALES[name] for name in TARGET_COLUMNS], dtype=np.float32)
     normalized_abs = target_abs / scales[None, :]
-    stress_threshold = float(np.quantile(np.max(normalized_abs, axis=1), 0.90))
+    benchmark_hardness = np.max(normalized_abs[benchmark_eligible], axis=1)
+    if len(benchmark_hardness) == 0:
+        raise RuntimeError("no benchmark-eligible rows are available for validation/blind/stress splitting")
+    stress_threshold = float(np.quantile(benchmark_hardness, 0.90))
 
     splits: dict[str, list[int]] = {"train": [], "validation": [], "blind": [], "stress": []}
     for index, row in enumerate(rows):
@@ -271,10 +281,11 @@ def dataset_version_summary(rows: list[dict[str, str]], csv_path: Path) -> dict[
     )
     has_training_only_rows = training_only_count > 0
     if has_training_only_rows:
-        split_policy = "stable_hash_parent_benchmark_with_training_only_append_rows"
+        split_policy = "stable_hash_parent_benchmark_with_training_only_append_rows_fixed_parent_stress_threshold"
         benchmark_provenance = (
             "Rows marked dataset_split_hint=training_only are assigned only to training. "
-            "Validation, blind, and stress benchmarks are drawn from unhinted parent rows."
+            "Validation, blind, and stress benchmarks are drawn from unhinted parent rows. "
+            "Stress hardness threshold is computed only from unhinted benchmark-eligible rows."
         )
     else:
         split_policy = "stable_hash_disjoint_benchmark_split"

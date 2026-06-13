@@ -108,6 +108,33 @@ Next controlled step:
 - Run a v8 no-new-simulation feature batch on the existing v6 dataset before
   deciding whether any further data expansion is justified.
 
+Queued v8 implementation:
+
+- Active worker command:
+  - `scripts/run_colab_v8_defocus_difference_workflow.sh`
+- Batch config:
+  - `configs/model_selection_batch_v8_defocus_difference_features.json`
+- No new simulations are queued for v8.
+- v8 materializes two derived feature CSV variants from the existing v6 CSV:
+  - `enhanced_v8_c1diff_basic`: mean-level under/over defocus differences for
+    `Xigma`, `Mu`, and `Rho`
+  - `enhanced_v8_c1diff_full`: mean-level plus harmonic under/over differences,
+    sums, magnitudes, and normalized differences
+- v8 jobs:
+  - fixed-split 66-feature baseline, seed23
+  - basic defocus-difference features, seed23/seed7
+  - full defocus-difference features, seed23/seed7
+
+Prepared next data expansion:
+
+- Config:
+  - `configs/targeted_expansion_v9_250k.json`
+- Expected size:
+  - `100,446` v6 parent rows + `149,554` new training-only rows = `250,000`
+    total rows
+- This config is intentionally inactive until v8 fixed-split and feature results
+  are reviewed.
+
 ## 2026-06-11 Current Model-Loop Status
 
 Current champion:

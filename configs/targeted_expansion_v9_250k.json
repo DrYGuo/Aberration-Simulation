@@ -1,0 +1,85 @@
+{
+  "description": "Prepared next-scale expansion from v6 benchmark-gap 100k to roughly 250k total rows. This is intentionally not the active v8 workflow; use only after the fixed-split and defocus-difference feature tests are evaluated.",
+  "dataset_version": "enhanced_v9_gap250k",
+  "parent_dataset_version": "enhanced_v6_benchmark_gap100k",
+  "expected_parent_rows": 100446,
+  "expected_new_training_only_rows": 149554,
+  "expected_total_rows": 250000,
+  "case_counts": {
+    "coupled_full_random": 21554,
+    "coupled_sparse_random": 19000,
+    "coupled_C1_C3_random": 6500,
+    "coupled_C1_A1_random": 6000,
+    "coupled_C1_A2_random": 5000,
+    "coupled_C1_S3_random": 5500,
+    "coupled_C1_A3_random": 4000,
+    "coupled_C1_A1_C3_random": 5500,
+    "coupled_C1_C3_A2_random": 5500,
+    "coupled_C1_A1_C3_A2_random": 5500,
+    "coupled_C1_C3_S3_random": 5000,
+    "coupled_C1_A1_S3_random": 4000,
+    "coupled_C1_B2_random": 2500,
+    "S3_high_random": 7000,
+    "coupled_A1_S3_random": 6500,
+    "coupled_B2_S3_random": 6000,
+    "coupled_A3_S3_random": 8500,
+    "coupled_C3_A3_S3_random": 8000,
+    "coupled_A1_B2_S3_random": 8500,
+    "coupled_A1_B2_random": 3500,
+    "coupled_A2_B2_random": 3000,
+    "coupled_C3_B2_random": 3000
+  },
+  "sampling": {
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_C1_C3_random",
+        "coupled_C1_A1_random",
+        "coupled_C1_A2_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A3_random",
+        "coupled_C1_A1_C3_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_B2_random"
+      ]
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_B2_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "diagnostic_only_until_v8_reviewed": true
+  },
+  "decision_note": {
+    "purpose": "Prepare a 250k next-scale expansion with hard-regime coverage, C1-balanced sampling, S3-tail preservation, and vector-coupling coverage.",
+    "activation_condition": "Run only after v8 confirms fixed benchmark splitting and identifies whether defocus-difference features should be used.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc",
+    "success_rule": "Promote only if 250k improves fixed-split weighted score, blind/stress metrics, C1 metrics, and S3/B2/A3 vector diagnostics without easy-target regression."
+  }
+}
