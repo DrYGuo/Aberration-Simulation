@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-14T08:47:33.552502+00:00",
+  "workflow": "scripts/run_colab_v9_gap250k_d66_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_055608_utc/training_features_enhanced.csv",
+  "runs": {
+    "v9_gap250k_d66_seed23": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc",
+    "v9_gap250k_d66_seed7": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed7_20260614_073553_utc"
+  },
+  "frozen_benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
+  "diagnostics": [
+    "v9_250k_d66_training",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ]
+}
