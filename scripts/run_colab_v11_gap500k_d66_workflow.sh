@@ -2,8 +2,73 @@
 set -euo pipefail
 
 DONE_MARKER="colab_worker_logs/v11_gap500k_d66_done.json"
+SAMPLING_QUALITY_DIR="training_results/model_selection_reports/sampling_quality_v11_gap500k_d66"
 if [ -f "$DONE_MARKER" ]; then
   echo "v11 500K d66 batch already completed; marker exists at $DONE_MARKER"
+  if [ -f "$SAMPLING_QUALITY_DIR/sampling_quality_summary.json" ]; then
+    echo "sampling-quality dashboard already exists at $SAMPLING_QUALITY_DIR"
+    exit 0
+  fi
+
+  echo "sampling-quality dashboard is missing; generating dashboard-only follow-up."
+  mkdir -p colab_worker_logs
+  V11_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v11_gap500k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+  if [ -z "$V11_CSV" ]; then
+    echo "Missing cached v11 500K CSV; cannot run dashboard-only follow-up without regenerating data."
+    exit 1
+  fi
+
+  FROZEN_SPLIT_MANIFEST="configs/benchmark_split_v6_frozen_row_keys.json"
+  if [ ! -f "$FROZEN_SPLIT_MANIFEST" ]; then
+    V6_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+    if [ -n "$V6_CSV" ]; then
+      python3 scripts/write_benchmark_split_manifest.py \
+        --csv-path "$V6_CSV" \
+        --output "$FROZEN_SPLIT_MANIFEST" \
+        --dataset-version enhanced_v6_benchmark_gap100k \
+        --overwrite
+    fi
+  fi
+
+  SPLIT_ARGS=()
+  if [ -f "$FROZEN_SPLIT_MANIFEST" ]; then
+    SPLIT_ARGS=(--benchmark-split-manifest "$FROZEN_SPLIT_MANIFEST")
+  else
+    echo "Frozen v6 split manifest is unavailable; sampling dashboard will omit benchmark nearest-neighbor split checks."
+  fi
+
+  python3 scripts/report_sampling_quality.py \
+    --csv-path "$V11_CSV" \
+    --config configs/targeted_expansion_v11_500k.json \
+    "${SPLIT_ARGS[@]}" \
+    --output-dir "$SAMPLING_QUALITY_DIR"
+
+  python3 - "$V11_CSV" "$SAMPLING_QUALITY_DIR" "$FROZEN_SPLIT_MANIFEST" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+csv_path = Path(sys.argv[1])
+output_dir = Path(sys.argv[2])
+manifest_path = Path(sys.argv[3])
+Path("colab_worker_logs/v11_gap500k_sampling_quality_done.json").write_text(
+    json.dumps(
+        {
+            "status": "complete",
+            "created_utc": datetime.now(timezone.utc).isoformat(),
+            "workflow": "scripts/run_colab_v11_gap500k_d66_workflow.sh",
+            "mode": "dashboard_only_after_completed_v11_training",
+            "dataset_csv": str(csv_path),
+            "sampling_quality_dir": str(output_dir),
+            "frozen_benchmark_split_manifest": str(manifest_path) if manifest_path.exists() else "",
+            "note": "Generated missing v11 sampling-quality dashboard without regenerating data or retraining.",
+        },
+        indent=2,
+    )
+    + "\n"
+)
+PY
   exit 0
 fi
 
