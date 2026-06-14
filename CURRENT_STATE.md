@@ -4,7 +4,7 @@ Last updated: 2026-06-14
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `146ab43`
+- Latest evaluated Colab result commit: `46d5264`
 - Documentation in this file reflects the evaluated Colab results through that commit.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
@@ -33,14 +33,16 @@ small plots, and concise reports.
 - Raw-angle regression notebook: `notebooks/uno_feature_regression_raw_angles.ipynb`
 - Colab model-selection worker notebook: `notebooks/colab_worker_model_loop.ipynb`
 - Colab worker config: `experiments/colab_worker_model_loop.json`
-- Latest completed model-selection batch config: `configs/model_selection_batch_v10_structured_head_v9_250k.json`
+- Latest completed model-selection batch config: `configs/model_selection_batch_v11_gap500k_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
-- Next queued model-selection batch config:
-  - `configs/model_selection_batch_v11_gap500k_d66.json`
+- Latest completed model-selection batch results:
+  - `training_results/model_selection_batches/v11_gap500k_d66_20260614_214817_utc/batch_summary.csv`
+- Latest completed 500k expansion config:
+  - `configs/targeted_expansion_v11_500k.json`
+- Previous model-selection batch config:
+  - `configs/model_selection_batch_v10_structured_head_v9_250k.json`
 - Completed 250k expansion config:
   - `configs/targeted_expansion_v9_250k.json`
-- Next queued 500k expansion config:
-  - `configs/targeted_expansion_v11_500k.json`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
@@ -108,13 +110,13 @@ Model decisions, run history, and the reproducibility/tracking standard are in
 Current baseline:
 
 - Run:
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc`
-  - seed-repeat check: `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed7_20260614_073553_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
+  - seed-repeat check: `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed23_20260614_214818_utc`
 - Dataset:
-  - `enhanced_v9_gap250k_20260614_055608_utc`
-  - `250,000` total rows
-  - `149,554` targeted hard-regime training-only rows appended to the v6 parent
-  - train/validation/blind/stress: `242,556 / 1,977 / 2,370 / 3,097`
+  - `enhanced_v11_gap500k_20260614_205607_utc`
+  - `500,000` total rows
+  - `250,000` targeted hard-regime training-only rows appended to the v9 parent
+  - validation/blind/stress remain the frozen benchmark splits from the v6 split policy
 - Feature family:
   - 66 enhanced harmonic-summary features
 - Model:
@@ -129,24 +131,28 @@ Current baseline:
 
 Key metrics for the current baseline:
 
-- Weighted score: `0.03051` for seed23, `0.03069` for seed7
-- True hard-target normalized MAE: `0.01537` / `0.01557`
-- Overall validation normalized MAE: `0.01186` / `0.01199`
+- Weighted score: `0.02619` for seed7, `0.02710` for seed23
+- True hard-target normalized MAE: `0.01372` / `0.01403`
+- Overall validation normalized MAE: `0.01056` / `0.01071`
 - Blind/stress normalized MAE:
-  - seed23: `0.00969` / `0.00872`
-  - seed7: `0.00968` / `0.00878`
+  - seed7: `0.00886` / `0.00761`
+  - seed23: `0.00884` / `0.00770`
 - B2/A3 magnitude MAE:
-  - seed23: `0.0553` / `1.208`
-  - seed7: `0.0552` / `1.237`
+  - seed7: `0.0498` / `1.145`
+  - seed23: `0.0498` / `1.099`
 - High-S3 magnitude MAE/bias/slope:
-  - seed23: `4.73` / `-3.12` / `0.865`
-  - seed7: `4.66` / `-3.00` / `0.851`
-- C1 validation/blind/stress MAE for seed23:
-  - `1.50` / `1.09` / `1.02`
+  - seed7: `4.09` / `-2.91` / `0.845`
+  - seed23: `4.32` / `-3.04` / `0.858`
+- High-S3 angle diagnostics:
+  - seed7: mean `2.15 deg`, p95 `7.00 deg`
+  - seed23: mean `2.23 deg`, p95 `7.94 deg`
+- C1 validation/blind/stress MAE:
+  - seed7: `1.36` / `0.98` / `0.87`
+  - seed23: `1.41` / `0.97` / `0.88`
 
 Current interpretation:
 
-- The v9 250K hard-regime expansion is the current best result and replaces v6
+- The v11 500K hard-regime expansion is the current best result and replaces v9
   as the baseline family.
 - Standalone S3 magnitude-loss remains rejected as the main direction.
 - The v7 C1-focused expansion is rejected, and v8/v8b defocus-difference
@@ -162,22 +168,24 @@ Current interpretation:
   - true hard-target normalized MAE worsened to `0.01584` / `0.01598`
   - A3 magnitude MAE worsened to `1.329` / `1.383`
   - B2 improved slightly, but not enough to justify promotion.
-- The active next step is a 500K data-scale test on the v9 66-feature grouped-head
-  baseline:
+- The completed v11 500K data-scale test kept the v9 66-feature grouped-head
+  architecture fixed:
   - expansion config: `configs/targeted_expansion_v11_500k.json`
   - batch config: `configs/model_selection_batch_v11_gap500k_d66.json`
   - worker script: `scripts/run_colab_v11_gap500k_d66_workflow.sh`
-  - active worker command: `bash scripts/run_colab_v11_gap500k_d66_workflow.sh`
-  - expected total rows: `500,000`
-  - expected new rows: `250,000` appended training-only rows
+  - total rows: `500,000`
+  - new rows: `250,000` appended training-only rows
   - batch training: `batch_size=65536`, `eval_batch_size=65536`, `predict_batch_size=65536`
-  - architecture/features unchanged from v9.
   - sampler: per-regime Latin-hypercube space filling for all v11 labels, plus
     balanced relative-angle strata for vector-vector S3 couplings.
-  - diagnostics: `targeted25k_audit.json` now includes coefficient coverage,
-    relative-angle coverage, and sampled nearest-neighbor distances; the v11
-    workflow also writes a sampling-quality dashboard before training and
-    `data_scale_learning_curve_*.md/json` after training.
+  - current result includes `targeted25k_audit.json`, label summaries, and
+    hard-target histograms.
+  - the standalone sampling-quality dashboard was not generated in the pushed
+    v11 result because the workflow began before the dashboard integration was
+    active. Run a dashboard-only follow-up on the existing v11 CSV before the
+    next expansion if the CSV is still available in Colab.
+  - `data_scale_learning_curve_20260614_232346_utc.md/json` confirms continued
+    improvement from 100K -> 250K -> 500K.
 
 500K data-distribution plan:
 

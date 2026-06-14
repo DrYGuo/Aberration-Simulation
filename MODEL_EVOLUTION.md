@@ -9,13 +9,15 @@ summarized in `model_registry*.csv`.
 
 Current baseline:
 
-- Dataset: `enhanced_v9_gap250k`
-- Parent dataset: `enhanced_v6_benchmark_gap100k`
+- Dataset: `enhanced_v11_gap500k`
+- Parent dataset: `enhanced_v9_gap250k`
 - Dataset run:
-  - `training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_055608_utc`
-- Total rows: `250,000`
+  - `training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc`
+- Total rows: `500,000`
+- Appended training-only rows: `250,000`
 - Training rows / validation / blind / stress:
-  - `242,556 / 1,977 / 2,370 / 3,097`
+  - frozen benchmark validation/blind/stress from the v6 split policy; all v11
+    appended rows are training-only
 - Feature family: 66 enhanced harmonic-summary features
 - Architecture: grouped-head residual MLP
 - Width: 320
@@ -24,31 +26,43 @@ Current baseline:
 - Optimizer path: AdamW, SmoothL1 component loss, gradient clipping, plateau LR scheduler
 - Split seed: `7`
 - Current baseline runs:
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc`
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed7_20260614_073553_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed23_20260614_214818_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
 
-Comparison against the frozen v8b 66-feature baseline:
+Best promoted run:
 
-| Metric | v8b frozen d66 seed23 | v9 seed23 | v9 seed7 | Direction |
-|---|---:|---:|---:|---|
-| weighted score | `0.03664` | `0.03051` | `0.03069` | better |
-| true hard-target normalized MAE | `0.01853` | `0.01537` | `0.01557` | better |
-| validation normalized MAE | `0.01421` | `0.01186` | `0.01199` | better |
-| blind normalized MAE | `0.01096` | `0.00969` | `0.00968` | better |
-| stress normalized MAE | `0.01021` | `0.00872` | `0.00878` | better |
-| high-S3 magnitude MAE | `6.11` | `4.73` | `4.66` | better |
-| high-S3 magnitude bias | `-4.44` | `-3.12` | `-3.00` | better |
-| high-S3 magnitude slope | `0.812` | `0.865` | `0.851` | better |
-| B2 magnitude MAE | `0.0635` | `0.0553` | `0.0552` | better |
-| A3 magnitude MAE | `1.381` | `1.208` | `1.237` | better |
-| validation C1 MAE | `1.77` | `1.50` | `1.59` | better |
-| blind C1 MAE | `1.21` | `1.09` | `1.09` | better |
-| stress C1 MAE | `1.25` | `1.02` | `1.05` | better |
+- `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
+
+Comparison against the v9 250K baseline:
+
+| Metric | v9 seed23 | v9 seed7 | v11 seed23 | v11 seed7 | Direction |
+|---|---:|---:|---:|---:|---|
+| weighted score | `0.03051` | `0.03069` | `0.02710` | `0.02619` | better |
+| true hard-target normalized MAE | `0.01537` | `0.01557` | `0.01403` | `0.01372` | better |
+| validation normalized MAE | `0.01186` | `0.01199` | `0.01071` | `0.01056` | better |
+| blind normalized MAE | `0.00969` | `0.00968` | `0.00884` | `0.00886` | better |
+| stress normalized MAE | `0.00872` | `0.00878` | `0.00770` | `0.00761` | better |
+| high-S3 magnitude MAE | `4.73` | `4.66` | `4.32` | `4.09` | better |
+| high-S3 magnitude bias | `-3.12` | `-3.00` | `-3.04` | `-2.91` | better |
+| high-S3 magnitude slope | `0.865` | `0.851` | `0.858` | `0.845` | mixed |
+| high-S3 mean angle error | n/a | n/a | `2.23 deg` | `2.15 deg` | tracked |
+| high-S3 p95 angle error | n/a | n/a | `7.94 deg` | `7.00 deg` | tracked |
+| B2 magnitude MAE | `0.0553` | `0.0552` | `0.0498` | `0.0498` | better |
+| A3 magnitude MAE | `1.208` | `1.237` | `1.099` | `1.145` | better |
+| validation C1 MAE | `1.50` | `1.59` | `1.41` | `1.36` | better |
+| blind C1 MAE | `1.09` | `1.09` | `0.97` | `0.98` | better |
+| stress C1 MAE | `1.02` | `1.05` | `0.88` | `0.87` | better |
 
 Interpretation:
 
-- The v9 250K hard-regime expansion is a clean improvement and replaces v6/v8b
-  as the current baseline family.
+- The v11 500K expansion is a clean, seed-stable improvement and replaces v9 as
+  the current baseline family.
+- The best current model is the v11 seed7 run by weighted score.
+- The main data-scale trend remains positive: the learning-curve report shows
+  v9 250K -> v11 500K improvements of `14.2%` weighted score, `10.7%` hard
+  MAE, `8.6%` blind MAE, and `12.7%` stress MAE.
+- The high-S3 slope is slightly mixed relative to v9, but high-S3 magnitude MAE
+  and bias improve, so the v11 result is still promoted.
 - The 66-feature representation remains the promoted feature set. The v8b
   full defocus-difference features improved selected high-S3/B2 diagnostics but
   were not seed-stable enough on blind, stress, and A3 metrics to promote.
@@ -57,8 +71,23 @@ Interpretation:
   measures C1 through differences of already strongly defocused probe features,
   so C1 should not dominate model selection.
 - The narrow v10 architecture test did not improve generalization, so the next
-  useful experiment is another controlled data-scale step while keeping the v9
-  architecture and feature set fixed.
+  useful experiment was a controlled data-scale step while keeping the v9
+  architecture and feature set fixed. That v11 500K step succeeded.
+
+Sampling-quality status:
+
+- Current v11 results include compact dataset audit artifacts:
+  - `targeted25k_audit.json`
+  - `label_summary.csv`
+  - `new_targeted_label_summary.csv`
+  - hard-target 2D histogram plots
+- The standalone sampling-quality dashboard planned for v11 was not generated in
+  the current pushed results. The v11 simulation/training began from commit
+  `8cba0d5`, before the dashboard integration commit was active in the worker
+  run.
+- Before the next data expansion, run a dashboard-only follow-up on the existing
+  v11 500K CSV if the CSV is still available in Colab. Do not regenerate data or
+  retrain just to obtain this dashboard.
 
 Rejected v10 architecture test:
 
@@ -88,10 +117,10 @@ Decision:
 - The structured/deeper high-order head slightly helped B2, but worsened the
   main weighted score, true hard-target score, blind score, A3, and seed-stable
   high-S3 behavior.
-- Keep `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23` as the
-  current baseline.
+- Keep the original grouped-head architecture for the next data-scale step. The
+  later v11 500K run supersedes v9 as the current baseline.
 
-Queued v11 500K data-scale implementation:
+Completed v11 500K data-scale implementation:
 
 - Active worker command:
   - `scripts/run_colab_v11_gap500k_d66_workflow.sh`
@@ -101,10 +130,10 @@ Queued v11 500K data-scale implementation:
   - `configs/model_selection_batch_v11_gap500k_d66.json`
 - Dataset:
   - parent: `enhanced_v9_gap250k`
-  - new dataset: `enhanced_v11_gap500k`
-  - expected parent rows: `250,000`
-  - expected appended training-only rows: `250,000`
-  - expected total rows: `500,000`
+  - new dataset: `enhanced_v11_gap500k_20260614_205607_utc`
+  - parent rows: `250,000`
+  - appended training-only rows: `250,000`
+  - total rows: `500,000`
 - Fixed items:
   - architecture: `grouped_heads`
   - feature count: 66
@@ -122,7 +151,7 @@ Queued v11 500K data-scale implementation:
   - `max_epochs=2000`
   - `eval_every=10`
   - `patience_epochs=300`
-- Jobs:
+- Completed jobs:
   - seed23
   - seed7
 - Sampling strategy:
@@ -137,12 +166,11 @@ Queued v11 500K data-scale implementation:
   - selected pairwise occupancy counts
   - A1-S3, B2-S3, and A3-S3 relative-angle coverage
   - sampled nearest-neighbor distances in normalized 12D target space
-  - standalone sampling-quality dashboard:
-    `training_results/model_selection_reports/sampling_quality_v11_gap500k_d66/`
-    with Markdown, JSON, CSV summaries, and compact plots
+  - standalone sampling-quality dashboard was planned but did not run in the
+    current pushed result; see sampling-quality status above
 - Learning-curve diagnostics:
-  - after v11 completes, `scripts/report_data_scale_learning_curve.py` compares
-    v6 100K, v9 250K, and v11 500K batch summaries.
+  - `scripts/report_data_scale_learning_curve.py` compared v6 100K, v9 250K,
+    and v11 500K batch summaries.
 - Promotion rule:
   - promote only if both seeds improve or preserve weighted score, blind/stress
     metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics
