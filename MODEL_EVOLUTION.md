@@ -5,6 +5,93 @@ reason for each change, and the minimum information needed to reproduce a run.
 Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
 summarized in `model_registry*.csv`.
 
+## 2026-06-14 Current Model-Loop Status
+
+Current baseline:
+
+- Dataset: `enhanced_v9_gap250k`
+- Parent dataset: `enhanced_v6_benchmark_gap100k`
+- Dataset run:
+  - `training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_055608_utc`
+- Total rows: `250,000`
+- Training rows / validation / blind / stress:
+  - `242,556 / 1,977 / 2,370 / 3,097`
+- Feature family: 66 enhanced harmonic-summary features
+- Architecture: grouped-head residual MLP
+- Width: 320
+- Learning rate: `6e-4`
+- Dropout: `0.075`
+- Optimizer path: AdamW, SmoothL1 component loss, gradient clipping, plateau LR scheduler
+- Split seed: `7`
+- Current baseline runs:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed7_20260614_073553_utc`
+
+Comparison against the frozen v8b 66-feature baseline:
+
+| Metric | v8b frozen d66 seed23 | v9 seed23 | v9 seed7 | Direction |
+|---|---:|---:|---:|---|
+| weighted score | `0.03664` | `0.03051` | `0.03069` | better |
+| true hard-target normalized MAE | `0.01853` | `0.01537` | `0.01557` | better |
+| validation normalized MAE | `0.01421` | `0.01186` | `0.01199` | better |
+| blind normalized MAE | `0.01096` | `0.00969` | `0.00968` | better |
+| stress normalized MAE | `0.01021` | `0.00872` | `0.00878` | better |
+| high-S3 magnitude MAE | `6.11` | `4.73` | `4.66` | better |
+| high-S3 magnitude bias | `-4.44` | `-3.12` | `-3.00` | better |
+| high-S3 magnitude slope | `0.812` | `0.865` | `0.851` | better |
+| B2 magnitude MAE | `0.0635` | `0.0553` | `0.0552` | better |
+| A3 magnitude MAE | `1.381` | `1.208` | `1.237` | better |
+| validation C1 MAE | `1.77` | `1.50` | `1.59` | better |
+| blind C1 MAE | `1.21` | `1.09` | `1.09` | better |
+| stress C1 MAE | `1.25` | `1.02` | `1.05` | better |
+
+Interpretation:
+
+- The v9 250K hard-regime expansion is a clean improvement and replaces v6/v8b
+  as the current baseline family.
+- The 66-feature representation remains the promoted feature set. The v8b
+  full defocus-difference features improved selected high-S3/B2 diagnostics but
+  were not seed-stable enough on blind, stress, and A3 metrics to promote.
+- C1 improved with v9, but it remains a secondary target because the current
+  under/over defocus geometry likely limits direct C1 sensitivity. The method
+  measures C1 through differences of already strongly defocused probe features,
+  so C1 should not dominate model selection.
+- The next experiment should not be another data expansion yet. First test a
+  narrow architecture change on the same v9 250K dataset.
+
+Queued v10 implementation:
+
+- Active worker command:
+  - `scripts/run_colab_v10_structured_head_v9_250k_workflow.sh`
+- Batch config:
+  - `configs/model_selection_batch_v10_structured_head_v9_250k.json`
+- Architecture under test:
+  - `grouped_heads_structured`
+- Fixed items:
+  - dataset: `enhanced_v9_gap250k`
+  - feature count: 66
+  - width: 320
+  - learning rate: `6e-4`
+  - dropout: `0.075`
+  - optimizer/loss path: unchanged from v9
+  - split seed: `7`
+- Architecture change:
+  - separate linear skip projections for scalar, low-order vector, and high-order vector target groups
+  - same trunk depth as v9
+  - slightly deeper high-order head for S3/A3
+- Jobs:
+  - seed23
+  - seed7
+- Promotion rule:
+  - promote only if both seeds improve or preserve weighted score, blind/stress
+    metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics
+    relative to v9 seed23 without easy-target regression.
+- Cache behavior:
+  - no new simulations are expected if the v9 cached CSV is still present in
+    Colab.
+  - if the v9 cache is missing, the workflow can regenerate the v9 dataset
+    from the v6 parent before training.
+
 ## 2026-06-12 Current Model-Loop Status
 
 Current baseline:

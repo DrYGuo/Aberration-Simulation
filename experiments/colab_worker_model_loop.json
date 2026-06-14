@@ -1,6 +1,6 @@
 {
-  "description": "v9 250K d66 workflow. This uses the v6 cached dataset as parent, generates the 250K hard-regime expansion with 66 enhanced features, and trains the current grouped-head architecture with seed23/seed7.",
-  "config_id": "v9-gap250k-d66",
+  "description": "v10 structured-head architecture test on the promoted v9 250K d66 dataset. This reuses cached/generated v9 features, keeps the optimizer and split policy fixed, and compares grouped_heads_structured seed23/seed7 against the current v9 seed23 baseline.",
+  "config_id": "v10-structured-head-v9-250k",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v9_gap250k_d66_workflow.sh"
+    "scripts/run_colab_v10_structured_head_v9_250k_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
