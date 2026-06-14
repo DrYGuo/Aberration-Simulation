@@ -189,6 +189,9 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
     selection_config = defaults.get("selection_config")
     if selection_config:
         command.extend(["--selection-config", str(selection_config)])
+    benchmark_split_manifest = job.get("benchmark_split_manifest", defaults.get("benchmark_split_manifest"))
+    if benchmark_split_manifest:
+        command.extend(["--benchmark-split-manifest", str(benchmark_split_manifest)])
     split_seed = job.get("split_seed", job.get("seed", defaults.get("split_seed")))
     if split_seed is not None:
         command.extend(["--split-seed", str(split_seed)])

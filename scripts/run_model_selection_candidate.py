@@ -273,6 +273,51 @@ def four_way_benchmark_split(
     return {name: np.asarray(values, dtype=np.int64) for name, values in splits.items()}
 
 
+def frozen_benchmark_split(
+    rows: list[dict[str, str]],
+    *,
+    manifest_path: Path,
+) -> dict[str, np.ndarray]:
+    manifest = json.loads(manifest_path.read_text())
+    raw_splits = manifest.get("splits", {})
+    split_key_sets = {
+        split_name: set(str(key) for key in raw_splits.get(split_name, []))
+        for split_name in ("train", "validation", "blind", "stress")
+    }
+    key_to_split: dict[str, str] = {}
+    for split_name, keys in split_key_sets.items():
+        for key in keys:
+            if key in key_to_split and key_to_split[key] != split_name:
+                raise RuntimeError(
+                    f"frozen benchmark manifest assigns key to multiple splits: {key}"
+                )
+            key_to_split[key] = split_name
+
+    splits: dict[str, list[int]] = {"train": [], "validation": [], "blind": [], "stress": []}
+    missing_benchmark_keys: list[str] = []
+    for index, row in enumerate(rows):
+        if str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() == TRAINING_ONLY_HINT:
+            splits["train"].append(index)
+            continue
+        key = stable_row_key(row, index)
+        split_name = key_to_split.get(key)
+        if split_name is None:
+            missing_benchmark_keys.append(key)
+            continue
+        splits[split_name].append(index)
+
+    if missing_benchmark_keys:
+        sample = missing_benchmark_keys[:5]
+        raise RuntimeError(
+            "frozen benchmark split manifest does not cover all unhinted benchmark rows; "
+            f"missing {len(missing_benchmark_keys)} keys, sample={sample}"
+        )
+    for name, values in splits.items():
+        if not values:
+            raise RuntimeError(f"split {name!r} is empty after applying frozen manifest {manifest_path}")
+    return {name: np.asarray(values, dtype=np.int64) for name, values in splits.items()}
+
+
 def dataset_version_summary(rows: list[dict[str, str]], csv_path: Path) -> dict[str, Any]:
     versions = sorted({str(row.get("dataset_version", "")).strip() for row in rows if str(row.get("dataset_version", "")).strip()})
     sources = sorted({str(row.get("dataset_source", "")).strip() for row in rows if str(row.get("dataset_source", "")).strip()})
@@ -938,6 +983,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validation-fraction", type=float, default=0.20)
     parser.add_argument("--blind-fraction", type=float, default=0.10)
     parser.add_argument("--stress-fraction", type=float, default=0.20)
+    parser.add_argument(
+        "--benchmark-split-manifest",
+        type=Path,
+        help="Frozen split manifest generated from benchmark parent rows. Training-only rows remain training-only.",
+    )
     parser.add_argument("--save-model", action="store_true")
     parser.add_argument(
         "--bootstrap-if-missing",
@@ -1055,15 +1105,23 @@ def main() -> int:
         **DEFAULT_TARGET_PHYSICAL_SCALES,
         **selection_config.get("target_physical_scales", {}),
     }
-    split_indices = four_way_benchmark_split(
-        rows,
-        labels,
-        y,
-        validation_fraction=args.validation_fraction,
-        blind_fraction=args.blind_fraction,
-        stress_fraction=args.stress_fraction,
-        seed=args.split_seed,
-    )
+    if args.benchmark_split_manifest:
+        split_indices = frozen_benchmark_split(
+            rows,
+            manifest_path=args.benchmark_split_manifest,
+        )
+        split_strategy = "frozen_benchmark_split_manifest"
+    else:
+        split_indices = four_way_benchmark_split(
+            rows,
+            labels,
+            y,
+            validation_fraction=args.validation_fraction,
+            blind_fraction=args.blind_fraction,
+            stress_fraction=args.stress_fraction,
+            seed=args.split_seed,
+        )
+        split_strategy = dataset_info["split_policy"]
     train_index = split_indices["train"]
     validation_index = split_indices["validation"]
 
@@ -1396,7 +1454,8 @@ def main() -> int:
         },
         "hidden_dim": args.hidden_dim,
         "dropout_probability": args.dropout,
-        "split_strategy": dataset_info["split_policy"],
+        "split_strategy": split_strategy,
+        "benchmark_split_manifest": None if args.benchmark_split_manifest is None else str(args.benchmark_split_manifest),
         "evaluation_protocol": "train_validation_blind_stress_disjoint",
         "split_seed": args.split_seed,
         "validation_fraction": args.validation_fraction,
