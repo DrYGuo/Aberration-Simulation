@@ -20,7 +20,8 @@ FROZEN_SPLIT_MANIFEST="configs/benchmark_split_v6_frozen_row_keys.json"
 python3 scripts/write_benchmark_split_manifest.py \
   --csv-path "$V6_CSV" \
   --output "$FROZEN_SPLIT_MANIFEST" \
-  --dataset-version enhanced_v6_benchmark_gap100k
+  --dataset-version enhanced_v6_benchmark_gap100k \
+  --overwrite
 
 FULL_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
 if [ -z "$FULL_CSV" ]; then

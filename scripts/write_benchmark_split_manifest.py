@@ -20,10 +20,11 @@ from feature_regression_model import TARGET_COLUMNS, file_sha256, target_from_ro
 from regression_diagnostics import discover_regime_column
 from run_model_selection_candidate import (
     DATASET_SPLIT_HINT_FIELD,
+    FROZEN_BENCHMARK_ROW_KEY_FIELDS,
     TRAINING_ONLY_HINT,
+    frozen_benchmark_row_key,
     four_way_benchmark_split,
     load_rows,
-    stable_row_key,
 )
 
 
@@ -63,7 +64,7 @@ def main() -> int:
     )
 
     splits = {
-        split_name: [stable_row_key(rows[int(index)], int(index)) for index in indices]
+        split_name: [frozen_benchmark_row_key(rows[int(index)], int(index)) for index in indices]
         for split_name, indices in split_indices.items()
     }
     key_to_split: dict[str, str] = {}
@@ -85,7 +86,7 @@ def main() -> int:
 
     payload = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
-        "schema_version": 1,
+        "schema_version": 2,
         "dataset_version": args.dataset_version or "unknown",
         "source_csv": str(args.csv_path),
         "source_csv_sha256": file_sha256(args.csv_path),
@@ -93,8 +94,8 @@ def main() -> int:
         "validation_fraction": args.validation_fraction,
         "blind_fraction": args.blind_fraction,
         "stress_fraction": args.stress_fraction,
-        "row_key_function": "run_model_selection_candidate.stable_row_key",
-        "row_key_fields": ["sweep_label", *TARGET_COLUMNS],
+        "row_key_function": "run_model_selection_candidate.frozen_benchmark_row_key",
+        "row_key_fields": ["row_index", *FROZEN_BENCHMARK_ROW_KEY_FIELDS],
         "training_only_policy": (
             f"Rows with {DATASET_SPLIT_HINT_FIELD}={TRAINING_ONLY_HINT} are always assigned to train "
             "and are not required to appear in this manifest."

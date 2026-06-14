@@ -203,6 +203,31 @@ def stable_row_key(row: dict[str, str], index: int) -> str:
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
+FROZEN_BENCHMARK_ROW_KEY_FIELDS = (
+    "sweep_label",
+    "C1",
+    "C3",
+    "A1_amp",
+    "A1_phase",
+    "A2_amp",
+    "A2_phase",
+    "B2_amp",
+    "B2_phase",
+    "A3_amp",
+    "A3_phase",
+    "S3_amp",
+    "S3_phase",
+    *TARGET_COLUMNS,
+)
+
+
+def frozen_benchmark_row_key(row: dict[str, str], index: int) -> str:
+    payload = {"row_index": index}
+    for field in FROZEN_BENCHMARK_ROW_KEY_FIELDS:
+        payload[field] = row.get(field, "")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+
 def stable_unit_interval(text: str, seed: int, salt: str) -> float:
     digest = hashlib.sha256(f"{seed}:{salt}:{text}".encode("utf-8")).hexdigest()
     return int(digest[:16], 16) / float(16**16)
@@ -279,6 +304,8 @@ def frozen_benchmark_split(
     manifest_path: Path,
 ) -> dict[str, np.ndarray]:
     manifest = json.loads(manifest_path.read_text())
+    row_key_function = str(manifest.get("row_key_function", "run_model_selection_candidate.frozen_benchmark_row_key"))
+    key_fn = stable_row_key if row_key_function.endswith(".stable_row_key") else frozen_benchmark_row_key
     raw_splits = manifest.get("splits", {})
     split_key_sets = {
         split_name: set(str(key) for key in raw_splits.get(split_name, []))
@@ -299,7 +326,7 @@ def frozen_benchmark_split(
         if str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() == TRAINING_ONLY_HINT:
             splits["train"].append(index)
             continue
-        key = stable_row_key(row, index)
+        key = key_fn(row, index)
         split_name = key_to_split.get(key)
         if split_name is None:
             missing_benchmark_keys.append(key)
