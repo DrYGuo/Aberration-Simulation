@@ -48,6 +48,12 @@ if [ -z "$V11_CSV" ]; then
   V11_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v11_gap500k_*/training_features_enhanced.csv | head -1)
 fi
 
+python3 scripts/report_sampling_quality.py \
+  --csv-path "$V11_CSV" \
+  --config configs/targeted_expansion_v11_500k.json \
+  --benchmark-split-manifest "$FROZEN_SPLIT_MANIFEST" \
+  --output-dir training_results/model_selection_reports/sampling_quality_v11_gap500k_d66
+
 BASE_CONFIG="configs/model_selection_batch_v11_gap500k_d66.json"
 RUNTIME_CONFIG="colab_worker_logs/model_selection_batch_v11_gap500k_d66_runtime.json"
 python3 - "$BASE_CONFIG" "$RUNTIME_CONFIG" "$V11_CSV" "$FROZEN_SPLIT_MANIFEST" <<'PY'

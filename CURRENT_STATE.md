@@ -176,7 +176,8 @@ Current interpretation:
     balanced relative-angle strata for vector-vector S3 couplings.
   - diagnostics: `targeted25k_audit.json` now includes coefficient coverage,
     relative-angle coverage, and sampled nearest-neighbor distances; the v11
-    workflow also writes `data_scale_learning_curve_*.md/json` after training.
+    workflow also writes a sampling-quality dashboard before training and
+    `data_scale_learning_curve_*.md/json` after training.
 
 500K data-distribution plan:
 

@@ -137,6 +137,9 @@ Queued v11 500K data-scale implementation:
   - selected pairwise occupancy counts
   - A1-S3, B2-S3, and A3-S3 relative-angle coverage
   - sampled nearest-neighbor distances in normalized 12D target space
+  - standalone sampling-quality dashboard:
+    `training_results/model_selection_reports/sampling_quality_v11_gap500k_d66/`
+    with Markdown, JSON, CSV summaries, and compact plots
 - Learning-curve diagnostics:
   - after v11 completes, `scripts/report_data_scale_learning_curve.py` compares
     v6 100K, v9 250K, and v11 500K batch summaries.
