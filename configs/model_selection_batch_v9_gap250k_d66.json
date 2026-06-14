@@ -1,0 +1,87 @@
+{
+  "enabled": true,
+  "batch_id": "v9_gap250k_d66",
+  "dataset_version": "enhanced_v9_gap250k",
+  "estimated_minutes_per_job": 90,
+  "walltime_safety_margin_minutes": 15,
+  "max_runtime_minutes": 330,
+  "artifact_policy": {
+    "push_large_artifacts": false,
+    "allowed_artifacts": [
+      "run_manifest_model_loop.json",
+      "metrics_model_loop.json",
+      "selection_score.json",
+      "per_target_diagnostics.json",
+      "vector_diagnostics.json",
+      "s3_magnitude_metric_audit_validation.csv",
+      "model_registry_model_loop.csv",
+      "training_history_summary.csv",
+      "training_history_model_loop.png",
+      "prediction_scatter_model_loop.png",
+      "batch_manifest.json",
+      "batch_summary.csv",
+      "s3_magnitude_metric_audit_*.md",
+      "training_validation_loss_gap_audit_*.md"
+    ]
+  },
+  "defaults": {
+    "family": "enhanced",
+    "search_root": "training_results/feature_regression_enhanced",
+    "selection_config": "experiments/model_selection_weights.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc/metrics_model_loop.json",
+    "easy_regression_limit": 0.10,
+    "split_seed": 7,
+    "weight_decay": 0.0001,
+    "residual_penalty": 0.003,
+    "eval_every": 25,
+    "patience_epochs": 1000,
+    "max_epochs": 6000,
+    "batch_size": 0,
+    "shuffle_batches": false,
+    "component_loss_kind": "smooth_l1",
+    "component_smooth_l1_beta": 0.25,
+    "grad_clip_norm": 1.0,
+    "lr_scheduler": "plateau",
+    "lr_plateau_factor": 0.5,
+    "lr_plateau_patience_evals": 8,
+    "min_learning_rate": 0.00001,
+    "s3_magnitude_loss_weight": 0.0
+  },
+  "jobs": [
+    {
+      "job_id": "v9_gap250k_d66_seed23",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 23
+      }
+    },
+    {
+      "job_id": "v9_gap250k_d66_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed7",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 7
+      }
+    }
+  ],
+  "decision_note": {
+    "purpose": "250K hard-regime expansion using the safer 66-feature baseline after v8b showed only small/inconsistent gains from 189 defocus-difference features.",
+    "baseline": "v8b_frozen_d66_seed23",
+    "fixed_architecture_and_optimizer": true,
+    "data_change_only": true,
+    "feature_set": "d66",
+    "split_seed": 7,
+    "promotion_rule": "Promote v9 only if it improves weighted hard score, blind/stress metrics, S3 high-magnitude metrics, and B2/A3 vector diagnostics without easy-target regression."
+  }
+}

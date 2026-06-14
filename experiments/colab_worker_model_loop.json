@@ -1,6 +1,6 @@
 {
-  "description": "Frozen-manifest v8b confirmation batch. This config uses existing v6 data, materializes the full no-simulation defocus-difference feature variant if needed, and reruns only the 66-feature baseline plus full defocus-difference seed23/seed7 candidates.",
-  "config_id": "v8b-frozen-defocus-confirmation",
+  "description": "v9 250K d66 workflow. This uses the v6 cached dataset as parent, generates the 250K hard-regime expansion with 66 enhanced features, and trains the current grouped-head architecture with seed23/seed7.",
+  "config_id": "v9-gap250k-d66",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v8b_frozen_defocus_confirmation_workflow.sh"
+    "scripts/run_colab_v9_gap250k_d66_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -56,7 +56,7 @@
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
-  "command_timeout_seconds": 14400,
+  "command_timeout_seconds": 28800,
   "artifact_max_bytes": 1500000,
   "artifact_blocked_suffixes": [
     ".pt",
