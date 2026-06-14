@@ -1,0 +1,141 @@
+{
+  "enabled": true,
+  "batch_id": "v8_defocus_difference_features",
+  "dataset_version": "enhanced_v8_defocus_difference_features",
+  "estimated_minutes_per_job": 30,
+  "walltime_safety_margin_minutes": 12,
+  "max_runtime_minutes": 230,
+  "artifact_policy": {
+    "push_large_artifacts": false,
+    "allowed_artifacts": [
+      "run_manifest_model_loop.json",
+      "metrics_model_loop.json",
+      "selection_score.json",
+      "per_target_diagnostics.json",
+      "vector_diagnostics.json",
+      "s3_magnitude_metric_audit_validation.csv",
+      "model_registry_model_loop.csv",
+      "training_history_summary.csv",
+      "training_history_model_loop.png",
+      "prediction_scatter_model_loop.png",
+      "batch_manifest.json",
+      "batch_summary.csv",
+      "c1_feature_sensitivity_*.md",
+      "c1_feature_sensitivity_*/*.json",
+      "c1_feature_sensitivity_*/*.csv",
+      "c1_feature_sensitivity_*/plots/*.png",
+      "s3_magnitude_metric_audit_*.md",
+      "training_validation_loss_gap_audit_*.md"
+    ]
+  },
+  "defaults": {
+    "family": "enhanced",
+    "search_root": "training_results/feature_regression_enhanced",
+    "selection_config": "experiments/model_selection_weights.json",
+    "baseline_metrics": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23_20260612_051859_utc/metrics_model_loop.json",
+    "easy_regression_limit": 0.1,
+    "split_seed": 7,
+    "weight_decay": 0.0001,
+    "residual_penalty": 0.003,
+    "eval_every": 25,
+    "patience_epochs": 1000,
+    "max_epochs": 6000,
+    "batch_size": 0,
+    "shuffle_batches": false,
+    "component_loss_kind": "smooth_l1",
+    "component_smooth_l1_beta": 0.25,
+    "grad_clip_norm": 1.0,
+    "lr_scheduler": "plateau",
+    "lr_plateau_factor": 0.5,
+    "lr_plateau_patience_evals": 8,
+    "min_learning_rate": 1e-05,
+    "s3_magnitude_loss_weight": 0.0
+  },
+  "jobs": [
+    {
+      "job_id": "v8_fixedsplit_d66_seed23",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v8fixedsplit_d66_seed23",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 23
+      },
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260613_230608_utc/training_features_enhanced.csv"
+    },
+    {
+      "job_id": "v8_c1diff_basic_seed23",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v8c1diff_basic_seed23",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 23
+      },
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_basic_20260613_231456_utc/training_features_enhanced.csv"
+    },
+    {
+      "job_id": "v8_c1diff_full_seed23",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v8c1diff_full_seed23",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 23
+      },
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv"
+    },
+    {
+      "job_id": "v8_c1diff_basic_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v8c1diff_basic_seed7",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 7
+      },
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_basic_20260613_231456_utc/training_features_enhanced.csv"
+    },
+    {
+      "job_id": "v8_c1diff_full_seed7",
+      "candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v8c1diff_full_seed7",
+      "enabled": true,
+      "model": {
+        "architecture": "grouped_heads",
+        "family": "enhanced",
+        "hidden_dim": 320,
+        "dropout": 0.075,
+        "learning_rate": 0.0006,
+        "torch_seed": 7
+      },
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv"
+    }
+  ],
+  "decision_note": {
+    "purpose": "No-new-simulation test of fixed benchmark splitting and explicit under/over defocus-difference features.",
+    "baseline": "v6_benchmark_gap100k_seed23",
+    "fixed_architecture_and_optimizer": true,
+    "data_change_only": false,
+    "feature_change_only": true,
+    "split_seed": 7,
+    "promotion_rule": "Promote a defocus-difference feature variant only if it improves C1 validation/blind/stress metrics while preserving v6 hard weighted score, S3 high-magnitude metrics, B2/A3 vector diagnostics, and easy-target gates."
+  },
+  "runtime_csv_paths": {
+    "v6": "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260613_230608_utc/training_features_enhanced.csv",
+    "c1diff_basic": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_basic_20260613_231456_utc/training_features_enhanced.csv",
+    "c1diff_full": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv"
+  },
+  "runtime_note": "Generated by run_colab_v8_defocus_difference_workflow.sh to pin v6 and augmented CSV paths."
+}
