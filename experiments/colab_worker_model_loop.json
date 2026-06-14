@@ -1,6 +1,6 @@
 {
-  "description": "Combined v8b-to-v9 workflow. This first confirms full defocus-difference features with frozen benchmark membership, then automatically chooses 66 or 189 features for a v9 250K expansion and trains seed23/seed7 on the selected feature set.",
-  "config_id": "v8b-to-v9-250k-auto",
+  "description": "Frozen-manifest v8b confirmation batch. This config uses existing v6 data, materializes the full no-simulation defocus-difference feature variant if needed, and reruns only the 66-feature baseline plus full defocus-difference seed23/seed7 candidates.",
+  "config_id": "v8b-frozen-defocus-confirmation",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -56,7 +56,7 @@
   ],
   "artifact_manifest_dir": "colab_worker_logs",
   "stop_on_command_failure": true,
-  "command_timeout_seconds": 28800,
+  "command_timeout_seconds": 14400,
   "artifact_max_bytes": 1500000,
   "artifact_blocked_suffixes": [
     ".pt",

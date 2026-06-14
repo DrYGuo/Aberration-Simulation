@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-V8B_DONE_MARKER="colab_worker_logs/v8b_frozen_defocus_confirmation_done.json"
-V9_DONE_MARKER="colab_worker_logs/v9_250k_selected_feature_batch_done.json"
-if [ -f "$V9_DONE_MARKER" ]; then
-  echo "v9 250k selected-feature batch already completed; marker exists at $V9_DONE_MARKER"
+DONE_MARKER="colab_worker_logs/v8b_frozen_defocus_confirmation_done.json"
+if [ -f "$DONE_MARKER" ]; then
+  echo "v8b frozen defocus confirmation already completed; marker exists at $DONE_MARKER"
   exit 0
 fi
 
@@ -67,15 +66,11 @@ print("csv paths:", json.dumps(csv_paths, indent=2))
 print("frozen benchmark split manifest:", manifest_path)
 PY
 
-if [ ! -f "$V8B_DONE_MARKER" ]; then
-  python3 scripts/run_model_selection_batch.py \
-    --batch-config "$RUNTIME_CONFIG" \
-    --output-root training_results/model_selection_loop \
-    --summary-root training_results/model_selection_batches \
-    --max-runtime-minutes 210
-else
-  echo "v8b confirmation phase already complete; marker exists at $V8B_DONE_MARKER"
-fi
+python3 scripts/run_model_selection_batch.py \
+  --batch-config "$RUNTIME_CONFIG" \
+  --output-root training_results/model_selection_loop \
+  --summary-root training_results/model_selection_batches \
+  --max-runtime-minutes 210
 
 RUNS=(
   "v8b_frozen_d66_seed23:D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23"
@@ -127,24 +122,19 @@ PY
   exit 0
 fi
 
-if [ ! -f "$V8B_DONE_MARKER" ]; then
-  python3 scripts/audit_s3_magnitude_metric.py "${COMPLETE_RUN_ARGS[@]}"
+python3 scripts/audit_s3_magnitude_metric.py "${COMPLETE_RUN_ARGS[@]}"
 
-  python3 scripts/audit_training_validation_loss_gap.py \
-    --include-default-runs \
-    "${COMPLETE_RUN_PATH_ARGS[@]}"
-fi
+python3 scripts/audit_training_validation_loss_gap.py \
+  --include-default-runs \
+  "${COMPLETE_RUN_PATH_ARGS[@]}"
 
-python3 - "$V8B_DONE_MARKER" "$V6_CSV" "$FULL_CSV" "$FROZEN_SPLIT_MANIFEST" <<'PY'
+python3 - "$DONE_MARKER" "$V6_CSV" "$FULL_CSV" "$FROZEN_SPLIT_MANIFEST" <<'PY'
 import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 marker = Path(sys.argv[1])
-if marker.exists():
-    print("done marker already exists:", marker)
-    raise SystemExit(0)
 marker.write_text(
     json.dumps(
         {
@@ -163,300 +153,6 @@ marker.write_text(
                 "training_validation_loss_gap_audit",
             ],
             "decision": "Compare full defocus-difference seed23/seed7 against the frozen 66-feature seed23 baseline before promotion.",
-        },
-        indent=2,
-    )
-    + "\n"
-)
-print("done marker:", marker)
-PY
-
-DECISION_JSON="colab_worker_logs/v8b_to_v9_feature_decision.json"
-python3 - "$DECISION_JSON" <<'PY'
-import csv
-import json
-from datetime import datetime, timezone
-from pathlib import Path
-
-decision_path = Path(__import__("sys").argv[1])
-summary_matches = sorted(Path("training_results/model_selection_batches").glob("v8b_frozen_defocus_confirmation_*/batch_summary.csv"))
-if not summary_matches:
-    raise RuntimeError("No v8b batch_summary.csv found; cannot decide v9 feature set.")
-summary_path = summary_matches[-1]
-rows = {row["job_id"]: row for row in csv.DictReader(summary_path.open())}
-required = [
-    "v8b_frozen_d66_seed23",
-    "v8b_frozen_c1diff_full_seed23",
-    "v8b_frozen_c1diff_full_seed7",
-]
-missing = [job_id for job_id in required if job_id not in rows]
-if missing:
-    raise RuntimeError(f"v8b summary is missing required jobs: {missing}")
-
-baseline = rows["v8b_frozen_d66_seed23"]
-full_jobs = [rows["v8b_frozen_c1diff_full_seed23"], rows["v8b_frozen_c1diff_full_seed7"]]
-
-def value(row: dict[str, str], key: str) -> float:
-    raw = row.get(key, "")
-    if raw in ("", None):
-        return float("inf")
-    return float(raw)
-
-def ratio(row: dict[str, str], key: str) -> float:
-    base = value(baseline, key)
-    current = value(row, key)
-    if base <= 0:
-        return 0.0 if current <= base else float("inf")
-    return current / base
-
-gates = {
-    "weighted_score": 1.01,
-    "validation_C1_mae": 1.03,
-    "blind_C1_mae": 1.05,
-    "stress_C1_mae": 1.05,
-    "blind_normalized_mae": 1.05,
-    "stress_normalized_mae": 1.05,
-    "S3_high_magnitude_mae": 1.02,
-    "B2_magnitude_mae": 1.05,
-    "A3_magnitude_mae": 1.08,
-}
-job_gate_results = {}
-for row in full_jobs:
-    checks = {key: {"ratio": ratio(row, key), "limit": limit} for key, limit in gates.items()}
-    passed = all(item["ratio"] <= item["limit"] for item in checks.values())
-    job_gate_results[row["job_id"]] = {"passed": passed, "checks": checks}
-
-promote_c1diff_full = all(item["passed"] for item in job_gate_results.values())
-selected_feature_set = "c1diff_full" if promote_c1diff_full else "d66"
-selected_reason = (
-    "Both full defocus-difference seeds passed preservation gates against the frozen 66-feature baseline."
-    if promote_c1diff_full
-    else "At least one full defocus-difference seed failed preservation gates; use the safer 66-feature baseline for 250K."
-)
-
-payload = {
-    "created_utc": datetime.now(timezone.utc).isoformat(),
-    "summary_path": str(summary_path),
-    "baseline_job": "v8b_frozen_d66_seed23",
-    "candidate_jobs": ["v8b_frozen_c1diff_full_seed23", "v8b_frozen_c1diff_full_seed7"],
-    "promotion_gates": gates,
-    "job_gate_results": job_gate_results,
-    "promote_c1diff_full": promote_c1diff_full,
-    "selected_feature_set_for_v9_250k": selected_feature_set,
-    "selected_reason": selected_reason,
-}
-decision_path.write_text(json.dumps(payload, indent=2) + "\n")
-print("v8b to v9 feature decision:", selected_feature_set)
-print("decision JSON:", decision_path)
-PY
-
-SELECTED_FEATURE_SET=$(python3 - "$DECISION_JSON" <<'PY'
-import json
-import sys
-from pathlib import Path
-print(json.loads(Path(sys.argv[1]).read_text())["selected_feature_set_for_v9_250k"])
-PY
-)
-
-V9_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v9_gap250k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
-if [ -z "$V9_CSV" ]; then
-  python3 scripts/generate_targeted_enhanced_dataset.py \
-    --parent-csv "$V6_CSV" \
-    --run-prefix enhanced_v9_gap250k \
-    --dataset-version enhanced_v9_gap250k \
-    --case-counts-json configs/targeted_expansion_v9_250k.json \
-    --seed 89 \
-    --batch-base-cases 256
-  V9_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v9_gap250k_*/training_features_enhanced.csv | head -1)
-fi
-
-V9_MODEL_CSV="$V9_CSV"
-V9_FEATURE_TAG="d66"
-V9_FEATURE_COUNT="66"
-if [ "$SELECTED_FEATURE_SET" = "c1diff_full" ]; then
-  V9_FULL_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v9_gap250k_c1diff_full_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
-  if [ -z "$V9_FULL_CSV" ]; then
-    python3 scripts/augment_defocus_difference_features.py \
-      --source-csv "$V9_CSV" \
-      --run-prefix enhanced_v9_gap250k_c1diff_full \
-      --dataset-version enhanced_v9_gap250k_c1diff_full \
-      --mode c1_defocus_full
-    V9_FULL_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v9_gap250k_c1diff_full_*/training_features_enhanced.csv | head -1)
-  fi
-  V9_MODEL_CSV="$V9_FULL_CSV"
-  V9_FEATURE_TAG="c1diff_full"
-  V9_FEATURE_COUNT="189"
-fi
-
-V9_BASELINE_METRICS=$(python3 - "$DECISION_JSON" <<'PY'
-import csv
-import json
-import sys
-from pathlib import Path
-
-decision = json.loads(Path(sys.argv[1]).read_text())
-summary_path = Path(decision["summary_path"])
-rows = {row["job_id"]: row for row in csv.DictReader(summary_path.open())}
-job_id = "v8b_frozen_c1diff_full_seed23" if decision["selected_feature_set_for_v9_250k"] == "c1diff_full" else "v8b_frozen_d66_seed23"
-selection_path = Path(rows[job_id]["selection_score_path"])
-selection = json.loads(selection_path.read_text())
-print(selection["metrics_path"])
-PY
-)
-
-V9_RUNTIME_CONFIG="colab_worker_logs/model_selection_batch_v9_250k_${V9_FEATURE_TAG}_runtime.json"
-python3 - "$V9_RUNTIME_CONFIG" "$V9_MODEL_CSV" "$V9_FEATURE_TAG" "$V9_FEATURE_COUNT" "$V9_BASELINE_METRICS" "$FROZEN_SPLIT_MANIFEST" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-runtime_config = Path(sys.argv[1])
-csv_path = sys.argv[2]
-feature_tag = sys.argv[3]
-feature_count = sys.argv[4]
-baseline_metrics = sys.argv[5]
-manifest_path = sys.argv[6]
-candidate_prefix = f"D{feature_count}_grouped_width320_lr6e-4_dropout0.075_v9gap250k_{feature_tag}"
-
-config = {
-    "enabled": True,
-    "batch_id": f"v9_gap250k_{feature_tag}",
-    "dataset_version": "enhanced_v9_gap250k" if feature_tag == "d66" else "enhanced_v9_gap250k_c1diff_full",
-    "estimated_minutes_per_job": 90,
-    "walltime_safety_margin_minutes": 15,
-    "max_runtime_minutes": 330,
-    "defaults": {
-        "family": "enhanced",
-        "selection_config": "experiments/model_selection_weights.json",
-        "baseline_metrics": baseline_metrics,
-        "easy_regression_limit": 0.10,
-        "split_seed": 7,
-        "weight_decay": 0.0001,
-        "residual_penalty": 0.003,
-        "eval_every": 25,
-        "patience_epochs": 1000,
-        "max_epochs": 6000,
-        "batch_size": 0,
-        "shuffle_batches": False,
-        "component_loss_kind": "smooth_l1",
-        "component_smooth_l1_beta": 0.25,
-        "grad_clip_norm": 1.0,
-        "lr_scheduler": "plateau",
-        "lr_plateau_factor": 0.5,
-        "lr_plateau_patience_evals": 8,
-        "min_learning_rate": 0.00001,
-        "s3_magnitude_loss_weight": 0.0,
-        "benchmark_split_manifest": manifest_path,
-    },
-    "jobs": [
-        {
-            "job_id": f"v9_gap250k_{feature_tag}_seed23",
-            "candidate_id": f"{candidate_prefix}_seed23",
-            "enabled": True,
-            "csv_path": csv_path,
-            "model": {
-                "architecture": "grouped_heads",
-                "family": "enhanced",
-                "hidden_dim": 320,
-                "dropout": 0.075,
-                "learning_rate": 0.0006,
-                "torch_seed": 23,
-            },
-        },
-        {
-            "job_id": f"v9_gap250k_{feature_tag}_seed7",
-            "candidate_id": f"{candidate_prefix}_seed7",
-            "enabled": True,
-            "csv_path": csv_path,
-            "model": {
-                "architecture": "grouped_heads",
-                "family": "enhanced",
-                "hidden_dim": 320,
-                "dropout": 0.075,
-                "learning_rate": 0.0006,
-                "torch_seed": 7,
-            },
-        },
-    ],
-    "runtime_csv_path": csv_path,
-    "runtime_feature_tag": feature_tag,
-    "runtime_benchmark_split_manifest": manifest_path,
-    "runtime_note": "Generated after v8b feature decision; trains the selected feature set on the v9 250K dataset.",
-}
-runtime_config.write_text(json.dumps(config, indent=2) + "\n")
-print("v9 runtime batch config:", runtime_config)
-print("v9 csv:", csv_path)
-print("v9 feature tag:", feature_tag)
-PY
-
-python3 scripts/run_model_selection_batch.py \
-  --batch-config "$V9_RUNTIME_CONFIG" \
-  --output-root training_results/model_selection_loop \
-  --summary-root training_results/model_selection_batches \
-  --max-runtime-minutes 330
-
-V9_RUN_DIRS=()
-for seed in 23 7; do
-  run_dir=$(ls -td training_results/model_selection_loop/D"${V9_FEATURE_COUNT}"_grouped_width320_lr6e-4_dropout0.075_v9gap250k_"${V9_FEATURE_TAG}"_seed"${seed}"_* 2>/dev/null | head -1 || true)
-  if [ -n "$run_dir" ]; then
-    V9_RUN_DIRS+=(--run "$run_dir")
-  fi
-done
-
-if [ "${#V9_RUN_DIRS[@]}" -lt 4 ]; then
-  python3 - "$V9_MODEL_CSV" "$V9_FEATURE_TAG" <<'PY'
-import json
-import sys
-from datetime import datetime, timezone
-from pathlib import Path
-
-Path("colab_worker_logs/v9_250k_selected_feature_batch_pending.json").write_text(
-    json.dumps(
-        {
-            "status": "pending",
-            "created_utc": datetime.now(timezone.utc).isoformat(),
-            "workflow": "scripts/run_colab_v8b_frozen_defocus_confirmation_workflow.sh",
-            "dataset_csv": sys.argv[1],
-            "selected_feature_set": sys.argv[2],
-            "note": "At least one v9 250K seed is not complete yet. The next worker cycle will continue the batch.",
-        },
-        indent=2,
-    )
-    + "\n"
-)
-PY
-  echo "v9 batch is not complete yet; skipping final audits until both seeds exist."
-  exit 0
-fi
-
-python3 scripts/audit_s3_magnitude_metric.py "${V9_RUN_DIRS[@]}"
-
-python3 scripts/audit_training_validation_loss_gap.py \
-  --include-default-runs \
-  "${V9_RUN_DIRS[@]}"
-
-python3 - "$V9_DONE_MARKER" "$V9_MODEL_CSV" "$V9_FEATURE_TAG" "$DECISION_JSON" <<'PY'
-import json
-import sys
-from datetime import datetime, timezone
-from pathlib import Path
-
-marker = Path(sys.argv[1])
-marker.write_text(
-    json.dumps(
-        {
-            "status": "complete",
-            "created_utc": datetime.now(timezone.utc).isoformat(),
-            "workflow": "scripts/run_colab_v8b_frozen_defocus_confirmation_workflow.sh",
-            "dataset_csv": sys.argv[2],
-            "selected_feature_set": sys.argv[3],
-            "feature_decision_json": sys.argv[4],
-            "diagnostics": [
-                "v8b_frozen_feature_decision",
-                "v9_250k_selected_feature_training",
-                "s3_magnitude_metric_audit",
-                "training_validation_loss_gap_audit",
-            ],
         },
         indent=2,
     )
