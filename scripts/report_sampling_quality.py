@@ -55,6 +55,7 @@ PAIRWISE_RANGES = [
 VECTOR_ORDERS = {"A1": 2, "B2": 1, "A2": 3, "S3": 2, "A3": 4}
 VECTOR_PAIRS = [("A3", "S3"), ("B2", "S3"), ("A1", "S3")]
 ANGLE_BINS = ("aligned", "orthogonal", "anti_aligned", "random")
+SAMPLING_QUALITY_LOGIC_VERSION = "dataset_version_focus_v2"
 
 
 def utc_stamp() -> str:
@@ -84,7 +85,16 @@ def normalized_entropy(counts: np.ndarray) -> float:
     return entropy / math.log(len(counts))
 
 
-def split_parent_new(rows: list[dict[str, str]]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def split_parent_new(
+    rows: list[dict[str, str]],
+    *,
+    focus_dataset_version: str | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    if focus_dataset_version:
+        versions = np.asarray([str(row.get("dataset_version", "")).strip() for row in rows], dtype=object)
+        new_mask = versions == focus_dataset_version
+        parent_mask = ~new_mask
+        return np.ones(len(rows), dtype=bool), parent_mask, new_mask
     hints = np.asarray([str(row.get(DATASET_SPLIT_HINT_FIELD, "")).strip() for row in rows], dtype=object)
     new_mask = hints == TRAINING_ONLY_HINT
     parent_mask = ~new_mask
@@ -96,7 +106,8 @@ def subset_indices(mask: np.ndarray) -> np.ndarray:
 
 
 def regime_quota_rows(rows: list[dict[str, str]], config: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    _, parent_mask, new_mask = split_parent_new(rows)
+    focus_dataset_version = str(config.get("dataset_version", "")).strip() or None
+    _, parent_mask, new_mask = split_parent_new(rows, focus_dataset_version=focus_dataset_version)
     parent_rows = [row for row, is_parent in zip(rows, parent_mask) if bool(is_parent)]
     new_rows = [row for row, is_new in zip(rows, new_mask) if bool(is_new)]
     full_counts = Counter(str(row.get("sweep_label", "")) for row in rows)
@@ -128,6 +139,7 @@ def regime_quota_rows(rows: list[dict[str, str]], config: dict[str, Any]) -> tup
             }
         )
     summary = {
+        "focus_dataset_version": focus_dataset_version or "",
         "planned_total_new_rows": int(sum(planned.values())),
         "observed_total_new_rows": int(len(new_rows)),
         "quota_warning_labels": failed,
@@ -603,7 +615,8 @@ def main() -> int:
     if not rows:
         raise RuntimeError(f"CSV is empty: {args.csv_path}")
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    _, parent_mask, new_mask = split_parent_new(rows)
+    focus_dataset_version = str(config.get("dataset_version", "")).strip() or None
+    _, parent_mask, new_mask = split_parent_new(rows, focus_dataset_version=focus_dataset_version)
     masks = {
         "full": np.ones(len(rows), dtype=bool),
         "parent": parent_mask,
@@ -626,10 +639,12 @@ def main() -> int:
 
     summary = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
+        "sampling_quality_logic_version": SAMPLING_QUALITY_LOGIC_VERSION,
         "csv_path": str(args.csv_path),
         "config": str(args.config),
         "benchmark_split_manifest": "" if args.benchmark_split_manifest is None else str(args.benchmark_split_manifest),
         "counts": {
+            "focus_dataset_version": focus_dataset_version or "",
             "total_rows": int(len(rows)),
             "parent_rows": int(np.sum(parent_mask)),
             "new_training_only_rows": int(np.sum(new_mask)),

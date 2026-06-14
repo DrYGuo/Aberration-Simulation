@@ -3,14 +3,30 @@ set -euo pipefail
 
 DONE_MARKER="colab_worker_logs/v11_gap500k_d66_done.json"
 SAMPLING_QUALITY_DIR="training_results/model_selection_reports/sampling_quality_v11_gap500k_d66"
+REQUIRED_SAMPLING_QUALITY_VERSION="dataset_version_focus_v2"
 if [ -f "$DONE_MARKER" ]; then
   echo "v11 500K d66 batch already completed; marker exists at $DONE_MARKER"
   if [ -f "$SAMPLING_QUALITY_DIR/sampling_quality_summary.json" ]; then
-    echo "sampling-quality dashboard already exists at $SAMPLING_QUALITY_DIR"
-    exit 0
+    EXISTING_SAMPLING_QUALITY_VERSION=$(python3 - "$SAMPLING_QUALITY_DIR/sampling_quality_summary.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+try:
+    print(str(json.loads(path.read_text()).get("sampling_quality_logic_version", "")))
+except Exception:
+    print("")
+PY
+)
+    if [ "$EXISTING_SAMPLING_QUALITY_VERSION" = "$REQUIRED_SAMPLING_QUALITY_VERSION" ]; then
+      echo "sampling-quality dashboard already exists at $SAMPLING_QUALITY_DIR with logic $REQUIRED_SAMPLING_QUALITY_VERSION"
+      exit 0
+    fi
+    echo "sampling-quality dashboard exists but uses old logic '$EXISTING_SAMPLING_QUALITY_VERSION'; regenerating."
   fi
 
-  echo "sampling-quality dashboard is missing; generating dashboard-only follow-up."
+  echo "generating sampling-quality dashboard-only follow-up."
   mkdir -p colab_worker_logs
   V11_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v11_gap500k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
   if [ -z "$V11_CSV" ]; then

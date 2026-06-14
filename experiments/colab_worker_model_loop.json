@@ -1,6 +1,6 @@
 {
-  "description": "v11 500K d66 data-scale workflow. If the completed v11 done marker exists, run the missing sampling-quality dashboard against the cached v11 CSV without regenerating data or retraining. Otherwise, run the full v11 expansion/training workflow.",
-  "config_id": "v11-gap500k-d66-sampling-quality-followup",
+  "description": "v11 500K d66 data-scale workflow. If the completed v11 done marker exists, run or refresh the corrected sampling-quality dashboard against the cached v11 CSV without regenerating data or retraining. Otherwise, run the full v11 expansion/training workflow.",
+  "config_id": "v11-gap500k-d66-sampling-quality-v2",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
