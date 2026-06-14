@@ -172,6 +172,11 @@ Current interpretation:
   - expected new rows: `250,000` appended training-only rows
   - batch training: `batch_size=65536`, `eval_batch_size=65536`, `predict_batch_size=65536`
   - architecture/features unchanged from v9.
+  - sampler: per-regime Latin-hypercube space filling for all v11 labels, plus
+    balanced relative-angle strata for vector-vector S3 couplings.
+  - diagnostics: `targeted25k_audit.json` now includes coefficient coverage,
+    relative-angle coverage, and sampled nearest-neighbor distances; the v11
+    workflow also writes `data_scale_learning_curve_*.md/json` after training.
 
 500K data-distribution plan:
 

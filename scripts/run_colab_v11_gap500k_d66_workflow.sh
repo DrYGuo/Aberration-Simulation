@@ -134,6 +134,13 @@ python3 scripts/audit_training_validation_loss_gap.py \
   --include-default-runs \
   "${COMPLETE_RUN_PATH_ARGS[@]}"
 
+V11_BATCH_SUMMARY=$(ls -td training_results/model_selection_batches/v11_gap500k_d66_*/batch_summary.csv 2>/dev/null | head -1 || true)
+if [ -n "$V11_BATCH_SUMMARY" ]; then
+  python3 scripts/report_data_scale_learning_curve.py \
+    --include-default-batches \
+    --batch-summary "v11_500k=$V11_BATCH_SUMMARY"
+fi
+
 python3 - "$DONE_MARKER" "$V11_CSV" "$FROZEN_SPLIT_MANIFEST" "${COMPLETE_RUN_PATH_ARGS[@]}" <<'PY'
 import json
 import sys

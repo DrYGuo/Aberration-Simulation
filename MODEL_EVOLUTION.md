@@ -125,6 +125,21 @@ Queued v11 500K data-scale implementation:
 - Jobs:
   - seed23
   - seed7
+- Sampling strategy:
+  - per-regime Latin-hypercube sampling for all v11 labels
+  - physics-guided regime proportions retained
+  - high-S3 tail forcing retained for S3-linked labels
+  - C1 magnitude-bin balancing retained for selected C1 labels
+  - balanced relative-angle strata for vector-vector S3 couplings:
+    aligned, orthogonal, anti-aligned, and random
+- Coverage diagnostics:
+  - coefficient marginal bin counts
+  - selected pairwise occupancy counts
+  - A1-S3, B2-S3, and A3-S3 relative-angle coverage
+  - sampled nearest-neighbor distances in normalized 12D target space
+- Learning-curve diagnostics:
+  - after v11 completes, `scripts/report_data_scale_learning_curve.py` compares
+    v6 100K, v9 250K, and v11 500K batch summaries.
 - Promotion rule:
   - promote only if both seeds improve or preserve weighted score, blind/stress
     metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics

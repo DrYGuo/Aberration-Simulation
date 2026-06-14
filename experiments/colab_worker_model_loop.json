@@ -1,5 +1,5 @@
 {
-  "description": "v11 500K d66 data-scale workflow. This expands the promoted v9 250K dataset to 500K with hard-regime/S3-A3-B2-focused sampling, then retrains the promoted grouped-head architecture with mini-batches and chunked evaluation.",
+  "description": "v11 500K d66 data-scale workflow. This expands the promoted v9 250K dataset to 500K with physics-guided regime proportions, per-regime Latin-hypercube sampling, S3-relative angle strata, and coverage diagnostics, then retrains the promoted grouped-head architecture with mini-batches and chunked evaluation.",
   "config_id": "v11-gap500k-d66",
   "cycles": 8,
   "sleep_seconds": 30,
@@ -31,6 +31,8 @@
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*.md",
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*/*.json",
     "training_results/model_selection_reports/training_validation_loss_gap_audit_*/plots/*.png",
+    "training_results/model_selection_reports/data_scale_learning_curve_*.md",
+    "training_results/model_selection_reports/data_scale_learning_curve_*.json",
     "training_results/model_selection_reports/c1_feature_sensitivity_*.md",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.json",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.csv",

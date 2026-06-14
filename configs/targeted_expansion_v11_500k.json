@@ -1,5 +1,5 @@
 {
-  "description": "Next-scale expansion from v9 250K to 500K total rows. This emphasizes broad hard-regime coverage plus S3/A3/B2 vector couplings, while keeping C1 present but not dominant because C1 sensitivity is limited by the present defocus geometry.",
+  "description": "Next-scale expansion from v9 250K to 500K total rows. This uses physics-guided regime proportions plus Latin-hypercube space-filling within major regimes, balanced S3-relative angle strata, and compact coverage diagnostics.",
   "dataset_version": "enhanced_v11_gap500k",
   "parent_dataset_version": "enhanced_v9_gap250k",
   "expected_parent_rows": 250000,
@@ -24,6 +24,45 @@
     "coupled_C3_B2_random": 2000
   },
   "sampling": {
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random",
+        "coupled_A1_B2_random",
+        "coupled_A2_B2_random",
+        "coupled_C3_B2_random"
+      ],
+      "note": "Latin-hypercube coordinates are generated separately per regime label, so each regime receives space-filling amplitudes/phases while preserving the planned regime proportions."
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_S3_random": [["C1", "S3"]],
+        "coupled_C1_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_C3_S3_random": [["C3", "S3"]],
+        "coupled_C1_A3_S3_random": [["A3", "S3"]]
+      },
+      "note": "Non-vector pairs such as C1-S3 and C3-S3 are kept in the label map for traceability, but only vector-vector pairs are actively angle-constrained by the generator."
+    },
     "c1_balanced": {
       "enabled": true,
       "magnitude_bins": [
@@ -70,7 +109,7 @@
     "purpose": "Test whether another hard-regime data scale-up improves v9 without changing features or architecture.",
     "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc",
     "rejected_recent_direction": "D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k",
-    "success_rule": "Promote only if 500K improves weighted score, blind/stress metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics without easy-target regression. C1 improvement is useful but should not dominate selection.",
-    "resource_note": "Use mini-batch training and chunked evaluation/prediction for 500K because the 250K full-batch run already used roughly 8.9/15 GB GPU RAM."
+      "success_rule": "Promote only if 500K improves weighted score, blind/stress metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics without easy-target regression. C1 improvement is useful but should not dominate selection.",
+      "resource_note": "Use mini-batch training and chunked evaluation/prediction for 500K because the 250K full-batch run already used roughly 8.9/15 GB GPU RAM."
   }
 }

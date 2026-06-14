@@ -45,6 +45,8 @@ COUPLING_EPSILON = 1e-8
 
 COMBINATION_FIELDS = (
     "sweep_label",
+    "sampling_method",
+    "sampling_relative_angle_bin",
     "C1",
     "A1_amp",
     "A1_phase",
@@ -58,6 +60,7 @@ COMBINATION_FIELDS = (
     "S3_phase",
     "C3",
 )
+SAMPLING_METADATA_FIELDS = ("sampling_method", "sampling_relative_angle_bin")
 
 BASELINE_PARAMETERS = {
     "C1_offset": 0,
@@ -88,6 +91,29 @@ TARGETED_CASE_COUNTS = {
 }
 
 ALL_FIELDS = ("C1", "C3", "A1", "A2", "B2", "A3", "S3")
+SAMPLING_DIMENSIONS = (
+    "C1_bin",
+    "C1_value",
+    "C1_sign",
+    "C3_value",
+    "A1_amp",
+    "A1_phase",
+    "A2_amp",
+    "A2_phase",
+    "B2_amp",
+    "B2_phase",
+    "A3_amp",
+    "A3_phase",
+    "S3_amp",
+    "S3_phase",
+)
+VECTOR_ORDERS = {"A1": 2, "B2": 1, "A2": 3, "S3": 2, "A3": 4}
+PHASE_PERIODS = {"A1": 180.0, "B2": 360.0, "A2": 120.0, "S3": 180.0, "A3": 90.0}
+RELATIVE_ANGLE_DEGREES = {
+    "aligned": 0.0,
+    "orthogonal": 90.0,
+    "anti_aligned": 180.0,
+}
 
 
 def utc_stamp() -> str:
@@ -209,6 +235,7 @@ def fieldnames_with_metadata(source_fieldnames: list[str]) -> list[str]:
         dict.fromkeys(
             [
                 *source_fieldnames,
+                *SAMPLING_METADATA_FIELDS,
                 DATASET_VERSION_FIELD,
                 DATASET_SOURCE_FIELD,
                 SPLIT_HINT_FIELD,
@@ -242,6 +269,52 @@ def extra_feature_columns() -> list[str]:
     return columns
 
 
+def latin_hypercube(n_rows: int, dimensions: tuple[str, ...], rng: np.random.Generator) -> list[dict[str, float]]:
+    if n_rows <= 0:
+        return []
+    columns: dict[str, np.ndarray] = {}
+    for name in dimensions:
+        columns[name] = (rng.permutation(n_rows).astype(float) + rng.random(n_rows)) / float(n_rows)
+    return [
+        {name: float(columns[name][row_index]) for name in dimensions}
+        for row_index in range(n_rows)
+    ]
+
+
+def vector_angle_from_phase(group: str, phase_deg: float) -> float:
+    return (VECTOR_ORDERS[group] * float(phase_deg)) % 360.0
+
+
+def phase_from_vector_angle(group: str, vector_angle_deg: float) -> float:
+    return (float(vector_angle_deg) / VECTOR_ORDERS[group]) % PHASE_PERIODS[group]
+
+
+def apply_relative_angle_controls(
+    params: dict[str, Any],
+    pairs: list[list[str]],
+    angle_bin: str,
+    rng: np.random.Generator,
+) -> None:
+    if not pairs or angle_bin == "random":
+        return
+    delta = RELATIVE_ANGLE_DEGREES.get(angle_bin)
+    if delta is None:
+        raise ValueError(f"unknown relative-angle bin: {angle_bin!r}")
+    jitter = float(rng.uniform(-7.5, 7.5))
+    for pair in pairs:
+        if len(pair) != 2:
+            raise ValueError(f"relative-angle pair must contain two vector groups: {pair!r}")
+        left, right = pair
+        if left not in VECTOR_ORDERS or right not in VECTOR_ORDERS:
+            continue
+        if float(params.get(f"{left}_amp", 0.0) or 0.0) <= COUPLING_EPSILON:
+            continue
+        if float(params.get(f"{right}_amp", 0.0) or 0.0) <= COUPLING_EPSILON:
+            continue
+        right_angle = vector_angle_from_phase(right, float(params.get(f"{right}_phase", 0.0) or 0.0))
+        params[f"{left}_phase"] = phase_from_vector_angle(left, right_angle + delta + jitter)
+
+
 def randomize(
     params: dict[str, Any],
     fields: tuple[str, ...],
@@ -250,44 +323,53 @@ def randomize(
     sparse: bool = False,
     s3_amp_range: tuple[float, float] | None = None,
     c1_magnitude_bins: tuple[tuple[float, float], ...] | None = None,
+    unit_values: dict[str, float] | None = None,
 ) -> dict[str, Any]:
-    def uniform(low: float, high: float) -> float:
-        return float(rng.uniform(low, high))
+    def unit(name: str) -> float:
+        if unit_values is not None and name in unit_values:
+            return min(max(float(unit_values[name]), 0.0), np.nextafter(1.0, 0.0))
+        return float(rng.random())
 
-    def amp(max_value: float, active_probability: float = 1.0) -> float:
-        if rng.random() > active_probability:
+    def uniform(low: float, high: float, name: str) -> float:
+        return float(low + unit(name) * (high - low))
+
+    def amp(max_value: float, name: str, active_probability: float = 1.0) -> float:
+        raw = unit(name)
+        if raw > active_probability:
             return 0.0
+        scaled = raw / max(active_probability, 1e-8)
         low = 0.05 * max_value
-        return uniform(low, max_value)
+        return float(low + scaled * (max_value - low))
 
     active_probability = 0.85 if sparse else 1.0
     if "C1" in fields:
         if c1_magnitude_bins:
-            low, high = c1_magnitude_bins[int(rng.integers(0, len(c1_magnitude_bins)))]
-            magnitude = uniform(low, high)
-            params["C1"] = magnitude if rng.random() < 0.5 else -magnitude
+            bin_index = min(int(unit("C1_bin") * len(c1_magnitude_bins)), len(c1_magnitude_bins) - 1)
+            low, high = c1_magnitude_bins[bin_index]
+            magnitude = uniform(low, high, "C1_value")
+            params["C1"] = magnitude if unit("C1_sign") < 0.5 else -magnitude
         else:
-            params["C1"] = uniform(-100.0, 100.0)
+            params["C1"] = uniform(-100.0, 100.0, "C1_value")
     if "C3" in fields:
-        params["C3"] = uniform(0.05, 2.0)
+        params["C3"] = uniform(0.05, 2.0, "C3_value")
     if "A1" in fields:
-        params["A1_amp"] = amp(60.0, active_probability)
-        params["A1_phase"] = uniform(0.0, 180.0)
+        params["A1_amp"] = amp(60.0, "A1_amp", active_probability)
+        params["A1_phase"] = uniform(0.0, 180.0, "A1_phase")
     if "A2" in fields:
-        params["A2_amp"] = amp(16.0, active_probability)
-        params["A2_phase"] = uniform(0.0, 120.0)
+        params["A2_amp"] = amp(16.0, "A2_amp", active_probability)
+        params["A2_phase"] = uniform(0.0, 120.0, "A2_phase")
     if "B2" in fields:
-        params["B2_amp"] = amp(3.0, active_probability)
-        params["B2_phase"] = uniform(0.0, 360.0)
+        params["B2_amp"] = amp(3.0, "B2_amp", active_probability)
+        params["B2_phase"] = uniform(0.0, 360.0, "B2_phase")
     if "A3" in fields:
-        params["A3_amp"] = amp(100.0, active_probability)
-        params["A3_phase"] = uniform(0.0, 90.0)
+        params["A3_amp"] = amp(100.0, "A3_amp", active_probability)
+        params["A3_phase"] = uniform(0.0, 90.0, "A3_phase")
     if "S3" in fields:
         if s3_amp_range is not None:
-            params["S3_amp"] = uniform(*s3_amp_range)
+            params["S3_amp"] = uniform(s3_amp_range[0], s3_amp_range[1], "S3_amp")
         else:
-            params["S3_amp"] = amp(100.0, active_probability)
-        params["S3_phase"] = uniform(0.0, 180.0)
+            params["S3_amp"] = amp(100.0, "S3_amp", active_probability)
+        params["S3_phase"] = uniform(0.0, 180.0, "S3_phase")
     return params
 
 
@@ -316,6 +398,22 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
     rng = np.random.default_rng(seed)
     case_counts = generation_config["case_counts"]
     sampling = generation_config.get("sampling", {})
+    space_filling = sampling.get("space_filling", {}) if isinstance(sampling, dict) else {}
+    space_filling_enabled = bool(space_filling.get("enabled", False)) if isinstance(space_filling, dict) else False
+    space_filling_method = str(space_filling.get("method", "latin_hypercube")) if isinstance(space_filling, dict) else "latin_hypercube"
+    if space_filling_enabled and space_filling_method != "latin_hypercube":
+        raise ValueError(f"unsupported space-filling method: {space_filling_method!r}")
+    space_filling_labels = set(space_filling.get("labels", [])) if isinstance(space_filling, dict) else set()
+    relative_angles = sampling.get("relative_angles", {}) if isinstance(sampling, dict) else {}
+    relative_angles_enabled = bool(relative_angles.get("enabled", False)) if isinstance(relative_angles, dict) else False
+    relative_angle_bins = (
+        list(relative_angles.get("bins", ["aligned", "orthogonal", "anti_aligned", "random"]))
+        if isinstance(relative_angles, dict)
+        else ["aligned", "orthogonal", "anti_aligned", "random"]
+    )
+    relative_angle_label_pairs = (
+        relative_angles.get("label_pairs", {}) if isinstance(relative_angles, dict) else {}
+    )
     s3_tail = sampling.get("s3_tail", {}) if isinstance(sampling, dict) else {}
     s3_tail_enabled = bool(s3_tail.get("enabled", False))
     s3_amp_range = None
@@ -373,9 +471,23 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
     for label, count in case_counts.items():
         if label != "coupled_sparse_random" and label not in field_sets:
             raise KeyError(f"unknown targeted case label: {label}")
-        for _ in range(count):
+        use_space_filling = space_filling_enabled and label in space_filling_labels
+        label_units = (
+            latin_hypercube(count, SAMPLING_DIMENSIONS, rng)
+            if use_space_filling
+            else [None] * count
+        )
+        relative_pairs = relative_angle_label_pairs.get(label, []) if relative_angles_enabled else []
+        for label_index in range(count):
             params = dict(BASELINE_PARAMETERS)
             params["sweep_label"] = label
+            params["sampling_method"] = space_filling_method if use_space_filling else "random"
+            angle_bin = (
+                str(relative_angle_bins[label_index % len(relative_angle_bins)])
+                if relative_pairs and relative_angle_bins
+                else ""
+            )
+            params["sampling_relative_angle_bin"] = angle_bin
             label_s3_range = s3_amp_range if s3_tail_enabled and label in s3_tail_labels else None
             label_c1_bins = c1_magnitude_bins if c1_balanced_enabled and label in c1_balanced_labels else None
             if label == "coupled_sparse_random":
@@ -386,26 +498,28 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
                     fields = ("S3", *tuple(rng.choice(available, size=other_count, replace=False)))
                 else:
                     fields = tuple(rng.choice(ALL_FIELDS, size=active_count, replace=False))
-                cases.append(
-                    randomize(
-                        params,
-                        fields,
-                        rng,
-                        sparse=True,
-                        s3_amp_range=label_s3_range,
-                        c1_magnitude_bins=label_c1_bins,
-                    )
+                randomized = randomize(
+                    params,
+                    fields,
+                    rng,
+                    sparse=True,
+                    s3_amp_range=label_s3_range,
+                    c1_magnitude_bins=label_c1_bins,
+                    unit_values=label_units[label_index],
                 )
+                apply_relative_angle_controls(randomized, relative_pairs, angle_bin, rng)
+                cases.append(randomized)
             else:
-                cases.append(
-                    randomize(
-                        params,
-                        field_sets[label],
-                        rng,
-                        s3_amp_range=label_s3_range,
-                        c1_magnitude_bins=label_c1_bins,
-                    )
+                randomized = randomize(
+                    params,
+                    field_sets[label],
+                    rng,
+                    s3_amp_range=label_s3_range,
+                    c1_magnitude_bins=label_c1_bins,
+                    unit_values=label_units[label_index],
                 )
+                apply_relative_angle_controls(randomized, relative_pairs, angle_bin, rng)
+                cases.append(randomized)
     rng.shuffle(cases)
     return cases
 
@@ -610,6 +724,131 @@ def per_regime_hard_target_stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return stats
 
 
+def target_scale_array() -> np.ndarray:
+    return np.asarray([100.0, 2.0, 60.0, 60.0, 3.0, 3.0, 16.0, 16.0, 100.0, 100.0, 100.0, 100.0], dtype=float)
+
+
+def relative_angle_deg(row: dict[str, Any], left: str, right: str) -> float:
+    left_angle = vector_angle_from_phase(left, float(row.get(f"{left}_phase", 0.0) or 0.0))
+    right_angle = vector_angle_from_phase(right, float(row.get(f"{right}_phase", 0.0) or 0.0))
+    delta = (left_angle - right_angle + 180.0) % 360.0 - 180.0
+    return float(delta)
+
+
+def angle_category(delta_deg: float) -> str:
+    value = abs(float(delta_deg))
+    if value <= 22.5 or value >= 157.5:
+        return "aligned_or_anti_aligned" if value <= 22.5 else "anti_aligned"
+    if 67.5 <= value <= 112.5:
+        return "orthogonal"
+    return "oblique"
+
+
+def sampled_nearest_neighbor_distances(
+    matrix: np.ndarray,
+    *,
+    rng: np.random.Generator,
+    sample_size: int = 3000,
+    chunk_size: int = 300,
+) -> dict[str, Any]:
+    if len(matrix) < 2:
+        return {"n_sampled": int(len(matrix))}
+    sample_size = min(int(sample_size), len(matrix))
+    sample_indices = rng.choice(len(matrix), size=sample_size, replace=False)
+    sample = matrix[sample_indices]
+    nearest: list[np.ndarray] = []
+    for start in range(0, sample_size, chunk_size):
+        block = sample[start : start + chunk_size]
+        distances = np.sqrt(np.sum((block[:, None, :] - sample[None, :, :]) ** 2, axis=2))
+        row_indices = np.arange(start, min(start + chunk_size, sample_size))
+        distances[np.arange(len(block)), row_indices] = np.inf
+        nearest.append(np.min(distances, axis=1))
+    values = np.concatenate(nearest)
+    return {
+        "n_sampled": int(sample_size),
+        "dimension": int(matrix.shape[1]),
+        "mean": float(np.mean(values)),
+        "median": float(np.median(values)),
+        "p90": float(np.percentile(values, 90)),
+        "p95": float(np.percentile(values, 95)),
+        "max": float(np.max(values)),
+    }
+
+
+def coefficient_coverage_diagnostics(rows: list[dict[str, Any]], seed: int = 123) -> dict[str, Any]:
+    matrix = target_matrix(rows, tuple(TARGET_COLUMNS))
+    if not len(matrix):
+        return {"n": 0}
+    normalized = matrix / target_scale_array()[None, :]
+    rng = np.random.default_rng(seed)
+    marginal_bins: dict[str, Any] = {}
+    for index, target in enumerate(TARGET_COLUMNS):
+        if target == "C3":
+            hist_range = (0.0, 1.0)
+        else:
+            hist_range = (-1.0, 1.0)
+        counts, edges = np.histogram(normalized[:, index], bins=20, range=hist_range)
+        marginal_bins[target] = {
+            "counts": counts.astype(int).tolist(),
+            "bin_edges": edges.tolist(),
+            "empty_bins": int(np.sum(counts == 0)),
+            "min_nonzero_bin_count": int(np.min(counts[counts > 0])) if np.any(counts > 0) else 0,
+        }
+    pair_bins: dict[str, Any] = {}
+    for left, right in [
+        ("S3_x", "S3_y"),
+        ("A3_x", "A3_y"),
+        ("B2_x", "B2_y"),
+        ("A1_x", "S3_x"),
+        ("B2_x", "S3_x"),
+        ("A3_x", "S3_x"),
+    ]:
+        left_index = TARGET_COLUMNS.index(left)
+        right_index = TARGET_COLUMNS.index(right)
+        counts, _, _ = np.histogram2d(
+            normalized[:, left_index],
+            normalized[:, right_index],
+            bins=16,
+            range=[[-1.0, 1.0], [-1.0, 1.0]],
+        )
+        pair_bins[f"{left}__{right}"] = {
+            "empty_bins": int(np.sum(counts == 0)),
+            "occupied_bins": int(np.sum(counts > 0)),
+            "total_bins": int(counts.size),
+            "min_nonzero_bin_count": int(np.min(counts[counts > 0])) if np.any(counts > 0) else 0,
+        }
+    relative_pairs: dict[str, Any] = {}
+    for left, right in [("A1", "S3"), ("B2", "S3"), ("A3", "S3")]:
+        active_rows = [
+            row
+            for row in rows
+            if float(row.get(f"{left}_amp", 0.0) or 0.0) > COUPLING_EPSILON
+            and float(row.get(f"{right}_amp", 0.0) or 0.0) > COUPLING_EPSILON
+        ]
+        deltas = [relative_angle_deg(row, left, right) for row in active_rows]
+        categories = Counter(angle_category(delta) for delta in deltas)
+        relative_pairs[f"{left}_{right}"] = {
+            "n": len(active_rows),
+            "category_counts": dict(categories),
+            "mean_abs_delta_deg": float(np.mean(np.abs(deltas))) if deltas else 0.0,
+            "p95_abs_delta_deg": float(np.percentile(np.abs(deltas), 95)) if deltas else 0.0,
+        }
+    sampling_counts = {
+        "method_counts": dict(Counter(str(row.get("sampling_method", "")) for row in rows)),
+        "relative_angle_bin_counts": dict(Counter(str(row.get("sampling_relative_angle_bin", "")) for row in rows)),
+    }
+    return {
+        "n": int(len(rows)),
+        "target_columns": TARGET_COLUMNS,
+        "normalization_scales": dict(zip(TARGET_COLUMNS, target_scale_array().tolist())),
+        "marginal_bins": marginal_bins,
+        "pair_bins": pair_bins,
+        "relative_angle_coverage": relative_pairs,
+        "sampling_metadata": sampling_counts,
+        "sampled_nearest_neighbor_distance": sampled_nearest_neighbor_distances(normalized, rng=rng),
+    }
+
+
 def pairwise_hard_target_histograms(
     output_dir: Path,
     rows: list[dict[str, Any]],
@@ -679,6 +918,8 @@ def write_targeted_audit(
         "combined_s3_magnitude_histogram": s3_magnitude_histogram(combined_rows),
         "combined_coupling_density": coupling_density(combined_rows),
         "new_coupling_density": coupling_density(new_rows),
+        "new_coefficient_coverage": coefficient_coverage_diagnostics(new_rows),
+        "combined_coefficient_coverage": coefficient_coverage_diagnostics(combined_rows),
         "fraction_new_rows_at_least_3_of_5_hard_targets_above_half_scale": float(
             np.mean(np.sum(normalized_abs > 0.5, axis=1) >= 3)
         )
