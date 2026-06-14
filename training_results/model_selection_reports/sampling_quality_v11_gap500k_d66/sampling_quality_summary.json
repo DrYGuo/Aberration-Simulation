@@ -1,0 +1,80 @@
+{
+  "created_utc": "2026-06-14T23:50:32.409466+00:00",
+  "csv_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/training_features_enhanced.csv",
+  "config": "configs/targeted_expansion_v11_500k.json",
+  "benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
+  "counts": {
+    "total_rows": 500000,
+    "parent_rows": 16446,
+    "new_training_only_rows": 483554,
+    "dataset_versions": {
+      "parent_cached_dataset": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000
+    },
+    "dataset_sources": {
+      "parent": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000
+    },
+    "split_hints": {
+      "": 16446,
+      "training_only": 483554
+    }
+  },
+  "quota": {
+    "planned_total_new_rows": 250000,
+    "observed_total_new_rows": 483554,
+    "quota_warning_labels": [
+      "S3_high_random",
+      "coupled_A1_B2_S3_random",
+      "coupled_A1_B2_random",
+      "coupled_A1_S3_random",
+      "coupled_A2_B2_random",
+      "coupled_A3_S3_random",
+      "coupled_B2_S3_random",
+      "coupled_C1_A1_C3_A2_random",
+      "coupled_C1_A1_C3_random",
+      "coupled_C1_A1_S3_random",
+      "coupled_C1_A1_random",
+      "coupled_C1_A2_random",
+      "coupled_C1_A3_random",
+      "coupled_C1_B2_random",
+      "coupled_C1_C3_A2_random",
+      "coupled_C1_C3_S3_random",
+      "coupled_C1_C3_random",
+      "coupled_C1_S3_random",
+      "coupled_C3_A3_S3_random",
+      "coupled_C3_B2_random",
+      "coupled_full_random",
+      "coupled_sparse_random"
+    ],
+    "quota_pass": false
+  },
+  "split": {
+    "status": "available",
+    "split_counts": {
+      "train": 492556,
+      "validation": 1977,
+      "blind": 2370,
+      "stress": 3097
+    },
+    "training_only_leakage_counts": {
+      "validation": 0,
+      "blind": 0,
+      "stress": 0
+    },
+    "training_only_leakage_pass": true
+  },
+  "warnings": [
+    "Regime quota mismatch >1% for: S3_high_random, coupled_A1_B2_S3_random, coupled_A1_B2_random, coupled_A1_S3_random, coupled_A2_B2_random, coupled_A3_S3_random, coupled_B2_S3_random, coupled_C1_A1_C3_A2_random, coupled_C1_A1_C3_random, coupled_C1_A1_S3_random, coupled_C1_A1_random, coupled_C1_A2_random, coupled_C1_A3_random, coupled_C1_B2_random, coupled_C1_C3_A2_random, coupled_C1_C3_S3_random, coupled_C1_C3_random, coupled_C1_S3_random, coupled_C3_A3_S3_random, coupled_C3_B2_random, coupled_full_random, coupled_sparse_random",
+    "Low new-row marginal entropy: new_training_only:A2_amp, new_training_only:A2_phase"
+  ],
+  "recommendation": "FAIL"
+}
