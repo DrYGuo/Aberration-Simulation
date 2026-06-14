@@ -1,0 +1,18 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-14T03:31:22.670511+00:00",
+  "workflow": "scripts/run_colab_v8_defocus_difference_workflow.sh",
+  "csv_paths": {
+    "v6": "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260613_230608_utc/training_features_enhanced.csv",
+    "c1diff_basic": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_basic_20260613_231456_utc/training_features_enhanced.csv",
+    "c1diff_full": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv"
+  },
+  "diagnostics": [
+    "fixed_benchmark_split_threshold",
+    "c1_feature_sensitivity",
+    "defocus_difference_feature_batch",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ],
+  "prepared_next_expansion_config": "configs/targeted_expansion_v9_250k.json"
+}

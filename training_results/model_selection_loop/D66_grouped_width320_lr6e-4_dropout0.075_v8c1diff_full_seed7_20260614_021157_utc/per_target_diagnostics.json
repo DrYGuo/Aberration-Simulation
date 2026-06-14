@@ -1,0 +1,4605 @@
+{
+  "train": {
+    "split": "train",
+    "targets": {
+      "C1": {
+        "n": 93002,
+        "target_scale": 100.0,
+        "bias": 0.20416173338890076,
+        "mae": 0.8235124349594116,
+        "rmse": 1.2373390197753906,
+        "normalized_mae": 0.008235123939812183,
+        "p95_abs_error": {
+          "value": 2.6738789081573486,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 4.356021404266357,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9970368728524991,
+        "intercept": 0.2040595226027586,
+        "r2": 0.9990537508628032,
+        "true_std": 39.48994445800781,
+        "pred_std": 39.391666412353516,
+        "compression_ratio": 0.9975113146649572,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "C3": {
+        "n": 93002,
+        "target_scale": 2.0,
+        "bias": 0.0003470123338047415,
+        "mae": 0.006548063829541206,
+        "rmse": 0.009796595200896263,
+        "normalized_mae": 0.003274031914770603,
+        "p95_abs_error": {
+          "value": 0.02125958912074566,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.0337967723608017,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9999459091538747,
+        "intercept": 0.000379365543025682,
+        "r2": 0.999782071571364,
+        "true_std": 0.6631972193717957,
+        "pred_std": 0.6632336378097534,
+        "compression_ratio": 1.0000549134358439,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_x": {
+        "n": 93002,
+        "target_scale": 60.0,
+        "bias": 0.0005872145411558449,
+        "mae": 0.34257450699806213,
+        "rmse": 0.5683072805404663,
+        "normalized_mae": 0.0057095750235021114,
+        "p95_abs_error": {
+          "value": 1.2388522624969482,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 2.1438825130462646,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9971945015772049,
+        "intercept": 0.0005355838714960435,
+        "r2": 0.9989219707936319,
+        "true_std": 17.245986938476562,
+        "pred_std": 17.20692253112793,
+        "compression_ratio": 0.9977348697127053,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_y": {
+        "n": 93002,
+        "target_scale": 60.0,
+        "bias": -0.008041576482355595,
+        "mae": 0.3310128450393677,
+        "rmse": 0.5507604479789734,
+        "normalized_mae": 0.0055168806575238705,
+        "p95_abs_error": {
+          "value": 1.2214691638946533,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 2.085181951522827,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9977587962531294,
+        "intercept": -0.007981133435802762,
+        "r2": 0.9989818287406942,
+        "true_std": 17.216205596923828,
+        "pred_std": 17.1864013671875,
+        "compression_ratio": 0.998268827032267,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_x": {
+        "n": 93002,
+        "target_scale": 3.0,
+        "bias": 0.0008713237475603819,
+        "mae": 0.019560180604457855,
+        "rmse": 0.03705805167555809,
+        "normalized_mae": 0.006520060356706381,
+        "p95_abs_error": {
+          "value": 0.08504658192396164,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.14615477621555328,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9938729558044664,
+        "intercept": 0.0008829493561388162,
+        "r2": 0.9979864573502336,
+        "true_std": 0.8180330991744995,
+        "pred_std": 0.813849151134491,
+        "compression_ratio": 0.9948853560519364,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_y": {
+        "n": 93002,
+        "target_scale": 3.0,
+        "bias": -6.237550405785441e-05,
+        "mae": 0.019781628623604774,
+        "rmse": 0.03698652982711792,
+        "normalized_mae": 0.006593876052647829,
+        "p95_abs_error": {
+          "value": 0.08499117195606232,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.14502623677253723,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9932709043341046,
+        "intercept": -3.928969361059693e-05,
+        "r2": 0.9979574584275935,
+        "true_std": 0.8094614744186401,
+        "pred_std": 0.8048463463783264,
+        "compression_ratio": 0.9942985204532083,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_x": {
+        "n": 93002,
+        "target_scale": 16.0,
+        "bias": -0.0009709123405627906,
+        "mae": 0.05032280087471008,
+        "rmse": 0.09243158996105194,
+        "normalized_mae": 0.00314517505466938,
+        "p95_abs_error": {
+          "value": 0.21597254276275635,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.35866618156433105,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9987086542423941,
+        "intercept": -0.0009360681967749216,
+        "r2": 0.9995241275388101,
+        "true_std": 4.229524612426758,
+        "pred_std": 4.225069999694824,
+        "compression_ratio": 0.9989467816976769,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_y": {
+        "n": 93002,
+        "target_scale": 16.0,
+        "bias": -0.0004967802087776363,
+        "mae": 0.04945347458124161,
+        "rmse": 0.091120146214962,
+        "normalized_mae": 0.0030908421613276005,
+        "p95_abs_error": {
+          "value": 0.21245646476745605,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.35266774892807007,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9990999677970944,
+        "intercept": -0.00048662992337310127,
+        "r2": 0.9995298538312951,
+        "true_std": 4.198727607727051,
+        "pred_std": 4.195936679840088,
+        "compression_ratio": 0.9993352919865945,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_x": {
+        "n": 93002,
+        "target_scale": 100.0,
+        "bias": -0.0295190941542387,
+        "mae": 0.8983599543571472,
+        "rmse": 1.5552234649658203,
+        "normalized_mae": 0.008983599953353405,
+        "p95_abs_error": {
+          "value": 3.434976100921631,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 6.054758071899414,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9945370705656755,
+        "intercept": -0.03021397807385126,
+        "r2": 0.9986414969750855,
+        "true_std": 41.73165512084961,
+        "pred_std": 41.532169342041016,
+        "compression_ratio": 0.9952197971005246,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_y": {
+        "n": 93002,
+        "target_scale": 100.0,
+        "bias": -0.029511062428355217,
+        "mae": 0.8795046806335449,
+        "rmse": 1.5243562459945679,
+        "normalized_mae": 0.008795047178864479,
+        "p95_abs_error": {
+          "value": 3.3775689601898193,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 5.928194522857666,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9944138841301617,
+        "intercept": -0.029163306658832783,
+        "r2": 0.9986817502363663,
+        "true_std": 41.48833084106445,
+        "pred_std": 41.2840690612793,
+        "compression_ratio": 0.9950766450314029,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_x": {
+        "n": 93002,
+        "target_scale": 100.0,
+        "bias": -0.017738161608576775,
+        "mae": 0.4926026165485382,
+        "rmse": 0.8542125225067139,
+        "normalized_mae": 0.0049260263331234455,
+        "p95_abs_error": {
+          "value": 1.9584012031555176,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 3.2872304916381836,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9981026392151038,
+        "intercept": -0.017919046944328998,
+        "r2": 0.9989531591949582,
+        "true_std": 26.35035514831543,
+        "pred_std": 26.31417465209961,
+        "compression_ratio": 0.9986269446460142,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_y": {
+        "n": 93002,
+        "target_scale": 100.0,
+        "bias": -0.015137112699449062,
+        "mae": 0.4939066767692566,
+        "rmse": 0.854593813419342,
+        "normalized_mae": 0.0049390667118132114,
+        "p95_abs_error": {
+          "value": 1.9648199081420898,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 3.256512403488159,
+          "reliable": true,
+          "n": 93002,
+          "minimum_n": 100
+        },
+        "slope": 0.9976515959101154,
+        "intercept": -0.015112837967831284,
+        "r2": 0.9989607821300084,
+        "true_std": 26.43558692932129,
+        "pred_std": 26.387269973754883,
+        "compression_ratio": 0.9981722760423066,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      }
+    }
+  },
+  "validation": {
+    "split": "validation",
+    "targets": {
+      "C1": {
+        "n": 1977,
+        "target_scale": 100.0,
+        "bias": 0.29796597361564636,
+        "mae": 1.7945094108581543,
+        "rmse": 2.760366439819336,
+        "normalized_mae": 0.017945094034075737,
+        "p95_abs_error": {
+          "value": 5.762834548950195,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 9.56488037109375,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9930165432805029,
+        "intercept": 0.29649296913211226,
+        "r2": 0.9962385402524501,
+        "true_std": 44.457618713378906,
+        "pred_std": 44.23126983642578,
+        "compression_ratio": 0.9949086594490719,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "C3": {
+        "n": 1977,
+        "target_scale": 2.0,
+        "bias": 0.0007843836792744696,
+        "mae": 0.010869527235627174,
+        "rmse": 0.015927283093333244,
+        "normalized_mae": 0.005434763617813587,
+        "p95_abs_error": {
+          "value": 0.03304145112633705,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.05374505743384361,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.997844213032642,
+        "intercept": 0.00271996188297523,
+        "r2": 0.9993428596492657,
+        "true_std": 0.6183794140815735,
+        "pred_std": 0.6172499656677246,
+        "compression_ratio": 0.9981735349073249,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_x": {
+        "n": 1977,
+        "target_scale": 60.0,
+        "bias": 0.06855936348438263,
+        "mae": 0.7477148771286011,
+        "rmse": 1.3704298734664917,
+        "normalized_mae": 0.01246191468089819,
+        "p95_abs_error": {
+          "value": 2.5518851280212402,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 5.090900421142578,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9933958092768695,
+        "intercept": 0.06394718300789151,
+        "r2": 0.9953052963280279,
+        "true_std": 19.883852005004883,
+        "pred_std": 19.799463272094727,
+        "compression_ratio": 0.9957559162636639,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_y": {
+        "n": 1977,
+        "target_scale": 60.0,
+        "bias": 0.03297579288482666,
+        "mae": 0.7314028739929199,
+        "rmse": 1.3401002883911133,
+        "normalized_mae": 0.012190047651529312,
+        "p95_abs_error": {
+          "value": 2.7588582038879395,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 5.895845890045166,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9907527311260714,
+        "intercept": 0.0360038162991306,
+        "r2": 0.9955733837215419,
+        "true_std": 19.944128036499023,
+        "pred_std": 19.8042049407959,
+        "compression_ratio": 0.9929842460173212,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_x": {
+        "n": 1977,
+        "target_scale": 3.0,
+        "bias": 0.0019893937278538942,
+        "mae": 0.04911945387721062,
+        "rmse": 0.08445798605680466,
+        "normalized_mae": 0.016373151913285255,
+        "p95_abs_error": {
+          "value": 0.18242105841636658,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.32470136880874634,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.979106129414373,
+        "intercept": 0.002117676736702235,
+        "r2": 0.9904489370247983,
+        "true_std": 0.8448687791824341,
+        "pred_std": 0.8313267827033997,
+        "compression_ratio": 0.9839714795803689,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_y": {
+        "n": 1977,
+        "target_scale": 3.0,
+        "bias": -0.000587944348808378,
+        "mae": 0.05126449093222618,
+        "rmse": 0.08902835100889206,
+        "normalized_mae": 0.017088163644075394,
+        "p95_abs_error": {
+          "value": 0.1865192949771881,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.32890066504478455,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.974317621100494,
+        "intercept": -0.00013030626279058008,
+        "r2": 0.9877897586250255,
+        "true_std": 0.7847521901130676,
+        "pred_std": 0.7694994807243347,
+        "compression_ratio": 0.9805636612667047,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_x": {
+        "n": 1977,
+        "target_scale": 16.0,
+        "bias": -0.00029963607084937394,
+        "mae": 0.10246513783931732,
+        "rmse": 0.16047582030296326,
+        "normalized_mae": 0.006404071114957333,
+        "p95_abs_error": {
+          "value": 0.35170820355415344,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.5508319139480591,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9967170586513691,
+        "intercept": -0.0004913655425548303,
+        "r2": 0.9992197614861411,
+        "true_std": 5.705794334411621,
+        "pred_std": 5.689295768737793,
+        "compression_ratio": 0.9971084541946552,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_y": {
+        "n": 1977,
+        "target_scale": 16.0,
+        "bias": -0.006673062685877085,
+        "mae": 0.10091996192932129,
+        "rmse": 0.1631138026714325,
+        "normalized_mae": 0.006307497620582581,
+        "p95_abs_error": {
+          "value": 0.3507186770439148,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.6176327466964722,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9978231724547951,
+        "intercept": -0.006560462420661829,
+        "r2": 0.9991923718809356,
+        "true_std": 5.7180891036987305,
+        "pred_std": 5.707955360412598,
+        "compression_ratio": 0.9982277745060709,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_x": {
+        "n": 1977,
+        "target_scale": 100.0,
+        "bias": 0.10459919273853302,
+        "mae": 2.542181968688965,
+        "rmse": 5.280113220214844,
+        "normalized_mae": 0.02542182058095932,
+        "p95_abs_error": {
+          "value": 10.647989273071289,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 20.125755310058594,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9479598842338933,
+        "intercept": 0.08236176444398009,
+        "r2": 0.9650962337757713,
+        "true_std": 27.22043800354004,
+        "pred_std": 26.30023765563965,
+        "compression_ratio": 0.9661945062096092,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_y": {
+        "n": 1977,
+        "target_scale": 100.0,
+        "bias": 0.2149375081062317,
+        "mae": 2.5635600090026855,
+        "rmse": 5.302624702453613,
+        "normalized_mae": 0.025635600090026855,
+        "p95_abs_error": {
+          "value": 10.509089469909668,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 21.114675521850586,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9389142395530106,
+        "intercept": 0.18269492659107972,
+        "r2": 0.967886157425871,
+        "true_std": 27.98450469970703,
+        "pred_std": 26.749347686767578,
+        "compression_ratio": 0.9558628238665098,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_x": {
+        "n": 1977,
+        "target_scale": 100.0,
+        "bias": -0.0769699290394783,
+        "mae": 1.2091715335845947,
+        "rmse": 2.424882173538208,
+        "normalized_mae": 0.012091714888811111,
+        "p95_abs_error": {
+          "value": 4.541123867034912,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 8.610191345214844,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9895652300441,
+        "intercept": -0.07802001328325547,
+        "r2": 0.9927855576018282,
+        "true_std": 28.321584701538086,
+        "pred_std": 28.129106521606445,
+        "compression_ratio": 0.9932038343913295,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_y": {
+        "n": 1977,
+        "target_scale": 100.0,
+        "bias": 0.0013718564296141267,
+        "mae": 1.1764945983886719,
+        "rmse": 2.1240029335021973,
+        "normalized_mae": 0.011764946393668652,
+        "p95_abs_error": {
+          "value": 4.365952491760254,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 7.895004749298096,
+          "reliable": true,
+          "n": 1977,
+          "minimum_n": 100
+        },
+        "slope": 0.9897285396442678,
+        "intercept": 0.0010186184677516924,
+        "r2": 0.9938803161491899,
+        "true_std": 26.92023277282715,
+        "pred_std": 26.726818084716797,
+        "compression_ratio": 0.9928152668759395,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      }
+    }
+  },
+  "blind": {
+    "split": "blind",
+    "targets": {
+      "C1": {
+        "n": 2370,
+        "target_scale": 100.0,
+        "bias": -0.021556725725531578,
+        "mae": 1.2916182279586792,
+        "rmse": 2.0383574962615967,
+        "normalized_mae": 0.012916182167828083,
+        "p95_abs_error": {
+          "value": 4.072114944458008,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 7.112844467163086,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9939951271589509,
+        "intercept": -0.020429977873326444,
+        "r2": 0.9944275870212026,
+        "true_std": 27.216594696044922,
+        "pred_std": 27.129344940185547,
+        "compression_ratio": 0.9967942442163032,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "C3": {
+        "n": 2370,
+        "target_scale": 2.0,
+        "bias": 0.0014389102580025792,
+        "mae": 0.008482945151627064,
+        "rmse": 0.01231259386986494,
+        "normalized_mae": 0.004241472575813532,
+        "p95_abs_error": {
+          "value": 0.026426494121551514,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.04099263623356819,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9992365754506582,
+        "intercept": 0.0017084166609817133,
+        "r2": 0.9995738198276203,
+        "true_std": 0.5919296145439148,
+        "pred_std": 0.5916039943695068,
+        "compression_ratio": 0.999449900517887,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_x": {
+        "n": 2370,
+        "target_scale": 60.0,
+        "bias": 0.0018570686224848032,
+        "mae": 0.7500012516975403,
+        "rmse": 1.44386625289917,
+        "normalized_mae": 0.012500020675361156,
+        "p95_abs_error": {
+          "value": 2.6258366107940674,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 6.692144393920898,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.991201532620919,
+        "intercept": 0.0016461695303522786,
+        "r2": 0.995683302742116,
+        "true_std": 21.781667709350586,
+        "pred_std": 21.637401580810547,
+        "compression_ratio": 0.9933767179600252,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_y": {
+        "n": 2370,
+        "target_scale": 60.0,
+        "bias": -0.004267068114131689,
+        "mae": 0.7160835862159729,
+        "rmse": 1.3756531476974487,
+        "normalized_mae": 0.011934726499021053,
+        "p95_abs_error": {
+          "value": 2.7597291469573975,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 5.268680095672607,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9885837170872104,
+        "intercept": -0.003097853316012921,
+        "r2": 0.9960309963656191,
+        "true_std": 21.485733032226562,
+        "pred_std": 21.283531188964844,
+        "compression_ratio": 0.9905890181657552,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_x": {
+        "n": 2370,
+        "target_scale": 3.0,
+        "bias": 0.0012407508911564946,
+        "mae": 0.04138835892081261,
+        "rmse": 0.06860203295946121,
+        "normalized_mae": 0.013796119950711727,
+        "p95_abs_error": {
+          "value": 0.14528200030326843,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.26870009303092957,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9953599525090717,
+        "intercept": 0.0014570576570462185,
+        "r2": 0.9956200216011426,
+        "true_std": 1.0338681936264038,
+        "pred_std": 1.0313432216644287,
+        "compression_ratio": 0.9975577428752127,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_y": {
+        "n": 2370,
+        "target_scale": 3.0,
+        "bias": 0.001750243827700615,
+        "mae": 0.0399976447224617,
+        "rmse": 0.06656257808208466,
+        "normalized_mae": 0.013332548551261425,
+        "p95_abs_error": {
+          "value": 0.13557766377925873,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.23629705607891083,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9993079782523845,
+        "intercept": 0.001750317527156154,
+        "r2": 0.9957729273768632,
+        "true_std": 1.023376703262329,
+        "pred_std": 1.0248305797576904,
+        "compression_ratio": 1.0014206660076652,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_x": {
+        "n": 2370,
+        "target_scale": 16.0,
+        "bias": 0.0011916039511561394,
+        "mae": 0.09152516722679138,
+        "rmse": 0.14288575947284698,
+        "normalized_mae": 0.005720322951674461,
+        "p95_abs_error": {
+          "value": 0.28250226378440857,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.5367534756660461,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.997545398516603,
+        "intercept": 0.001447217090379276,
+        "r2": 0.9994158258599151,
+        "true_std": 5.881316184997559,
+        "pred_std": 5.8686017990112305,
+        "compression_ratio": 0.9978381733635133,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_y": {
+        "n": 2370,
+        "target_scale": 16.0,
+        "bias": 0.0034936931915581226,
+        "mae": 0.09073129296302795,
+        "rmse": 0.1377023160457611,
+        "normalized_mae": 0.005670705810189247,
+        "p95_abs_error": {
+          "value": 0.2862144410610199,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.4761073887348175,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9979349013942546,
+        "intercept": 0.0033787035406227304,
+        "r2": 0.9994827490707664,
+        "true_std": 6.027924060821533,
+        "pred_std": 6.017037868499756,
+        "compression_ratio": 0.9981940395711797,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_x": {
+        "n": 2370,
+        "target_scale": 100.0,
+        "bias": 0.09501422941684723,
+        "mae": 1.834368348121643,
+        "rmse": 4.1717848777771,
+        "normalized_mae": 0.01834368333220482,
+        "p95_abs_error": {
+          "value": 6.905221462249756,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 16.067794799804688,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9258700286383217,
+        "intercept": 0.0680293389322039,
+        "r2": 0.9479621168361689,
+        "true_std": 17.38802146911621,
+        "pred_std": 16.58049201965332,
+        "compression_ratio": 0.9535582900620875,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_y": {
+        "n": 2370,
+        "target_scale": 100.0,
+        "bias": -0.012896477244794369,
+        "mae": 1.7808917760849,
+        "rmse": 3.676313638687134,
+        "normalized_mae": 0.01780891790986061,
+        "p95_abs_error": {
+          "value": 6.901835918426514,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 17.454879760742188,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9437524009681231,
+        "intercept": -0.011099092476804425,
+        "r2": 0.962221375283946,
+        "true_std": 18.168670654296875,
+        "pred_std": 17.5065975189209,
+        "compression_ratio": 0.9635596270099488,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_x": {
+        "n": 2370,
+        "target_scale": 100.0,
+        "bias": -0.0678090900182724,
+        "mae": 1.0328209400177002,
+        "rmse": 1.83617103099823,
+        "normalized_mae": 0.010328209027647972,
+        "p95_abs_error": {
+          "value": 3.739657163619995,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 7.434578895568848,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9876354579118716,
+        "intercept": -0.07201787854392623,
+        "r2": 0.989371044274664,
+        "true_std": 17.671377182006836,
+        "pred_std": 17.547712326049805,
+        "compression_ratio": 0.9930019683987648,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_y": {
+        "n": 2370,
+        "target_scale": 100.0,
+        "bias": -0.03602432832121849,
+        "mae": 1.049646019935608,
+        "rmse": 1.9817519187927246,
+        "normalized_mae": 0.010496459901332855,
+        "p95_abs_error": {
+          "value": 3.84020733833313,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 8.363907814025879,
+          "reliable": true,
+          "n": 2370,
+          "minimum_n": 100
+        },
+        "slope": 0.9878181334992274,
+        "intercept": -0.02935098571672274,
+        "r2": 0.9870880790540616,
+        "true_std": 17.338064193725586,
+        "pred_std": 17.239797592163086,
+        "compression_ratio": 0.9943323198908179,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      }
+    }
+  },
+  "stress": {
+    "split": "stress",
+    "targets": {
+      "C1": {
+        "n": 3097,
+        "target_scale": 100.0,
+        "bias": 0.22936353087425232,
+        "mae": 1.331478476524353,
+        "rmse": 2.7516751289367676,
+        "normalized_mae": 0.01331478450447321,
+        "p95_abs_error": {
+          "value": 5.009973049163818,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 9.421650886535645,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9907634893257704,
+        "intercept": 0.2299740425559474,
+        "r2": 0.9925852780690644,
+        "true_std": 31.662960052490234,
+        "pred_std": 31.4887638092041,
+        "compression_ratio": 0.9944984220364315,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "C3": {
+        "n": 3097,
+        "target_scale": 2.0,
+        "bias": -8.952205462264828e-06,
+        "mae": 0.008193855173885822,
+        "rmse": 0.015460162423551083,
+        "normalized_mae": 0.004096927586942911,
+        "p95_abs_error": {
+          "value": 0.029739901423454285,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.052657585591077805,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.998629648203925,
+        "intercept": 0.0006724784945860857,
+        "r2": 0.9994665487963406,
+        "true_std": 0.6681955456733704,
+        "pred_std": 0.6674582958221436,
+        "compression_ratio": 0.998896655543425,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_x": {
+        "n": 3097,
+        "target_scale": 60.0,
+        "bias": -0.007962487637996674,
+        "mae": 0.5809110403060913,
+        "rmse": 1.1560027599334717,
+        "normalized_mae": 0.009681850671768188,
+        "p95_abs_error": {
+          "value": 2.206312656402588,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 5.171762466430664,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9949651827081167,
+        "intercept": -0.0076213069497445786,
+        "r2": 0.9972264896518858,
+        "true_std": 21.850330352783203,
+        "pred_std": 21.770750045776367,
+        "compression_ratio": 0.9963579357509943,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A1_y": {
+        "n": 3097,
+        "target_scale": 60.0,
+        "bias": -0.017628706991672516,
+        "mae": 0.5541934370994568,
+        "rmse": 1.1061290502548218,
+        "normalized_mae": 0.00923655740916729,
+        "p95_abs_error": {
+          "value": 2.23384690284729,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 4.460011005401611,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9983211244960398,
+        "intercept": -0.018184188254040924,
+        "r2": 0.997462119673948,
+        "true_std": 21.9418888092041,
+        "pred_std": 21.932920455932617,
+        "compression_ratio": 0.9995912679464621,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_x": {
+        "n": 3097,
+        "target_scale": 3.0,
+        "bias": -0.00031070891418494284,
+        "mae": 0.03918267413973808,
+        "rmse": 0.07334925979375839,
+        "normalized_mae": 0.013060891069471836,
+        "p95_abs_error": {
+          "value": 0.1768255978822708,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.2860982120037079,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9921873491738977,
+        "intercept": -5.4789096497676264e-05,
+        "r2": 0.9953761918201096,
+        "true_std": 1.0716283321380615,
+        "pred_std": 1.065750241279602,
+        "compression_ratio": 0.9945148045435381,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "B2_y": {
+        "n": 3097,
+        "target_scale": 3.0,
+        "bias": -0.0011644763872027397,
+        "mae": 0.039250489324331284,
+        "rmse": 0.07283830642700195,
+        "normalized_mae": 0.013083496131002903,
+        "p95_abs_error": {
+          "value": 0.1640477180480957,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.2977348268032074,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9884118273138329,
+        "intercept": -0.0009205075730677798,
+        "r2": 0.9954801061382874,
+        "true_std": 1.067536473274231,
+        "pred_std": 1.0576037168502808,
+        "compression_ratio": 0.9906956280439904,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_x": {
+        "n": 3097,
+        "target_scale": 16.0,
+        "bias": 0.0007439313922077417,
+        "mae": 0.06685582548379898,
+        "rmse": 0.1301313191652298,
+        "normalized_mae": 0.004178489092737436,
+        "p95_abs_error": {
+          "value": 0.2812120020389557,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.5429443717002869,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 1.000051728899262,
+        "intercept": 0.0007437322655152804,
+        "r2": 0.9988811613490737,
+        "true_std": 3.8903660774230957,
+        "pred_std": 3.8927433490753174,
+        "compression_ratio": 1.000611066312247,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A2_y": {
+        "n": 3097,
+        "target_scale": 16.0,
+        "bias": -0.00047417814494110644,
+        "mae": 0.06692031025886536,
+        "rmse": 0.1330944150686264,
+        "normalized_mae": 0.004182519391179085,
+        "p95_abs_error": {
+          "value": 0.29356667399406433,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 0.540128231048584,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9984953884802766,
+        "intercept": -0.0005910370462633756,
+        "r2": 0.9989699649407051,
+        "true_std": 4.142422199249268,
+        "pred_std": 4.1383256912231445,
+        "compression_ratio": 0.9990110838951024,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_x": {
+        "n": 3097,
+        "target_scale": 100.0,
+        "bias": -0.12420520186424255,
+        "mae": 2.0539519786834717,
+        "rmse": 4.9774675369262695,
+        "normalized_mae": 0.02053952030837536,
+        "p95_abs_error": {
+          "value": 9.245214462280273,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 22.11451530456543,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9760917798869644,
+        "intercept": -0.12172167020283703,
+        "r2": 0.9824647064772042,
+        "true_std": 36.978660583496094,
+        "pred_std": 36.425209045410156,
+        "compression_ratio": 0.9850332183655958,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "S3_y": {
+        "n": 3097,
+        "target_scale": 100.0,
+        "bias": -0.1863526552915573,
+        "mae": 1.9807008504867554,
+        "rmse": 4.7473225593566895,
+        "normalized_mae": 0.019807009026408195,
+        "p95_abs_error": {
+          "value": 8.934505462646484,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 21.634126663208008,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9785262190993731,
+        "intercept": -0.2035065787456938,
+        "r2": 0.9830854651014026,
+        "true_std": 35.98679733276367,
+        "pred_std": 35.5236930847168,
+        "compression_ratio": 0.9871312736233616,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_x": {
+        "n": 3097,
+        "target_scale": 100.0,
+        "bias": 0.03438671678304672,
+        "mae": 0.9081366062164307,
+        "rmse": 1.8411468267440796,
+        "normalized_mae": 0.00908136647194624,
+        "p95_abs_error": {
+          "value": 4.082673072814941,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 7.300884246826172,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9941474643176835,
+        "intercept": 0.0367057424917225,
+        "r2": 0.9946228851883369,
+        "true_std": 25.024141311645508,
+        "pred_std": 24.945266723632812,
+        "compression_ratio": 0.9968480601579728,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      },
+      "A3_y": {
+        "n": 3097,
+        "target_scale": 100.0,
+        "bias": 0.03560948744416237,
+        "mae": 0.8920127749443054,
+        "rmse": 1.8132965564727783,
+        "normalized_mae": 0.008920127525925636,
+        "p95_abs_error": {
+          "value": 4.10612678527832,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 20
+        },
+        "p99_abs_error": {
+          "value": 7.675596714019775,
+          "reliable": true,
+          "n": 3097,
+          "minimum_n": 100
+        },
+        "slope": 0.9952834733772212,
+        "intercept": 0.03700047204346057,
+        "r2": 0.9950452120149355,
+        "true_std": 25.698026657104492,
+        "pred_std": 25.64070701599121,
+        "compression_ratio": 0.9977694925031361,
+        "regression_available": true,
+        "sufficient_true_variance": true,
+        "regression_to_mean_warning": false
+      }
+    }
+  },
+  "validation_regime_breakdown": {
+    "regime_column": "sweep_label",
+    "regimes": {
+      "A1": {
+        "split": "sweep_label:A1",
+        "targets": {
+          "C1": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": 0.05761581286787987,
+            "mae": 0.17053058743476868,
+            "rmse": 0.20091579854488373,
+            "normalized_mae": 0.0017053058836609125,
+            "p95_abs_error": {
+              "value": 0.3464921712875366,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.19247747957706451,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 32,
+            "target_scale": 2.0,
+            "bias": -0.0007721427828073502,
+            "mae": 0.002071322873234749,
+            "rmse": 0.002715831156820059,
+            "normalized_mae": 0.0010356614366173744,
+            "p95_abs_error": {
+              "value": 0.005833321716636419,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.002603753935545683,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 32,
+            "target_scale": 60.0,
+            "bias": 0.022543378174304962,
+            "mae": 0.07556194067001343,
+            "rmse": 0.10209584981203079,
+            "normalized_mae": 0.0012593657011166215,
+            "p95_abs_error": {
+              "value": 0.18795667588710785,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 1.001983709555189,
+            "intercept": 0.022543377737747138,
+            "r2": 0.9999872355515268,
+            "true_std": 24.366985321044922,
+            "pred_std": 24.41547966003418,
+            "compression_ratio": 1.0019901657242505,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 32,
+            "target_scale": 60.0,
+            "bias": -0.025982394814491272,
+            "mae": 0.08461415767669678,
+            "rmse": 0.12004166841506958,
+            "normalized_mae": 0.001410236000083387,
+            "p95_abs_error": {
+              "value": 0.28854554891586304,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 1.003360393601906,
+            "intercept": -0.025982395163737577,
+            "r2": 0.9999881597527942,
+            "true_std": 24.366985321044922,
+            "pred_std": 24.449012756347656,
+            "compression_ratio": 1.0033663349906436,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 32,
+            "target_scale": 3.0,
+            "bias": 0.00028454215498641133,
+            "mae": 0.0008779715280979872,
+            "rmse": 0.001295731752179563,
+            "normalized_mae": 0.0002926571760326624,
+            "p95_abs_error": {
+              "value": 0.0028368160128593445,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0012641031062230468,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 32,
+            "target_scale": 3.0,
+            "bias": -0.0007501645013689995,
+            "mae": 0.0014345468953251839,
+            "rmse": 0.0018099381122738123,
+            "normalized_mae": 0.0004781823081430048,
+            "p95_abs_error": {
+              "value": 0.003377028275281191,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0016471579438075423,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 32,
+            "target_scale": 16.0,
+            "bias": -0.004532410763204098,
+            "mae": 0.00727219320833683,
+            "rmse": 0.008178089745342731,
+            "normalized_mae": 0.0004545120755210519,
+            "p95_abs_error": {
+              "value": 0.012295683845877647,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.006807232275605202,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 32,
+            "target_scale": 16.0,
+            "bias": -0.002531648613512516,
+            "mae": 0.00468155462294817,
+            "rmse": 0.00542597146704793,
+            "normalized_mae": 0.0002925971639342606,
+            "p95_abs_error": {
+              "value": 0.009724479168653488,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.004799158312380314,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": -0.05768611654639244,
+            "mae": 0.20669198036193848,
+            "rmse": 0.26481539011001587,
+            "normalized_mae": 0.0020669198129326105,
+            "p95_abs_error": {
+              "value": 0.5162703990936279,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.2584559917449951,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": 0.0016472414135932922,
+            "mae": 0.21691785752773285,
+            "rmse": 0.336482971906662,
+            "normalized_mae": 0.0021691785659641027,
+            "p95_abs_error": {
+              "value": 0.7507098913192749,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.33647891879081726,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": 0.034199394285678864,
+            "mae": 0.06594772636890411,
+            "rmse": 0.08683503419160843,
+            "normalized_mae": 0.0006594772567041218,
+            "p95_abs_error": {
+              "value": 0.16958633065223694,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.07981681823730469,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": 0.012318382039666176,
+            "mae": 0.0631316602230072,
+            "rmse": 0.09069569408893585,
+            "normalized_mae": 0.00063131662318483,
+            "p95_abs_error": {
+              "value": 0.19937407970428467,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.08985525369644165,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 32
+      },
+      "C1": {
+        "split": "sweep_label:C1",
+        "targets": {
+          "C1": {
+            "n": 2,
+            "target_scale": 100.0,
+            "bias": 0.08782196044921875,
+            "mae": 0.5804290771484375,
+            "rmse": 0.5870354771614075,
+            "normalized_mae": 0.005804290995001793,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 60.0,
+            "pred_std": 60.58042907714844,
+            "compression_ratio": 1.009673817952474,
+            "regression_available": false,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 2,
+            "target_scale": 2.0,
+            "bias": -0.00017791986465454102,
+            "mae": 0.003774881362915039,
+            "rmse": 0.0037790718488395214,
+            "normalized_mae": 0.0018874406814575195,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.003774881362915039,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 2,
+            "target_scale": 60.0,
+            "bias": 0.007936371490359306,
+            "mae": 0.05289379507303238,
+            "rmse": 0.05348588526248932,
+            "normalized_mae": 0.0008815632318146527,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.05289379507303238,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 2,
+            "target_scale": 60.0,
+            "bias": -0.047832146286964417,
+            "mae": 0.047832146286964417,
+            "rmse": 0.05116286873817444,
+            "normalized_mae": 0.000797202461399138,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.018158331513404846,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 2,
+            "target_scale": 3.0,
+            "bias": 0.0019767130725085735,
+            "mae": 0.0019767130725085735,
+            "rmse": 0.001977733103558421,
+            "normalized_mae": 0.0006589043769054115,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 6.351229967549443e-05,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 2,
+            "target_scale": 3.0,
+            "bias": -0.0013178634690120816,
+            "mae": 0.0016582104144617915,
+            "rmse": 0.0021181185729801655,
+            "normalized_mae": 0.0005527368048205972,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0016582104144617915,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 2,
+            "target_scale": 16.0,
+            "bias": 0.0011442340910434723,
+            "mae": 0.009589757770299911,
+            "rmse": 0.009657780639827251,
+            "normalized_mae": 0.0005993598606437445,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.009589757770299911,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 2,
+            "target_scale": 16.0,
+            "bias": 0.00020926236175000668,
+            "mae": 0.003667545272037387,
+            "rmse": 0.003673510393127799,
+            "normalized_mae": 0.00022922157950233668,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.003667545272037387,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 2,
+            "target_scale": 100.0,
+            "bias": 0.1385820508003235,
+            "mae": 0.21440616250038147,
+            "rmse": 0.25529393553733826,
+            "normalized_mae": 0.002144061727449298,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.21440616250038147,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 2,
+            "target_scale": 100.0,
+            "bias": 0.16758590936660767,
+            "mae": 0.16758590936660767,
+            "rmse": 0.16833248734474182,
+            "normalized_mae": 0.0016758590936660767,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.015836447477340698,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 2,
+            "target_scale": 100.0,
+            "bias": -0.03656947612762451,
+            "mae": 0.03656947612762451,
+            "rmse": 0.03859733045101166,
+            "normalized_mae": 0.00036569475196301937,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.012346141040325165,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 2,
+            "target_scale": 100.0,
+            "bias": 0.005922385491430759,
+            "mae": 0.02232435718178749,
+            "rmse": 0.023096570745110512,
+            "normalized_mae": 0.0002232435654150322,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 2,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.02232435718178749,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 2
+      },
+      "C1_A1_C3_grid": {
+        "split": "sweep_label:C1_A1_C3_grid",
+        "targets": {
+          "C1": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": 0.8034784197807312,
+            "mae": 0.8196566104888916,
+            "rmse": 1.2345837354660034,
+            "normalized_mae": 0.008196566253900528,
+            "p95_abs_error": {
+              "value": 2.9943301677703857,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 1.0122183521997592,
+            "intercept": 0.742386650807479,
+            "r2": 0.9992481400324589,
+            "true_std": 31.224990844726562,
+            "pred_std": 31.61810302734375,
+            "compression_ratio": 1.01258966526434,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 32,
+            "target_scale": 2.0,
+            "bias": -0.0014625545591115952,
+            "mae": 0.0027976278215646744,
+            "rmse": 0.004415745381265879,
+            "normalized_mae": 0.0013988139107823372,
+            "p95_abs_error": {
+              "value": 0.009756320156157017,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 1.000102438529333,
+            "intercept": -0.0014945665995280766,
+            "r2": 0.9997037376205664,
+            "true_std": 0.24206146597862244,
+            "pred_std": 0.2421221137046814,
+            "compression_ratio": 1.0002505468014653,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 32,
+            "target_scale": 60.0,
+            "bias": 0.011638601310551167,
+            "mae": 0.0936092734336853,
+            "rmse": 0.160729318857193,
+            "normalized_mae": 0.0015601546037942171,
+            "p95_abs_error": {
+              "value": 0.3451065719127655,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 0.9998453400351786,
+            "intercept": 0.01163860183442132,
+            "r2": 0.9999584910573216,
+            "true_std": 24.874685287475586,
+            "pred_std": 24.871355056762695,
+            "compression_ratio": 0.9998661196845546,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 32,
+            "target_scale": 60.0,
+            "bias": 0.01800953596830368,
+            "mae": 0.1222342923283577,
+            "rmse": 0.20786695182323456,
+            "normalized_mae": 0.002037238096818328,
+            "p95_abs_error": {
+              "value": 0.5280841588973999,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": 1.0019127123283618,
+            "intercept": 0.018009534571318753,
+            "r2": 0.9999343504720661,
+            "true_std": 24.874685287475586,
+            "pred_std": 24.923080444335938,
+            "compression_ratio": 1.0019455585588743,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 32,
+            "target_scale": 3.0,
+            "bias": 0.0009558509336784482,
+            "mae": 0.0017254205886274576,
+            "rmse": 0.002362891798838973,
+            "normalized_mae": 0.0005751401768065989,
+            "p95_abs_error": {
+              "value": 0.00542403245344758,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0021609272807836533,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 32,
+            "target_scale": 3.0,
+            "bias": -0.001016140915453434,
+            "mae": 0.0025474848225712776,
+            "rmse": 0.00348815880715847,
+            "normalized_mae": 0.0008491615881212056,
+            "p95_abs_error": {
+              "value": 0.0066505735740065575,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0033368710428476334,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 32,
+            "target_scale": 16.0,
+            "bias": 0.004146139603108168,
+            "mae": 0.010044583119452,
+            "rmse": 0.014267372898757458,
+            "normalized_mae": 0.00062778644496575,
+            "p95_abs_error": {
+              "value": 0.030572116374969482,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.013651647605001926,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 32,
+            "target_scale": 16.0,
+            "bias": -0.0013000075705349445,
+            "mae": 0.0055327871814370155,
+            "rmse": 0.007921923883259296,
+            "normalized_mae": 0.00034579919883981347,
+            "p95_abs_error": {
+              "value": 0.014550047926604748,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.007814529351890087,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": -0.02528587356209755,
+            "mae": 0.29806119203567505,
+            "rmse": 0.40455034375190735,
+            "normalized_mae": 0.0029806119855493307,
+            "p95_abs_error": {
+              "value": 0.8202042579650879,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.40375933051109314,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": -0.026789844036102295,
+            "mae": 0.2112395167350769,
+            "rmse": 0.34290775656700134,
+            "normalized_mae": 0.002112395130097866,
+            "p95_abs_error": {
+              "value": 0.8006861805915833,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.3418596684932709,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": -0.008908463642001152,
+            "mae": 0.09056106209754944,
+            "rmse": 0.1195835992693901,
+            "normalized_mae": 0.0009056106209754944,
+            "p95_abs_error": {
+              "value": 0.24561621248722076,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.1192513182759285,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 32,
+            "target_scale": 100.0,
+            "bias": -0.0028847623616456985,
+            "mae": 0.06419487297534943,
+            "rmse": 0.09070581942796707,
+            "normalized_mae": 0.0006419487181119621,
+            "p95_abs_error": {
+              "value": 0.19997645914554596,
+              "reliable": true,
+              "n": 32,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 32,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.09065994620323181,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 32
+      },
+      "C3": {
+        "split": "sweep_label:C3",
+        "targets": {
+          "C1": {
+            "n": 1,
+            "target_scale": 100.0,
+            "bias": 0.43993133306503296,
+            "mae": 0.43993133306503296,
+            "rmse": 0.43993133306503296,
+            "normalized_mae": 0.004399313125759363,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 1,
+            "target_scale": 2.0,
+            "bias": -0.0004221200942993164,
+            "mae": 0.0004221200942993164,
+            "rmse": 0.0004221200942993164,
+            "normalized_mae": 0.0002110600471496582,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 1,
+            "target_scale": 60.0,
+            "bias": -0.046928294003009796,
+            "mae": 0.046928294003009796,
+            "rmse": 0.046928294003009796,
+            "normalized_mae": 0.0007821382605470717,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 1,
+            "target_scale": 60.0,
+            "bias": -0.060142241418361664,
+            "mae": 0.060142241418361664,
+            "rmse": 0.060142241418361664,
+            "normalized_mae": 0.001002370729111135,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 1,
+            "target_scale": 3.0,
+            "bias": 0.0008159030694514513,
+            "mae": 0.0008159030694514513,
+            "rmse": 0.0008159030694514513,
+            "normalized_mae": 0.00027196769951842725,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 1,
+            "target_scale": 3.0,
+            "bias": -0.0005354499444365501,
+            "mae": 0.0005354499444365501,
+            "rmse": 0.0005354499444365501,
+            "normalized_mae": 0.00017848331481218338,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 1,
+            "target_scale": 16.0,
+            "bias": -0.008938085287809372,
+            "mae": 0.008938085287809372,
+            "rmse": 0.008938085287809372,
+            "normalized_mae": 0.0005586303304880857,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 1,
+            "target_scale": 16.0,
+            "bias": 0.002424180507659912,
+            "mae": 0.002424180507659912,
+            "rmse": 0.002424180507659912,
+            "normalized_mae": 0.0001515112817287445,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 1,
+            "target_scale": 100.0,
+            "bias": 0.07217803597450256,
+            "mae": 0.07217803597450256,
+            "rmse": 0.07217803597450256,
+            "normalized_mae": 0.0007217803504317999,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 1,
+            "target_scale": 100.0,
+            "bias": -0.030460506677627563,
+            "mae": 0.030460506677627563,
+            "rmse": 0.030460506677627563,
+            "normalized_mae": 0.00030460505513474345,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 1,
+            "target_scale": 100.0,
+            "bias": 0.010623276233673096,
+            "mae": 0.010623276233673096,
+            "rmse": 0.010623276233673096,
+            "normalized_mae": 0.0001062327646650374,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 1,
+            "target_scale": 100.0,
+            "bias": 0.027924269437789917,
+            "mae": 0.027924269437789917,
+            "rmse": 0.027924269437789917,
+            "normalized_mae": 0.0002792426967062056,
+            "p95_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 1,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 1
+      },
+      "S3_C32_wide": {
+        "split": "sweep_label:S3_C32_wide",
+        "targets": {
+          "C1": {
+            "n": 45,
+            "target_scale": 100.0,
+            "bias": 0.30129358172416687,
+            "mae": 0.3065420687198639,
+            "rmse": 0.37373679876327515,
+            "normalized_mae": 0.0030654207803308964,
+            "p95_abs_error": {
+              "value": 0.6570357084274292,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.22113659977912903,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 45,
+            "target_scale": 2.0,
+            "bias": 9.886291081784293e-05,
+            "mae": 0.0012030084617435932,
+            "rmse": 0.001497021527029574,
+            "normalized_mae": 0.0006015042308717966,
+            "p95_abs_error": {
+              "value": 0.00293574295938015,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0014937535161152482,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 45,
+            "target_scale": 60.0,
+            "bias": 0.028036048635840416,
+            "mae": 0.09420715272426605,
+            "rmse": 0.12456540018320084,
+            "normalized_mae": 0.0015701191732659936,
+            "p95_abs_error": {
+              "value": 0.23315384984016418,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.12136935442686081,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 45,
+            "target_scale": 60.0,
+            "bias": -0.016714317724108696,
+            "mae": 0.04353102669119835,
+            "rmse": 0.06150694563984871,
+            "normalized_mae": 0.0007255171076394618,
+            "p95_abs_error": {
+              "value": 0.13464774191379547,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.059192363172769547,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 45,
+            "target_scale": 3.0,
+            "bias": 0.0004342400352470577,
+            "mae": 0.0005867549334652722,
+            "rmse": 0.0006885130424052477,
+            "normalized_mae": 0.000195584972971119,
+            "p95_abs_error": {
+              "value": 0.0011940523982048035,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0005343087250366807,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 45,
+            "target_scale": 3.0,
+            "bias": -0.0001992753823287785,
+            "mae": 0.0014651142992079258,
+            "rmse": 0.0018655670573934913,
+            "normalized_mae": 0.000488371413666755,
+            "p95_abs_error": {
+              "value": 0.003382122842594981,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.001854893402196467,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 45,
+            "target_scale": 16.0,
+            "bias": -0.004937705583870411,
+            "mae": 0.005095646250993013,
+            "rmse": 0.006339298561215401,
+            "normalized_mae": 0.00031847789068706334,
+            "p95_abs_error": {
+              "value": 0.011708900332450867,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.003975647501647472,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 45,
+            "target_scale": 16.0,
+            "bias": -0.0010732599766924977,
+            "mae": 0.003389643970876932,
+            "rmse": 0.004028594586998224,
+            "normalized_mae": 0.00021185274817980826,
+            "p95_abs_error": {
+              "value": 0.005976553075015545,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.0038829995319247246,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 45,
+            "target_scale": 100.0,
+            "bias": -0.07011962682008743,
+            "mae": 0.21303527057170868,
+            "rmse": 0.2856822609901428,
+            "normalized_mae": 0.002130352659150958,
+            "p95_abs_error": {
+              "value": 0.5304552912712097,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": 0.9977652467185116,
+            "intercept": -0.056264162269756765,
+            "r2": 0.9999428418135204,
+            "true_std": 35.12871551513672,
+            "pred_std": 35.05121994018555,
+            "compression_ratio": 0.997793953641209,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 45,
+            "target_scale": 100.0,
+            "bias": 0.035874951630830765,
+            "mae": 0.1307883858680725,
+            "rmse": 0.1942761093378067,
+            "normalized_mae": 0.0013078838819637895,
+            "p95_abs_error": {
+              "value": 0.4449279308319092,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": 0.9977523824043413,
+            "intercept": 0.03587495014071733,
+            "r2": 0.9999620767553522,
+            "true_std": 29.12578010559082,
+            "pred_std": 29.060871124267578,
+            "compression_ratio": 0.9977714251399301,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 45,
+            "target_scale": 100.0,
+            "bias": 0.01674005389213562,
+            "mae": 0.040135957300662994,
+            "rmse": 0.045689377933740616,
+            "normalized_mae": 0.0004013595753349364,
+            "p95_abs_error": {
+              "value": 0.0783458948135376,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.042512230575084686,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 45,
+            "target_scale": 100.0,
+            "bias": 0.027745850384235382,
+            "mae": 0.03724517673254013,
+            "rmse": 0.04283031448721886,
+            "normalized_mae": 0.0003724517591763288,
+            "p95_abs_error": {
+              "value": 0.0726042091846466,
+              "reliable": true,
+              "n": 45,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": null,
+              "reliable": false,
+              "n": 45,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.03262826427817345,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 45
+      },
+      "coupled_C1_A1_C3_A2_random": {
+        "split": "sweep_label:coupled_C1_A1_C3_A2_random",
+        "targets": {
+          "C1": {
+            "n": 397,
+            "target_scale": 100.0,
+            "bias": 0.2871381938457489,
+            "mae": 1.4170303344726562,
+            "rmse": 2.0772488117218018,
+            "normalized_mae": 0.014170303009450436,
+            "p95_abs_error": {
+              "value": 3.9503486156463623,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 7.689538955688477,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9971165432713613,
+            "intercept": 0.2850702350737171,
+            "r2": 0.9978847857591653,
+            "true_std": 44.64472579956055,
+            "pred_std": 44.56332015991211,
+            "compression_ratio": 0.9981765899960071,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 397,
+            "target_scale": 2.0,
+            "bias": 0.001627461751922965,
+            "mae": 0.009027187712490559,
+            "rmse": 0.012387540191411972,
+            "normalized_mae": 0.004513593856245279,
+            "p95_abs_error": {
+              "value": 0.025651874020695686,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.03945440798997879,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9969790139305582,
+            "intercept": 0.00464749476473611,
+            "r2": 0.9995533315887236,
+            "true_std": 0.5752010345458984,
+            "pred_std": 0.5735921859741211,
+            "compression_ratio": 0.997202980392677,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 397,
+            "target_scale": 60.0,
+            "bias": -0.008217362686991692,
+            "mae": 0.460506409406662,
+            "rmse": 0.654731035232544,
+            "normalized_mae": 0.0076751066371798515,
+            "p95_abs_error": {
+              "value": 1.3215115070343018,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 2.4067134857177734,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9949842081812782,
+            "intercept": -0.013966497090749706,
+            "r2": 0.9991861740129592,
+            "true_std": 22.60226058959961,
+            "pred_std": 22.49813461303711,
+            "compression_ratio": 0.9953931167128295,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 397,
+            "target_scale": 60.0,
+            "bias": 0.014944973401725292,
+            "mae": 0.42685866355895996,
+            "rmse": 0.6090214252471924,
+            "normalized_mae": 0.0071143112145364285,
+            "p95_abs_error": {
+              "value": 1.2898571491241455,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 1.9372897148132324,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9953606304537322,
+            "intercept": 0.014130913460464113,
+            "r2": 0.9993401988521694,
+            "true_std": 23.32516098022461,
+            "pred_std": 23.22467613220215,
+            "compression_ratio": 0.9956919976626247,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 397,
+            "target_scale": 3.0,
+            "bias": 0.001976877683773637,
+            "mae": 0.02639717608690262,
+            "rmse": 0.041830990463495255,
+            "normalized_mae": 0.008799058385193348,
+            "p95_abs_error": {
+              "value": 0.08828742802143097,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.15640252828598022,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.04178425297141075,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 397,
+            "target_scale": 3.0,
+            "bias": -0.0010730670765042305,
+            "mae": 0.026353279128670692,
+            "rmse": 0.04101764038205147,
+            "normalized_mae": 0.008784426376223564,
+            "p95_abs_error": {
+              "value": 0.09240245819091797,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.14795130491256714,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.041003599762916565,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 397,
+            "target_scale": 16.0,
+            "bias": 0.0015817326493561268,
+            "mae": 0.08387742936611176,
+            "rmse": 0.12039635330438614,
+            "normalized_mae": 0.005242339335381985,
+            "p95_abs_error": {
+              "value": 0.2657085955142975,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.39730384945869446,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9988499783081057,
+            "intercept": 0.0016994436884309083,
+            "r2": 0.9996262097459249,
+            "true_std": 6.2157697677612305,
+            "pred_std": 6.209784984588623,
+            "compression_ratio": 0.9990371613820628,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 397,
+            "target_scale": 16.0,
+            "bias": -0.00202222284860909,
+            "mae": 0.08106804639101028,
+            "rmse": 0.11557026207447052,
+            "normalized_mae": 0.005066752899438143,
+            "p95_abs_error": {
+              "value": 0.23301510512828827,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.36769014596939087,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": 0.9998171250296934,
+            "intercept": -0.002084947423419485,
+            "r2": 0.9995853786758803,
+            "true_std": 5.6746134757995605,
+            "pred_std": 5.6747517585754395,
+            "compression_ratio": 1.0000243686687154,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 397,
+            "target_scale": 100.0,
+            "bias": -0.13577225804328918,
+            "mae": 1.3753554821014404,
+            "rmse": 2.286308765411377,
+            "normalized_mae": 0.013753554783761501,
+            "p95_abs_error": {
+              "value": 5.073286056518555,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 9.517768859863281,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 2.282273769378662,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 397,
+            "target_scale": 100.0,
+            "bias": 0.19356635212898254,
+            "mae": 1.3414098024368286,
+            "rmse": 2.31697154045105,
+            "normalized_mae": 0.01341409794986248,
+            "p95_abs_error": {
+              "value": 5.164822578430176,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 8.510052680969238,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 2.3088717460632324,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 397,
+            "target_scale": 100.0,
+            "bias": -0.04818085581064224,
+            "mae": 0.630075991153717,
+            "rmse": 0.9432494044303894,
+            "normalized_mae": 0.006300759967416525,
+            "p95_abs_error": {
+              "value": 1.9633429050445557,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 3.036316156387329,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.9420180916786194,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 397,
+            "target_scale": 100.0,
+            "bias": -0.018764298409223557,
+            "mae": 0.6169368028640747,
+            "rmse": 0.9736645817756653,
+            "normalized_mae": 0.0061693680472671986,
+            "p95_abs_error": {
+              "value": 1.93110191822052,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 3.6056463718414307,
+              "reliable": true,
+              "n": 397,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.9734837412834167,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 397
+      },
+      "coupled_C1_C3_A2_random": {
+        "split": "sweep_label:coupled_C1_C3_A2_random",
+        "targets": {
+          "C1": {
+            "n": 276,
+            "target_scale": 100.0,
+            "bias": 0.06104264780879021,
+            "mae": 1.4374557733535767,
+            "rmse": 2.6136996746063232,
+            "normalized_mae": 0.014374557882547379,
+            "p95_abs_error": {
+              "value": 5.1749091148376465,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 8.863940238952637,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": 0.9980809018010262,
+            "intercept": 0.06788489145052648,
+            "r2": 0.9970161329659469,
+            "true_std": 47.805694580078125,
+            "pred_std": 47.78535461425781,
+            "compression_ratio": 0.999574528390415,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 276,
+            "target_scale": 2.0,
+            "bias": -0.0005070168408565223,
+            "mae": 0.008445040322840214,
+            "rmse": 0.013994125649333,
+            "normalized_mae": 0.004222520161420107,
+            "p95_abs_error": {
+              "value": 0.027292221784591675,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.046137213706970215,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": 0.9955891186073402,
+            "intercept": 0.003866198054417689,
+            "r2": 0.9994086102970903,
+            "true_std": 0.565841555595398,
+            "pred_std": 0.5635137557983398,
+            "compression_ratio": 0.9958861278850247,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 276,
+            "target_scale": 60.0,
+            "bias": -0.0072716916911304,
+            "mae": 0.17282533645629883,
+            "rmse": 0.24686267971992493,
+            "normalized_mae": 0.0028804221656173468,
+            "p95_abs_error": {
+              "value": 0.48901522159576416,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.751617431640625,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.24675557017326355,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 276,
+            "target_scale": 60.0,
+            "bias": 0.009825141169130802,
+            "mae": 0.14518772065639496,
+            "rmse": 0.20065970718860626,
+            "normalized_mae": 0.002419795375317335,
+            "p95_abs_error": {
+              "value": 0.3762199878692627,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.5414989590644836,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.20041902363300323,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 276,
+            "target_scale": 3.0,
+            "bias": -0.0005671552498824894,
+            "mae": 0.01095629669725895,
+            "rmse": 0.0169081874191761,
+            "normalized_mae": 0.003652098821476102,
+            "p95_abs_error": {
+              "value": 0.030080880969762802,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.04612778499722481,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.01689867302775383,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 276,
+            "target_scale": 3.0,
+            "bias": 0.002225168514996767,
+            "mae": 0.011858636513352394,
+            "rmse": 0.018733104690909386,
+            "normalized_mae": 0.0039528789930045605,
+            "p95_abs_error": {
+              "value": 0.0352737158536911,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.04742642492055893,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.018600480630993843,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 276,
+            "target_scale": 16.0,
+            "bias": 0.012913119047880173,
+            "mae": 0.07046522200107574,
+            "rmse": 0.10607089102268219,
+            "normalized_mae": 0.004404076375067234,
+            "p95_abs_error": {
+              "value": 0.22582197189331055,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.3890969753265381,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": 0.9964367324226752,
+            "intercept": 0.013064155460239675,
+            "r2": 0.9996947297965092,
+            "true_std": 5.904223442077637,
+            "pred_std": 5.884089469909668,
+            "compression_ratio": 0.9965899034199011,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 276,
+            "target_scale": 16.0,
+            "bias": -0.004043090157210827,
+            "mae": 0.0625743567943573,
+            "rmse": 0.09003670513629913,
+            "normalized_mae": 0.003910897299647331,
+            "p95_abs_error": {
+              "value": 0.20593297481536865,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.2555501461029053,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": 0.9987505260529257,
+            "intercept": -0.003624497611616935,
+            "r2": 0.9997824228912321,
+            "true_std": 6.076061248779297,
+            "pred_std": 6.069130897521973,
+            "compression_ratio": 0.9988594006917365,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 276,
+            "target_scale": 100.0,
+            "bias": 0.005463551729917526,
+            "mae": 0.34518224000930786,
+            "rmse": 0.466468870639801,
+            "normalized_mae": 0.0034518223255872726,
+            "p95_abs_error": {
+              "value": 0.9378306865692139,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 1.3722057342529297,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.46643686294555664,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 276,
+            "target_scale": 100.0,
+            "bias": 0.02400362119078636,
+            "mae": 0.3169916272163391,
+            "rmse": 0.4766636788845062,
+            "normalized_mae": 0.0031699163373559713,
+            "p95_abs_error": {
+              "value": 0.8969335556030273,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 1.20794677734375,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.4760589301586151,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 276,
+            "target_scale": 100.0,
+            "bias": 0.005804426968097687,
+            "mae": 0.24815647304058075,
+            "rmse": 0.40681734681129456,
+            "normalized_mae": 0.0024815646465867758,
+            "p95_abs_error": {
+              "value": 0.8178809881210327,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 1.397287368774414,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.40677589178085327,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 276,
+            "target_scale": 100.0,
+            "bias": -0.03914418816566467,
+            "mae": 0.2865310311317444,
+            "rmse": 0.4316491484642029,
+            "normalized_mae": 0.0028653102926909924,
+            "p95_abs_error": {
+              "value": 0.9536551833152771,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 1.2973963022232056,
+              "reliable": true,
+              "n": 276,
+              "minimum_n": 100
+            },
+            "slope": null,
+            "intercept": null,
+            "r2": null,
+            "true_std": 0.0,
+            "pred_std": 0.4298705756664276,
+            "compression_ratio": null,
+            "regression_available": false,
+            "sufficient_true_variance": false,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 276
+      },
+      "coupled_full_random": {
+        "split": "sweep_label:coupled_full_random",
+        "targets": {
+          "C1": {
+            "n": 797,
+            "target_scale": 100.0,
+            "bias": 0.2338486611843109,
+            "mae": 2.3042240142822266,
+            "rmse": 3.2004072666168213,
+            "normalized_mae": 0.023042239248752594,
+            "p95_abs_error": {
+              "value": 7.008879661560059,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 9.607032775878906,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9902100452252673,
+            "intercept": 0.22996342489958035,
+            "r2": 0.9954430699441913,
+            "true_std": 46.793643951416016,
+            "pred_std": 46.443084716796875,
+            "compression_ratio": 0.9925084006070758,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 797,
+            "target_scale": 2.0,
+            "bias": 0.0004209680773783475,
+            "mae": 0.013609327375888824,
+            "rmse": 0.01864757388830185,
+            "normalized_mae": 0.006804663687944412,
+            "p95_abs_error": {
+              "value": 0.03730195015668869,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.05983246490359306,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9962500363830401,
+            "intercept": 0.004142192961737977,
+            "r2": 0.999035076483444,
+            "true_std": 0.5958315134048462,
+            "pred_std": 0.593885600566864,
+            "compression_ratio": 0.9967341223245102,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 797,
+            "target_scale": 60.0,
+            "bias": 0.12742388248443604,
+            "mae": 1.1445059776306152,
+            "rmse": 1.7567312717437744,
+            "normalized_mae": 0.019075099378824234,
+            "p95_abs_error": {
+              "value": 3.10451602935791,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 6.18605375289917,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9912121029136831,
+            "intercept": 0.11964918662648247,
+            "r2": 0.9940083041786013,
+            "true_std": 22.490755081176758,
+            "pred_std": 22.360980987548828,
+            "compression_ratio": 0.9942298916528355,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 797,
+            "target_scale": 60.0,
+            "bias": 0.060045599937438965,
+            "mae": 1.1701284646987915,
+            "rmse": 1.8306559324264526,
+            "normalized_mae": 0.01950214058160782,
+            "p95_abs_error": {
+              "value": 3.632772445678711,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 6.813747882843018,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9863081897354447,
+            "intercept": 0.06451722793087052,
+            "r2": 0.9936195526597247,
+            "true_std": 22.576637268066406,
+            "pred_std": 22.340429306030273,
+            "compression_ratio": 0.9895375046677019,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 797,
+            "target_scale": 3.0,
+            "bias": 0.002429092535749078,
+            "mae": 0.07976725697517395,
+            "rmse": 0.11535242199897766,
+            "normalized_mae": 0.026589086279273033,
+            "p95_abs_error": {
+              "value": 0.2483387589454651,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.3804619312286377,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9769748881802388,
+            "intercept": 0.0024828922117142932,
+            "r2": 0.9907377576917162,
+            "true_std": 1.1654291152954102,
+            "pred_std": 1.144106149673462,
+            "compression_ratio": 0.981703764439982,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 797,
+            "target_scale": 3.0,
+            "bias": -0.0010816414142027497,
+            "mae": 0.08430411666631699,
+            "rmse": 0.12256774306297302,
+            "normalized_mae": 0.028101371601223946,
+            "p95_abs_error": {
+              "value": 0.24093902111053467,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.39380326867103577,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9707363382044825,
+            "intercept": 0.0004217698673284051,
+            "r2": 0.9885274420434528,
+            "true_std": 1.103816270828247,
+            "pred_std": 1.0780173540115356,
+            "compression_ratio": 0.9766275262482286,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 797,
+            "target_scale": 16.0,
+            "bias": -0.005939495749771595,
+            "mae": 0.14580850303173065,
+            "rmse": 0.2104157656431198,
+            "normalized_mae": 0.009113031439483166,
+            "p95_abs_error": {
+              "value": 0.4356050193309784,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.7062089443206787,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9958128985669454,
+            "intercept": -0.005680145806785122,
+            "r2": 0.9988434051814609,
+            "true_std": 6.138294219970703,
+            "pred_std": 6.116156101226807,
+            "compression_ratio": 0.9963934412475911,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 797,
+            "target_scale": 16.0,
+            "bias": -0.00866020005196333,
+            "mae": 0.14690691232681274,
+            "rmse": 0.2158130258321762,
+            "normalized_mae": 0.009181682020425797,
+            "p95_abs_error": {
+              "value": 0.43191349506378174,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.7722772359848022,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9978074903276991,
+            "intercept": -0.0086653490811238,
+            "r2": 0.9987839476486914,
+            "true_std": 6.171558856964111,
+            "pred_std": 6.161787033081055,
+            "compression_ratio": 0.9984166360380684,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 797,
+            "target_scale": 100.0,
+            "bias": 0.2090090662240982,
+            "mae": 4.110489845275879,
+            "rmse": 7.072268486022949,
+            "normalized_mae": 0.04110489785671234,
+            "p95_abs_error": {
+              "value": 14.695609092712402,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 24.74712562561035,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9404292235402762,
+            "intercept": 0.08608438253356399,
+            "r2": 0.9659090200042413,
+            "true_std": 36.43729782104492,
+            "pred_std": 34.92089080810547,
+            "compression_ratio": 0.9583831100652137,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 797,
+            "target_scale": 100.0,
+            "bias": 0.1597657948732376,
+            "mae": 4.327457904815674,
+            "rmse": 7.276515960693359,
+            "normalized_mae": 0.04327457770705223,
+            "p95_abs_error": {
+              "value": 15.304125785827637,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 24.28984832763672,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9370650633532599,
+            "intercept": 0.10628812667218568,
+            "r2": 0.9692465068419096,
+            "true_std": 39.044921875,
+            "pred_std": 37.22282791137695,
+            "compression_ratio": 0.9533333945588015,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 797,
+            "target_scale": 100.0,
+            "bias": -0.09220100939273834,
+            "mae": 2.003631114959717,
+            "rmse": 3.4612982273101807,
+            "normalized_mae": 0.02003631182014942,
+            "p95_abs_error": {
+              "value": 5.958415508270264,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 9.81728458404541,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9890939336839525,
+            "intercept": -0.08448664879037457,
+            "r2": 0.9921921361041725,
+            "true_std": 38.862953186035156,
+            "pred_std": 38.59219741821289,
+            "compression_ratio": 0.9930330624508598,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 797,
+            "target_scale": 100.0,
+            "bias": 0.014128356240689754,
+            "mae": 1.9166443347930908,
+            "rmse": 2.9491608142852783,
+            "normalized_mae": 0.01916644349694252,
+            "p95_abs_error": {
+              "value": 6.171088695526123,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 8.88210678100586,
+              "reliable": true,
+              "n": 797,
+              "minimum_n": 100
+            },
+            "slope": 0.9882299554655498,
+            "intercept": 0.009628114390530124,
+            "r2": 0.9936082820788041,
+            "true_std": 36.494590759277344,
+            "pred_std": 36.1828727722168,
+            "compression_ratio": 0.9914585153422688,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 797
+      },
+      "coupled_sparse_random": {
+        "split": "sweep_label:coupled_sparse_random",
+        "targets": {
+          "C1": {
+            "n": 395,
+            "target_scale": 100.0,
+            "bias": 0.5826098322868347,
+            "mae": 1.7845538854599,
+            "rmse": 2.866166353225708,
+            "normalized_mae": 0.01784553937613964,
+            "p95_abs_error": {
+              "value": 6.1980791091918945,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 10.582489013671875,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9902373415796992,
+            "intercept": 0.5598710743731166,
+            "r2": 0.9956155384987131,
+            "true_std": 41.928611755371094,
+            "pred_std": 41.61199951171875,
+            "compression_ratio": 0.9924487782829636,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "C3": {
+            "n": 395,
+            "target_scale": 2.0,
+            "bias": 0.001966807059943676,
+            "mae": 0.011417427100241184,
+            "rmse": 0.016567423939704895,
+            "normalized_mae": 0.005708713550120592,
+            "p95_abs_error": {
+              "value": 0.03401709720492363,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.052509013563394547,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 1.0012063303451584,
+            "intercept": 0.0010410047802495818,
+            "r2": 0.9993174641635908,
+            "true_std": 0.6289956569671631,
+            "pred_std": 0.6299687623977661,
+            "compression_ratio": 1.0015470781392912,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_x": {
+            "n": 395,
+            "target_scale": 60.0,
+            "bias": 0.09349343925714493,
+            "mae": 0.8246446251869202,
+            "rmse": 1.6415996551513672,
+            "normalized_mae": 0.01374407671391964,
+            "p95_abs_error": {
+              "value": 2.8532352447509766,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 6.954639911651611,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9954269315845486,
+            "intercept": 0.0909403209095455,
+            "r2": 0.9922522134105478,
+            "true_std": 18.594633102416992,
+            "pred_std": 18.58182144165039,
+            "compression_ratio": 0.9993110022286519,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A1_y": {
+            "n": 395,
+            "target_scale": 60.0,
+            "bias": 0.02494932897388935,
+            "mae": 0.7471457123756409,
+            "rmse": 1.3492238521575928,
+            "normalized_mae": 0.012452428229153156,
+            "p95_abs_error": {
+              "value": 2.8832924365997314,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 6.627484321594238,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9934841359811216,
+            "intercept": 0.03248360535657529,
+            "r2": 0.9942894948737986,
+            "true_std": 17.785415649414062,
+            "pred_std": 17.720569610595703,
+            "compression_ratio": 0.9963539767584517,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_x": {
+            "n": 395,
+            "target_scale": 3.0,
+            "bias": 0.0033031802158802748,
+            "mae": 0.05042169243097305,
+            "rmse": 0.08303368091583252,
+            "normalized_mae": 0.016807230189442635,
+            "p95_abs_error": {
+              "value": 0.17625659704208374,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.2671891152858734,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9860733644563807,
+            "intercept": 0.0036654854443819765,
+            "r2": 0.9919164258126048,
+            "true_std": 0.9119270443916321,
+            "pred_std": 0.9029571413993835,
+            "compression_ratio": 0.9901637932031805,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "B2_y": {
+            "n": 395,
+            "target_scale": 3.0,
+            "bias": -0.001062725787051022,
+            "mae": 0.051207780838012695,
+            "rmse": 0.0861428752541542,
+            "normalized_mae": 0.01706925965845585,
+            "p95_abs_error": {
+              "value": 0.16913916170597076,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.32212886214256287,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.988427436173829,
+            "intercept": -0.0012302249800742225,
+            "r2": 0.9881658861203102,
+            "true_std": 0.7873626947402954,
+            "pred_std": 0.7829501032829285,
+            "compression_ratio": 0.9943957321233992,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_x": {
+            "n": 395,
+            "target_scale": 16.0,
+            "bias": 0.0004826212243642658,
+            "mae": 0.08305039256811142,
+            "rmse": 0.1307719349861145,
+            "normalized_mae": 0.005190649535506964,
+            "p95_abs_error": {
+              "value": 0.3246843218803406,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.4535152018070221,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9963880420706818,
+            "intercept": -0.0015031359299371191,
+            "r2": 0.9992830537597224,
+            "true_std": 4.840078353881836,
+            "pred_std": 4.824337482452393,
+            "compression_ratio": 0.9967478064860625,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A2_y": {
+            "n": 395,
+            "target_scale": 16.0,
+            "bias": -0.010642237961292267,
+            "mae": 0.0822538360953331,
+            "rmse": 0.1417444348335266,
+            "normalized_mae": 0.005140864755958319,
+            "p95_abs_error": {
+              "value": 0.2963600754737854,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 0.5021050572395325,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9948037258684347,
+            "intercept": -0.008697386875526339,
+            "r2": 0.9993213843578495,
+            "true_std": 5.321008682250977,
+            "pred_std": 5.295173645019531,
+            "compression_ratio": 0.9951447105663214,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_x": {
+            "n": 395,
+            "target_scale": 100.0,
+            "bias": 0.24827127158641815,
+            "mae": 2.7400174140930176,
+            "rmse": 5.760598182678223,
+            "normalized_mae": 0.027400173246860504,
+            "p95_abs_error": {
+              "value": 11.344921112060547,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 27.871694564819336,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9626101179826777,
+            "intercept": 0.29757072639082777,
+            "r2": 0.963554156433516,
+            "true_std": 29.58463478088379,
+            "pred_std": 29.033124923706055,
+            "compression_ratio": 0.9813582333781556,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "S3_y": {
+            "n": 395,
+            "target_scale": 100.0,
+            "bias": 0.5392727851867676,
+            "mae": 2.478968381881714,
+            "rmse": 5.321690559387207,
+            "normalized_mae": 0.024789683520793915,
+            "p95_abs_error": {
+              "value": 8.740425109863281,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 25.610464096069336,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9391174991126168,
+            "intercept": 0.482817692761757,
+            "r2": 0.9661352171007389,
+            "true_std": 27.313617706298828,
+            "pred_std": 26.138525009155273,
+            "compression_ratio": 0.9569777716822709,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A3_x": {
+            "n": 395,
+            "target_scale": 100.0,
+            "bias": -0.1586320847272873,
+            "mae": 1.1850847005844116,
+            "rmse": 2.060260772705078,
+            "normalized_mae": 0.01185084693133831,
+            "p95_abs_error": {
+              "value": 4.6548991203308105,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 6.855023384094238,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9908653560025984,
+            "intercept": -0.17627017834849193,
+            "r2": 0.9956995869192741,
+            "true_std": 31.024368286132812,
+            "pred_std": 30.8082218170166,
+            "compression_ratio": 0.9930330098223845,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          },
+          "A3_y": {
+            "n": 395,
+            "target_scale": 100.0,
+            "bias": 0.02054399810731411,
+            "mae": 1.186164140701294,
+            "rmse": 1.986452341079712,
+            "normalized_mae": 0.011861640959978104,
+            "p95_abs_error": {
+              "value": 3.6339333057403564,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 20
+            },
+            "p99_abs_error": {
+              "value": 7.257996082305908,
+              "reliable": true,
+              "n": 395,
+              "minimum_n": 100
+            },
+            "slope": 0.9940075446496456,
+            "intercept": 0.02413553095986111,
+            "r2": 0.9958349338061749,
+            "true_std": 30.646425247192383,
+            "pred_std": 30.52691650390625,
+            "compression_ratio": 0.9961004018471263,
+            "regression_available": true,
+            "sufficient_true_variance": true,
+            "regression_to_mean_warning": false
+          }
+        },
+        "n": 395
+      }
+    }
+  }
+}
