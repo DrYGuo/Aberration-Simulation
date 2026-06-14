@@ -594,6 +594,104 @@ def weighted_mse(pred, target, target_weights):
     )
 
 
+def chunk_slices(n_rows: int, batch_size: int):
+    if batch_size <= 0 or batch_size >= n_rows:
+        yield slice(0, n_rows)
+        return
+    for start in range(0, n_rows, batch_size):
+        yield slice(start, min(start + batch_size, n_rows))
+
+
+def evaluate_losses_chunked(
+    model,
+    x,
+    y,
+    target_weights,
+    *,
+    batch_size: int,
+    component_loss_kind: str,
+    smooth_l1_beta: float,
+    residual_penalty: float,
+    y_mean,
+    y_std,
+    s3_vector_scale: float,
+    s3_magnitude_loss_weight: float,
+    s3_magnitude_low_bin_weight: float,
+    s3_magnitude_medium_bin_weight: float,
+    s3_magnitude_high_bin_weight: float,
+    s3_magnitude_loss_kind: str,
+) -> dict[str, float]:
+    torch, _ = import_torch()
+    n_rows = int(x.shape[0])
+    if n_rows == 0:
+        return {
+            "weighted_mse": 0.0,
+            "component_loss": 0.0,
+            "component_smoothl1": 0.0,
+            "s3_magnitude_loss": 0.0,
+            "residual_penalty": 0.0,
+            "total_objective": 0.0,
+        }
+    totals = {
+        "weighted_mse": 0.0,
+        "component_loss": 0.0,
+        "component_smoothl1": 0.0,
+        "s3_magnitude_loss": 0.0,
+        "residual_penalty": 0.0,
+    }
+    for batch_slice in chunk_slices(n_rows, int(batch_size)):
+        xb = x[batch_slice]
+        yb = y[batch_slice]
+        batch_n = int(xb.shape[0])
+        pred = model(xb)
+        residual = model.residual(xb)
+        batch_values = {
+            "weighted_mse": weighted_mse(pred, yb, target_weights),
+            "component_loss": weighted_component_loss(
+                pred,
+                yb,
+                target_weights,
+                loss_kind=component_loss_kind,
+                smooth_l1_beta=smooth_l1_beta,
+            ),
+            "component_smoothl1": weighted_component_loss(
+                pred,
+                yb,
+                target_weights,
+                loss_kind="smooth_l1",
+                smooth_l1_beta=smooth_l1_beta,
+            ),
+            "s3_magnitude_loss": s3_magnitude_loss(
+                pred,
+                yb,
+                y_mean=y_mean,
+                y_std=y_std,
+                vector_scale=s3_vector_scale,
+                loss_weight=s3_magnitude_loss_weight,
+                low_bin_weight=s3_magnitude_low_bin_weight,
+                medium_bin_weight=s3_magnitude_medium_bin_weight,
+                high_bin_weight=s3_magnitude_high_bin_weight,
+                use_smooth_l1=s3_magnitude_loss_kind == "smooth_l1",
+            ),
+            "residual_penalty": residual_penalty * torch.mean(residual**2),
+        }
+        for key, value in batch_values.items():
+            totals[key] += float(value.detach().cpu()) * batch_n
+    values = {key: value / n_rows for key, value in totals.items()}
+    values["total_objective"] = (
+        values["component_loss"] + values["s3_magnitude_loss"] + values["residual_penalty"]
+    )
+    return values
+
+
+def predict_numpy_chunked(model, x, *, batch_size: int) -> np.ndarray:
+    predictions = []
+    n_rows = int(x.shape[0])
+    for batch_slice in chunk_slices(n_rows, int(batch_size)):
+        predictions.append(model(x[batch_slice]).detach().cpu().numpy())
+    return np.concatenate(predictions, axis=0) if predictions else np.empty((0, len(TARGET_COLUMNS)), dtype=np.float32)
+
+
 def s3_magnitude_loss(
     pred_scaled,
     target_scaled,
@@ -1075,6 +1173,18 @@ def parse_args() -> argparse.Namespace:
         default=0,
         help="Use full-batch training when <= 0; otherwise train with shuffled mini-batches.",
     )
+    parser.add_argument(
+        "--eval-batch-size",
+        type=int,
+        default=0,
+        help="Chunk evaluation passes when > 0. Defaults to --batch-size when mini-batch training is enabled.",
+    )
+    parser.add_argument(
+        "--predict-batch-size",
+        type=int,
+        default=0,
+        help="Chunk final full-dataset prediction when > 0. Defaults to --eval-batch-size, then --batch-size.",
+    )
     parser.add_argument("--shuffle-batches", action="store_true")
     parser.add_argument("--component-loss-kind", choices=["mse", "smooth_l1"], default="mse")
     parser.add_argument("--component-smooth-l1-beta", type=float, default=0.25)
@@ -1330,6 +1440,8 @@ def main() -> int:
     best_epoch = None
     best_validation_loss = float("inf")
     epochs_since_best = 0
+    eval_batch_size = int(args.eval_batch_size or args.batch_size or 0)
+    predict_batch_size = int(args.predict_batch_size or eval_batch_size or args.batch_size or 0)
 
     n_train_rows = int(x_train.shape[0])
     for epoch in range(1, args.max_epochs + 1):
@@ -1390,134 +1502,128 @@ def main() -> int:
         if epoch % args.eval_every == 0 or epoch == 1:
             model.eval()
             with torch.no_grad():
-                train_pred_eval = model(x_train)
-                train_weighted_mse = float(weighted_mse(train_pred_eval, y_train, target_weights).detach().cpu())
-                train_component_loss_eval = float(
-                    weighted_component_loss(
-                        train_pred_eval,
-                        y_train,
-                        target_weights,
-                        loss_kind=args.component_loss_kind,
-                        smooth_l1_beta=args.component_smooth_l1_beta,
-                    )
-                    .detach()
-                    .cpu()
+                train_losses = evaluate_losses_chunked(
+                    model,
+                    x_train,
+                    y_train,
+                    target_weights,
+                    batch_size=eval_batch_size,
+                    component_loss_kind=args.component_loss_kind,
+                    smooth_l1_beta=args.component_smooth_l1_beta,
+                    residual_penalty=args.residual_penalty,
+                    y_mean=y_mean,
+                    y_std=y_std,
+                    s3_vector_scale=s3_vector_scale,
+                    s3_magnitude_loss_weight=args.s3_magnitude_loss_weight,
+                    s3_magnitude_low_bin_weight=args.s3_magnitude_low_bin_weight,
+                    s3_magnitude_medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                    s3_magnitude_high_bin_weight=args.s3_magnitude_high_bin_weight,
+                    s3_magnitude_loss_kind=args.s3_magnitude_loss_kind,
                 )
-                train_component_smoothl1 = float(
-                    weighted_component_loss(
-                        train_pred_eval,
-                        y_train,
-                        target_weights,
-                        loss_kind="smooth_l1",
-                        smooth_l1_beta=args.component_smooth_l1_beta,
-                    )
-                    .detach()
-                    .cpu()
-                )
-                train_s3_mag_loss_eval = float(
-                    s3_magnitude_loss(
-                        train_pred_eval,
-                        y_train,
-                        y_mean=y_mean,
-                        y_std=y_std,
-                        vector_scale=s3_vector_scale,
-                        loss_weight=args.s3_magnitude_loss_weight,
-                        low_bin_weight=args.s3_magnitude_low_bin_weight,
-                        medium_bin_weight=args.s3_magnitude_medium_bin_weight,
-                        high_bin_weight=args.s3_magnitude_high_bin_weight,
-                        use_smooth_l1=args.s3_magnitude_loss_kind == "smooth_l1",
-                    )
-                    .detach()
-                    .cpu()
-                )
-                train_residual_penalty_eval = float(
-                    (args.residual_penalty * torch.mean(model.residual(x_train) ** 2)).detach().cpu()
-                )
-                train_total_objective = (
-                    train_component_loss_eval
-                    + train_s3_mag_loss_eval
-                    + train_residual_penalty_eval
-                )
-                validation_pred_eval = model(x_validation)
-                validation_weighted_mse = float(
-                    weighted_mse(validation_pred_eval, y_validation, target_weights).detach().cpu()
-                )
-                validation_component_loss_eval = float(
-                    weighted_component_loss(
-                        validation_pred_eval,
-                        y_validation,
-                        target_weights,
-                        loss_kind=args.component_loss_kind,
-                        smooth_l1_beta=args.component_smooth_l1_beta,
-                    )
-                    .detach()
-                    .cpu()
-                )
-                validation_component_smoothl1 = float(
-                    weighted_component_loss(
-                        validation_pred_eval,
-                        y_validation,
-                        target_weights,
-                        loss_kind="smooth_l1",
-                        smooth_l1_beta=args.component_smooth_l1_beta,
-                    )
-                    .detach()
-                    .cpu()
+                validation_losses = evaluate_losses_chunked(
+                    model,
+                    x_validation,
+                    y_validation,
+                    target_weights,
+                    batch_size=eval_batch_size,
+                    component_loss_kind=args.component_loss_kind,
+                    smooth_l1_beta=args.component_smooth_l1_beta,
+                    residual_penalty=args.residual_penalty,
+                    y_mean=y_mean,
+                    y_std=y_std,
+                    s3_vector_scale=s3_vector_scale,
+                    s3_magnitude_loss_weight=args.s3_magnitude_loss_weight,
+                    s3_magnitude_low_bin_weight=args.s3_magnitude_low_bin_weight,
+                    s3_magnitude_medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                    s3_magnitude_high_bin_weight=args.s3_magnitude_high_bin_weight,
+                    s3_magnitude_loss_kind=args.s3_magnitude_loss_kind,
                 )
                 split_weighted_mse: dict[str, float] = {
-                    "train": train_weighted_mse,
-                    "validation": validation_weighted_mse,
+                    "train": train_losses["weighted_mse"],
+                    "validation": validation_losses["weighted_mse"],
                 }
                 for split_name in ["blind", "stress"]:
                     xs, ys = split_tensors[split_name]
-                    split_weighted_mse[split_name] = float(weighted_mse(model(xs), ys, target_weights).detach().cpu())
+                    split_weighted_mse[split_name] = evaluate_losses_chunked(
+                        model,
+                        xs,
+                        ys,
+                        target_weights,
+                        batch_size=eval_batch_size,
+                        component_loss_kind=args.component_loss_kind,
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                        residual_penalty=args.residual_penalty,
+                        y_mean=y_mean,
+                        y_std=y_std,
+                        s3_vector_scale=s3_vector_scale,
+                        s3_magnitude_loss_weight=args.s3_magnitude_loss_weight,
+                        s3_magnitude_low_bin_weight=args.s3_magnitude_low_bin_weight,
+                        s3_magnitude_medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                        s3_magnitude_high_bin_weight=args.s3_magnitude_high_bin_weight,
+                        s3_magnitude_loss_kind=args.s3_magnitude_loss_kind,
+                    )["weighted_mse"]
                 train_source_weighted_mse: dict[str, float | None] = {"parent": None, "training_only": None}
                 for source_name, tensors in train_source_tensors.items():
                     if tensors is None:
                         continue
                     xs, ys = tensors
-                    train_source_weighted_mse[source_name] = float(
-                        weighted_mse(model(xs), ys, target_weights).detach().cpu()
-                    )
+                    train_source_weighted_mse[source_name] = evaluate_losses_chunked(
+                        model,
+                        xs,
+                        ys,
+                        target_weights,
+                        batch_size=eval_batch_size,
+                        component_loss_kind=args.component_loss_kind,
+                        smooth_l1_beta=args.component_smooth_l1_beta,
+                        residual_penalty=args.residual_penalty,
+                        y_mean=y_mean,
+                        y_std=y_std,
+                        s3_vector_scale=s3_vector_scale,
+                        s3_magnitude_loss_weight=args.s3_magnitude_loss_weight,
+                        s3_magnitude_low_bin_weight=args.s3_magnitude_low_bin_weight,
+                        s3_magnitude_medium_bin_weight=args.s3_magnitude_medium_bin_weight,
+                        s3_magnitude_high_bin_weight=args.s3_magnitude_high_bin_weight,
+                        s3_magnitude_loss_kind=args.s3_magnitude_loss_kind,
+                    )["weighted_mse"]
                 current_lr = float(optimizer.param_groups[0]["lr"])
             history.append(
                 {
                     "epoch": epoch,
-                    "train_loss": train_weighted_mse,
-                    "validation_loss": validation_weighted_mse,
-                    "train_weighted_mse": train_weighted_mse,
-                    "validation_weighted_mse": validation_weighted_mse,
+                    "train_loss": train_losses["weighted_mse"],
+                    "validation_loss": validation_losses["weighted_mse"],
+                    "train_weighted_mse": train_losses["weighted_mse"],
+                    "validation_weighted_mse": validation_losses["weighted_mse"],
                     "blind_weighted_mse": split_weighted_mse["blind"],
                     "stress_weighted_mse": split_weighted_mse["stress"],
                     "train_parent_weighted_mse": train_source_weighted_mse["parent"],
                     "train_training_only_weighted_mse": train_source_weighted_mse["training_only"],
-                    "train_component_loss": train_component_loss_eval,
-                    "validation_component_loss": validation_component_loss_eval,
-                    "train_component_smoothl1": train_component_smoothl1,
-                    "validation_component_smoothl1": validation_component_smoothl1,
-                    "train_s3_magnitude_loss": train_s3_mag_loss_eval,
-                    "train_residual_penalty": train_residual_penalty_eval,
-                    "train_total_objective": train_total_objective,
-                    "train_total_objective_loss": train_total_objective,
+                    "train_component_loss": train_losses["component_loss"],
+                    "validation_component_loss": validation_losses["component_loss"],
+                    "train_component_smoothl1": train_losses["component_smoothl1"],
+                    "validation_component_smoothl1": validation_losses["component_smoothl1"],
+                    "train_s3_magnitude_loss": train_losses["s3_magnitude_loss"],
+                    "train_residual_penalty": train_losses["residual_penalty"],
+                    "train_total_objective": train_losses["total_objective"],
+                    "train_total_objective_loss": train_losses["total_objective"],
                     "train_epoch_objective_loss": epoch_total_loss / max(n_train_rows, 1),
                     "learning_rate": current_lr,
                 }
             )
             print(
-                f"epoch {epoch:5d} train_mse={train_weighted_mse:.6f} "
-                f"val_mse={validation_weighted_mse:.6f} blind_mse={split_weighted_mse['blind']:.6f} "
-                f"stress_mse={split_weighted_mse['stress']:.6f} objective={train_total_objective:.6f} "
+                f"epoch {epoch:5d} train_mse={train_losses['weighted_mse']:.6f} "
+                f"val_mse={validation_losses['weighted_mse']:.6f} blind_mse={split_weighted_mse['blind']:.6f} "
+                f"stress_mse={split_weighted_mse['stress']:.6f} objective={train_losses['total_objective']:.6f} "
                 f"lr={current_lr:.3g}"
             )
-            if validation_weighted_mse < best_validation_loss:
-                best_validation_loss = validation_weighted_mse
+            if validation_losses["weighted_mse"] < best_validation_loss:
+                best_validation_loss = validation_losses["weighted_mse"]
                 best_epoch = epoch
                 best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
                 epochs_since_best = 0
             else:
                 epochs_since_best += args.eval_every
             if scheduler is not None:
-                scheduler.step(validation_weighted_mse)
+                scheduler.step(validation_losses["weighted_mse"])
             if epochs_since_best >= args.patience_epochs:
                 print("early stopping at epoch", epoch)
                 break
@@ -1527,7 +1633,11 @@ def main() -> int:
 
     model.eval()
     with torch.no_grad():
-        pred_scaled = model(torch.tensor(Xn, device=device)).detach().cpu().numpy()
+        pred_scaled = predict_numpy_chunked(
+            model,
+            torch.tensor(Xn, device=device),
+            batch_size=predict_batch_size,
+        )
     y_pred = y_scaler.inverse_transform(pred_scaled)
 
     training_config = {
@@ -1543,6 +1653,8 @@ def main() -> int:
         "torch_seed": args.torch_seed,
         "batch_size": args.batch_size,
         "shuffle_batches": args.shuffle_batches,
+        "eval_batch_size": eval_batch_size,
+        "predict_batch_size": predict_batch_size,
         "component_loss_kind": args.component_loss_kind,
         "component_smooth_l1_beta": args.component_smooth_l1_beta,
         "grad_clip_norm": args.grad_clip_norm,
@@ -1713,6 +1825,8 @@ def main() -> int:
             "torch_seed": args.torch_seed,
             "batch_size": args.batch_size,
             "shuffle_batches": args.shuffle_batches,
+            "eval_batch_size": eval_batch_size,
+            "predict_batch_size": predict_batch_size,
             "component_loss_kind": args.component_loss_kind,
             "component_smooth_l1_beta": args.component_smooth_l1_beta,
             "grad_clip_norm": args.grad_clip_norm,
@@ -1742,6 +1856,8 @@ def main() -> int:
         "torch_seed": args.torch_seed,
         "batch_size": args.batch_size,
         "shuffle_batches": args.shuffle_batches,
+        "eval_batch_size": eval_batch_size,
+        "predict_batch_size": predict_batch_size,
         "component_loss_kind": args.component_loss_kind,
         "grad_clip_norm": args.grad_clip_norm,
         "lr_scheduler": args.lr_scheduler,

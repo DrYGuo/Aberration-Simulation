@@ -4,7 +4,7 @@ Last updated: 2026-06-14
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `3cee6f8`
+- Latest evaluated Colab result commit: `146ab43`
 - Documentation in this file reflects the evaluated Colab results through that commit.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
@@ -33,12 +33,14 @@ small plots, and concise reports.
 - Raw-angle regression notebook: `notebooks/uno_feature_regression_raw_angles.ipynb`
 - Colab model-selection worker notebook: `notebooks/colab_worker_model_loop.ipynb`
 - Colab worker config: `experiments/colab_worker_model_loop.json`
-- Latest completed model-selection batch config: `configs/model_selection_batch_v9_gap250k_d66.json`
+- Latest completed model-selection batch config: `configs/model_selection_batch_v10_structured_head_v9_250k.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
 - Next queued model-selection batch config:
-  - `configs/model_selection_batch_v10_structured_head_v9_250k.json`
+  - `configs/model_selection_batch_v11_gap500k_d66.json`
 - Completed 250k expansion config:
   - `configs/targeted_expansion_v9_250k.json`
+- Next queued 500k expansion config:
+  - `configs/targeted_expansion_v11_500k.json`
 - Main Colab smoke-test notebook: `notebooks/colab_gpu_smoke_test.ipynb`
 - GPU optics implementation: `src/aberration_simulation/gpu_optics.py`
 - CPU optics implementation: `src/aberration_simulation/cpu_optics.py`
@@ -155,14 +157,58 @@ Current interpretation:
   inferred from differences between features measured under large imposed
   under/over defocus offsets, so its residual signal can be weaker than the
   defocused probe geometry itself.
-- The active next step is an architecture-only test on the v9 250K 66-feature
-  dataset:
-  - new architecture option: `grouped_heads_structured`
-  - batch config: `configs/model_selection_batch_v10_structured_head_v9_250k.json`
-  - worker script: `scripts/run_colab_v10_structured_head_v9_250k_workflow.sh`
-  - active worker command: `bash scripts/run_colab_v10_structured_head_v9_250k_workflow.sh`
-  - no new simulations are expected if the v9 cached CSV is still alive in
-    Colab; the workflow can regenerate v9 only if the cache is missing.
+- The v10 structured-head architecture test is rejected:
+  - weighted score worsened from v9 `0.03051` / `0.03069` to `0.03118` / `0.03155`
+  - true hard-target normalized MAE worsened to `0.01584` / `0.01598`
+  - A3 magnitude MAE worsened to `1.329` / `1.383`
+  - B2 improved slightly, but not enough to justify promotion.
+- The active next step is a 500K data-scale test on the v9 66-feature grouped-head
+  baseline:
+  - expansion config: `configs/targeted_expansion_v11_500k.json`
+  - batch config: `configs/model_selection_batch_v11_gap500k_d66.json`
+  - worker script: `scripts/run_colab_v11_gap500k_d66_workflow.sh`
+  - active worker command: `bash scripts/run_colab_v11_gap500k_d66_workflow.sh`
+  - expected total rows: `500,000`
+  - expected new rows: `250,000` appended training-only rows
+  - batch training: `batch_size=65536`, `eval_batch_size=65536`, `predict_batch_size=65536`
+  - architecture/features unchanged from v9.
+
+500K data-distribution plan:
+
+- Broad hard-regime coverage:
+  - `coupled_full_random`: `40,000`
+  - `coupled_sparse_random`: `35,000`
+- S3/A3/B2 hard-vector coverage:
+  - `S3_high_random`: `24,000`
+  - `coupled_A3_S3_random`: `24,000`
+  - `coupled_B2_S3_random`: `20,000`
+  - `coupled_A1_B2_S3_random`: `24,000`
+  - `coupled_C3_A3_S3_random`: `22,000`
+  - `coupled_A1_S3_random`: `16,000`
+- C1 retained but not dominant:
+  - `coupled_C1_C3_random`: `8,000`
+  - `coupled_C1_S3_random`: `8,000`
+  - `coupled_C1_A1_S3_random`: `8,000`
+  - `coupled_C1_C3_S3_random`: `7,000`
+  - `coupled_C1_A3_S3_random`: `6,000`
+- Secondary B2 couplings:
+  - `coupled_A1_B2_random`: `3,000`
+  - `coupled_A2_B2_random`: `3,000`
+  - `coupled_C3_B2_random`: `2,000`
+
+Resource notes:
+
+- The v10/v9 250K run used about `8.87/15 GB` GPU RAM on T4. A 500K full-batch
+  run could exceed memory, so the v11 batch uses mini-batch training and chunked
+  evaluation/prediction.
+- The current implementation still keeps normalized tensors on GPU. This should
+  be acceptable for 500K because the tensor storage is small compared with
+  full-batch activations, but a future 1M run may need CPU-resident batch loading
+  if GPU memory becomes tight.
+- Current disk usage around `49.56/235.68 GB` is not an immediate blocker for
+  500K. For 1M, disk can become an issue if multiple large feature CSVs are kept
+  simultaneously. Keep only needed cached CSV generations in Colab and continue
+  pushing only compact artifacts to GitHub.
 
 Benchmark note:
 

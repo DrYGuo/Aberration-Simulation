@@ -1,0 +1,76 @@
+{
+  "description": "Next-scale expansion from v9 250K to 500K total rows. This emphasizes broad hard-regime coverage plus S3/A3/B2 vector couplings, while keeping C1 present but not dominant because C1 sensitivity is limited by the present defocus geometry.",
+  "dataset_version": "enhanced_v11_gap500k",
+  "parent_dataset_version": "enhanced_v9_gap250k",
+  "expected_parent_rows": 250000,
+  "expected_new_training_only_rows": 250000,
+  "expected_total_rows": 500000,
+  "case_counts": {
+    "coupled_full_random": 40000,
+    "coupled_sparse_random": 35000,
+    "S3_high_random": 24000,
+    "coupled_A3_S3_random": 24000,
+    "coupled_B2_S3_random": 20000,
+    "coupled_A1_B2_S3_random": 24000,
+    "coupled_C3_A3_S3_random": 22000,
+    "coupled_A1_S3_random": 16000,
+    "coupled_C1_C3_random": 8000,
+    "coupled_C1_S3_random": 8000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C1_C3_S3_random": 7000,
+    "coupled_C1_A3_S3_random": 6000,
+    "coupled_A1_B2_random": 3000,
+    "coupled_A2_B2_random": 3000,
+    "coupled_C3_B2_random": 2000
+  },
+  "sampling": {
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random"
+      ]
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "validation_blind_stress_source": "frozen_v6_benchmark_manifest",
+    "do_not_train_on_blind_or_stress": true
+  },
+  "decision_note": {
+    "purpose": "Test whether another hard-regime data scale-up improves v9 without changing features or architecture.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc",
+    "rejected_recent_direction": "D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k",
+    "success_rule": "Promote only if 500K improves weighted score, blind/stress metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics without easy-target regression. C1 improvement is useful but should not dominate selection.",
+    "resource_note": "Use mini-batch training and chunked evaluation/prediction for 500K because the 250K full-batch run already used roughly 8.9/15 GB GPU RAM."
+  }
+}

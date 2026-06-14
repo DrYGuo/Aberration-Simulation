@@ -165,6 +165,8 @@ def command_for_job(job: dict[str, Any], defaults: dict[str, Any], output_root: 
         command.extend(["--torch-seed", str(torch_seed)])
     for option_name, flag_name in [
         ("batch_size", "--batch-size"),
+        ("eval_batch_size", "--eval-batch-size"),
+        ("predict_batch_size", "--predict-batch-size"),
         ("component_loss_kind", "--component-loss-kind"),
         ("component_smooth_l1_beta", "--component-smooth-l1-beta"),
         ("grad_clip_norm", "--grad-clip-norm"),

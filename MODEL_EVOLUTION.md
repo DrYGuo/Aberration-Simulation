@@ -56,29 +56,72 @@ Interpretation:
   under/over defocus geometry likely limits direct C1 sensitivity. The method
   measures C1 through differences of already strongly defocused probe features,
   so C1 should not dominate model selection.
-- The next experiment should not be another data expansion yet. First test a
-  narrow architecture change on the same v9 250K dataset.
+- The narrow v10 architecture test did not improve generalization, so the next
+  useful experiment is another controlled data-scale step while keeping the v9
+  architecture and feature set fixed.
 
-Queued v10 implementation:
+Rejected v10 architecture test:
 
-- Active worker command:
-  - `scripts/run_colab_v10_structured_head_v9_250k_workflow.sh`
 - Batch config:
   - `configs/model_selection_batch_v10_structured_head_v9_250k.json`
-- Architecture under test:
+- Architecture:
   - `grouped_heads_structured`
+- Candidate runs:
+  - `D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k_seed23_20260614_090413_utc`
+  - `D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k_seed7_20260614_102033_utc`
+
+| Metric | v9 seed23 | v9 seed7 | v10 seed23 | v10 seed7 | Decision |
+|---|---:|---:|---:|---:|---|
+| weighted score | `0.03051` | `0.03069` | `0.03118` | `0.03155` | worse |
+| true hard-target normalized MAE | `0.01537` | `0.01557` | `0.01584` | `0.01598` | worse |
+| validation normalized MAE | `0.01186` | `0.01199` | `0.01199` | `0.01214` | worse/mixed |
+| blind normalized MAE | `0.00969` | `0.00968` | `0.00974` | `0.00983` | worse |
+| stress normalized MAE | `0.00872` | `0.00878` | `0.00867` | `0.00882` | mixed |
+| high-S3 magnitude MAE | `4.73` | `4.66` | `4.71` | `5.06` | mixed/worse |
+| high-S3 magnitude slope | `0.865` | `0.851` | `0.851` | `0.844` | worse |
+| B2 magnitude MAE | `0.0553` | `0.0552` | `0.0530` | `0.0542` | slightly better |
+| A3 magnitude MAE | `1.208` | `1.237` | `1.329` | `1.383` | worse |
+
+Decision:
+
+- Do not promote v10.
+- The structured/deeper high-order head slightly helped B2, but worsened the
+  main weighted score, true hard-target score, blind score, A3, and seed-stable
+  high-S3 behavior.
+- Keep `D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23` as the
+  current baseline.
+
+Queued v11 500K data-scale implementation:
+
+- Active worker command:
+  - `scripts/run_colab_v11_gap500k_d66_workflow.sh`
+- Expansion config:
+  - `configs/targeted_expansion_v11_500k.json`
+- Batch config:
+  - `configs/model_selection_batch_v11_gap500k_d66.json`
+- Dataset:
+  - parent: `enhanced_v9_gap250k`
+  - new dataset: `enhanced_v11_gap500k`
+  - expected parent rows: `250,000`
+  - expected appended training-only rows: `250,000`
+  - expected total rows: `500,000`
 - Fixed items:
-  - dataset: `enhanced_v9_gap250k`
+  - architecture: `grouped_heads`
   - feature count: 66
   - width: 320
   - learning rate: `6e-4`
   - dropout: `0.075`
-  - optimizer/loss path: unchanged from v9
+  - optimizer/loss path: AdamW, SmoothL1, gradient clipping, plateau scheduler
   - split seed: `7`
-- Architecture change:
-  - separate linear skip projections for scalar, low-order vector, and high-order vector target groups
-  - same trunk depth as v9
-  - slightly deeper high-order head for S3/A3
+  - validation/blind/stress: frozen v6 benchmark split manifest
+- Resource settings:
+  - `batch_size=65536`
+  - `eval_batch_size=65536`
+  - `predict_batch_size=65536`
+  - shuffled mini-batches enabled
+  - `max_epochs=2000`
+  - `eval_every=10`
+  - `patience_epochs=300`
 - Jobs:
   - seed23
   - seed7
@@ -86,11 +129,42 @@ Queued v10 implementation:
   - promote only if both seeds improve or preserve weighted score, blind/stress
     metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics
     relative to v9 seed23 without easy-target regression.
-- Cache behavior:
-  - no new simulations are expected if the v9 cached CSV is still present in
-    Colab.
-  - if the v9 cache is missing, the workflow can regenerate the v9 dataset
-    from the v6 parent before training.
+
+v11 500K appended-row distribution:
+
+| Regime | Rows | Reason |
+|---|---:|---|
+| `coupled_full_random` | `40,000` | broad nonlinear 12D coverage |
+| `coupled_sparse_random` | `35,000` | broad sparse hard-regime coverage |
+| `S3_high_random` | `24,000` | direct high-S3 tail coverage |
+| `coupled_A3_S3_random` | `24,000` | high-order vector coupling |
+| `coupled_B2_S3_random` | `20,000` | B2/S3 vector coupling |
+| `coupled_A1_B2_S3_random` | `24,000` | A1/B2/S3 coupled hard regime |
+| `coupled_C3_A3_S3_random` | `22,000` | C3/A3/S3 high-order coupling |
+| `coupled_A1_S3_random` | `16,000` | symmetry-important A1/S3 coupling |
+| `coupled_C1_C3_random` | `8,000` | scalar coupling retained |
+| `coupled_C1_S3_random` | `8,000` | C1/S3 interaction retained |
+| `coupled_C1_A1_S3_random` | `8,000` | C1/A1/S3 interaction retained |
+| `coupled_C1_C3_S3_random` | `7,000` | C1/C3/S3 interaction retained |
+| `coupled_C1_A3_S3_random` | `6,000` | C1/A3/S3 interaction retained |
+| `coupled_A1_B2_random` | `3,000` | secondary vector coupling |
+| `coupled_A2_B2_random` | `3,000` | secondary vector coupling |
+| `coupled_C3_B2_random` | `2,000` | secondary scalar/vector coupling |
+
+Resource notes for 500K and future 1M:
+
+- The latest Colab session showed about `8.87/15 GB` GPU RAM used at 250K.
+  A 500K full-batch run could exceed T4 memory, so v11 uses mini-batch training
+  plus chunked evaluation and prediction.
+- The runner still stores normalized train/validation/blind/stress tensors on
+  GPU. This is expected to be acceptable for 500K because feature/target tensors
+  are much smaller than full-batch activations. For 1M, implement CPU-resident
+  batch loading if GPU memory becomes tight.
+- Disk usage around `49.56/235.68 GB` is not an immediate blocker for 500K. For
+  1M, disk can become limiting if several large feature CSV generations remain
+  cached at once. Keep only necessary cached datasets in Colab and continue the
+  GitHub policy of pushing only compact metrics, manifests, registry CSVs, and
+  plots.
 
 ## 2026-06-12 Current Model-Loop Status
 

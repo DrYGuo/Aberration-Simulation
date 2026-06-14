@@ -1,6 +1,6 @@
 {
-  "description": "v10 structured-head architecture test on the promoted v9 250K d66 dataset. This reuses cached/generated v9 features, keeps the optimizer and split policy fixed, and compares grouped_heads_structured seed23/seed7 against the current v9 seed23 baseline.",
-  "config_id": "v10-structured-head-v9-250k",
+  "description": "v11 500K d66 data-scale workflow. This expands the promoted v9 250K dataset to 500K with hard-regime/S3-A3-B2-focused sampling, then retrains the promoted grouped-head architecture with mini-batches and chunked evaluation.",
+  "config_id": "v11-gap500k-d66",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v10_structured_head_v9_250k_workflow.sh"
+    "scripts/run_colab_v11_gap500k_d66_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
