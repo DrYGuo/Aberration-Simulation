@@ -1,0 +1,19 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-14T23:23:46.502411+00:00",
+  "workflow": "scripts/run_colab_v11_gap500k_d66_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/training_features_enhanced.csv",
+  "frozen_benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
+  "run_args": [
+    "--run",
+    "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed23_20260614_214818_utc",
+    "--run",
+    "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc"
+  ],
+  "diagnostics": [
+    "v11_500k_d66_training",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ],
+  "decision": "Compare the 500K data-scale run against the promoted v9 250K d66 baseline before any 1M expansion."
+}

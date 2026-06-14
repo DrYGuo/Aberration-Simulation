@@ -1,0 +1,362 @@
+{
+  "run_name": "enhanced_v11_gap500k_20260614_205607_utc",
+  "dataset_version": "enhanced_v11_gap500k",
+  "created_utc": "2026-06-14T21:48:07.205794+00:00",
+  "git_commit": "8cba0d5",
+  "generation_script": "scripts/generate_targeted_enhanced_dataset.py",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "parent_dataset_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_202549_utc/training_features_enhanced.csv",
+  "parent_dataset_sha256": "525e85a5eea88212f3408591659acd4d1817a54372255d33bea54c1bb1f3c9c7",
+  "output_csv": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/training_features_enhanced.csv",
+  "output_csv_sha256": "eadcf801db40100a445da1dc1075a8058d54b06800720749738f1bd779e2c552",
+  "row_count_before_expansion": 250000,
+  "appended_training_only_row_count": 250000,
+  "total_rows": 500000,
+  "random_seed": 113,
+  "targeted_case_counts": {
+    "coupled_full_random": 40000,
+    "coupled_sparse_random": 35000,
+    "S3_high_random": 24000,
+    "coupled_A3_S3_random": 24000,
+    "coupled_B2_S3_random": 20000,
+    "coupled_A1_B2_S3_random": 24000,
+    "coupled_C3_A3_S3_random": 22000,
+    "coupled_A1_S3_random": 16000,
+    "coupled_C1_C3_random": 8000,
+    "coupled_C1_S3_random": 8000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C1_C3_S3_random": 7000,
+    "coupled_C1_A3_S3_random": 6000,
+    "coupled_A1_B2_random": 3000,
+    "coupled_A2_B2_random": 3000,
+    "coupled_C3_B2_random": 2000
+  },
+  "generation_config": {
+    "description": "Next-scale expansion from v9 250K to 500K total rows. This uses physics-guided regime proportions plus Latin-hypercube space-filling within major regimes, balanced S3-relative angle strata, and compact coverage diagnostics.",
+    "dataset_version": "enhanced_v11_gap500k",
+    "parent_dataset_version": "enhanced_v9_gap250k",
+    "expected_parent_rows": 250000,
+    "expected_new_training_only_rows": 250000,
+    "expected_total_rows": 500000,
+    "case_counts": {
+      "coupled_full_random": 40000,
+      "coupled_sparse_random": 35000,
+      "S3_high_random": 24000,
+      "coupled_A3_S3_random": 24000,
+      "coupled_B2_S3_random": 20000,
+      "coupled_A1_B2_S3_random": 24000,
+      "coupled_C3_A3_S3_random": 22000,
+      "coupled_A1_S3_random": 16000,
+      "coupled_C1_C3_random": 8000,
+      "coupled_C1_S3_random": 8000,
+      "coupled_C1_A1_S3_random": 8000,
+      "coupled_C1_C3_S3_random": 7000,
+      "coupled_C1_A3_S3_random": 6000,
+      "coupled_A1_B2_random": 3000,
+      "coupled_A2_B2_random": 3000,
+      "coupled_C3_B2_random": 2000
+    },
+    "sampling": {
+      "space_filling": {
+        "enabled": true,
+        "method": "latin_hypercube",
+        "labels": [
+          "coupled_full_random",
+          "coupled_sparse_random",
+          "S3_high_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "coupled_A1_S3_random",
+          "coupled_C1_C3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random",
+          "coupled_A1_B2_random",
+          "coupled_A2_B2_random",
+          "coupled_C3_B2_random"
+        ],
+        "note": "Latin-hypercube coordinates are generated separately per regime label, so each regime receives space-filling amplitudes/phases while preserving the planned regime proportions."
+      },
+      "relative_angles": {
+        "enabled": true,
+        "bins": [
+          "aligned",
+          "orthogonal",
+          "anti_aligned",
+          "random"
+        ],
+        "label_pairs": {
+          "coupled_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_B2_S3_random": [
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_A1_B2_S3_random": [
+            [
+              "A1",
+              "S3"
+            ],
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_C3_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_A1_S3_random": [
+            [
+              "A1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_S3_random": [
+            [
+              "C1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_A1_S3_random": [
+            [
+              "A1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_C3_S3_random": [
+            [
+              "C3",
+              "S3"
+            ]
+          ],
+          "coupled_C1_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ]
+        },
+        "note": "Non-vector pairs such as C1-S3 and C3-S3 are kept in the label map for traceability, but only vector-vector pairs are actively angle-constrained by the generator."
+      },
+      "c1_balanced": {
+        "enabled": true,
+        "magnitude_bins": [
+          [
+            0.0,
+            10.0
+          ],
+          [
+            10.0,
+            40.0
+          ],
+          [
+            40.0,
+            75.0
+          ],
+          [
+            75.0,
+            100.0
+          ]
+        ],
+        "labels": [
+          "coupled_C1_C3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random"
+        ]
+      },
+      "s3_tail": {
+        "enabled": true,
+        "s3_amp_min": 63.5,
+        "s3_amp_max": 100.0,
+        "labels": [
+          "S3_high_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "coupled_A1_S3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random"
+        ],
+        "force_s3_in_sparse": false
+      }
+    },
+    "selection_policy": {
+      "training_only_append_rows": true,
+      "requires_fixed_benchmark_split": true,
+      "split_seed": 7,
+      "validation_blind_stress_source": "frozen_v6_benchmark_manifest",
+      "do_not_train_on_blind_or_stress": true
+    },
+    "decision_note": {
+      "purpose": "Test whether another hard-regime data scale-up improves v9 without changing features or architecture.",
+      "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23_20260614_062447_utc",
+      "rejected_recent_direction": "D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k",
+      "success_rule": "Promote only if 500K improves weighted score, blind/stress metrics, high-S3 magnitude diagnostics, and B2/A3 vector diagnostics without easy-target regression. C1 improvement is useful but should not dominate selection.",
+      "resource_note": "Use mini-batch training and chunked evaluation/prediction for 500K because the 250K full-batch run already used roughly 8.9/15 GB GPU RAM."
+    }
+  },
+  "target_columns": [
+    "C1",
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "A2_x",
+    "A2_y",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y"
+  ],
+  "feature_columns": [
+    "C1_value_real",
+    "C3_value_real",
+    "A1_value_real",
+    "A1_value_imag",
+    "B2_value_real",
+    "B2_value_imag",
+    "A2_value_real",
+    "A2_value_imag",
+    "S3_value_real",
+    "S3_value_imag",
+    "A3_value_real",
+    "A3_value_imag",
+    "under_Xigma_mean",
+    "under_Xigma_h1_real",
+    "under_Xigma_h1_imag",
+    "under_Xigma_h2_real",
+    "under_Xigma_h2_imag",
+    "under_Xigma_h3_real",
+    "under_Xigma_h3_imag",
+    "under_Xigma_h4_real",
+    "under_Xigma_h4_imag",
+    "under_Mu_mean",
+    "under_Mu_h1_real",
+    "under_Mu_h1_imag",
+    "under_Mu_h2_real",
+    "under_Mu_h2_imag",
+    "under_Mu_h3_real",
+    "under_Mu_h3_imag",
+    "under_Mu_h4_real",
+    "under_Mu_h4_imag",
+    "under_Rho_mean",
+    "under_Rho_h1_real",
+    "under_Rho_h1_imag",
+    "under_Rho_h2_real",
+    "under_Rho_h2_imag",
+    "under_Rho_h3_real",
+    "under_Rho_h3_imag",
+    "under_Rho_h4_real",
+    "under_Rho_h4_imag",
+    "over_Xigma_mean",
+    "over_Xigma_h1_real",
+    "over_Xigma_h1_imag",
+    "over_Xigma_h2_real",
+    "over_Xigma_h2_imag",
+    "over_Xigma_h3_real",
+    "over_Xigma_h3_imag",
+    "over_Xigma_h4_real",
+    "over_Xigma_h4_imag",
+    "over_Mu_mean",
+    "over_Mu_h1_real",
+    "over_Mu_h1_imag",
+    "over_Mu_h2_real",
+    "over_Mu_h2_imag",
+    "over_Mu_h3_real",
+    "over_Mu_h3_imag",
+    "over_Mu_h4_real",
+    "over_Mu_h4_imag",
+    "over_Rho_mean",
+    "over_Rho_h1_real",
+    "over_Rho_h1_imag",
+    "over_Rho_h2_real",
+    "over_Rho_h2_imag",
+    "over_Rho_h3_real",
+    "over_Rho_h3_imag",
+    "over_Rho_h4_real",
+    "over_Rho_h4_imag"
+  ],
+  "feature_count": 66,
+  "regime_counts_after_merge": {
+    "C1": 6,
+    "C3": 6,
+    "A1": 32,
+    "B2/C21": 32,
+    "A2": 20,
+    "A3": 20,
+    "S3/C32": 36,
+    "A3_wide": 45,
+    "S3_C32_wide": 45,
+    "C1_A1_C3_grid": 108,
+    "A1_B2_S3_grid": 96,
+    "coupled_full_random": 80554,
+    "coupled_C1_C3_A2_random": 11000,
+    "coupled_C1_A1_C3_A2_random": 12500,
+    "coupled_A1_A2_B2_random": 1500,
+    "coupled_A1_B2_S3_random": 39500,
+    "coupled_A3_S3_random": 40000,
+    "coupled_sparse_random": 71500,
+    "coupled_A2_B2_random": 8500,
+    "coupled_A1_S3_random": 28500,
+    "coupled_C3_A3_S3_random": 36500,
+    "coupled_C1_C3_random": 18000,
+    "coupled_A1_B2_random": 9000,
+    "coupled_C3_B2_random": 7000,
+    "coupled_C1_C3_S3_random": 18000,
+    "S3_high_random": 33500,
+    "coupled_B2_S3_random": 29500,
+    "coupled_C1_S3_random": 13500,
+    "coupled_C1_A1_random": 6000,
+    "coupled_C1_A1_S3_random": 12000,
+    "coupled_C1_A2_random": 5000,
+    "coupled_C1_A1_C3_random": 5500,
+    "coupled_C1_A3_random": 4000,
+    "coupled_C1_B2_random": 2500,
+    "coupled_C1_A3_S3_random": 6000
+  },
+  "new_rows_per_regime": {
+    "coupled_B2_S3_random": 20000,
+    "S3_high_random": 24000,
+    "coupled_full_random": 40000,
+    "coupled_A1_S3_random": 16000,
+    "coupled_C1_A3_S3_random": 6000,
+    "coupled_C1_S3_random": 8000,
+    "coupled_sparse_random": 35000,
+    "coupled_C1_C3_random": 8000,
+    "coupled_A3_S3_random": 24000,
+    "coupled_A2_B2_random": 3000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C3_A3_S3_random": 22000,
+    "coupled_A1_B2_S3_random": 24000,
+    "coupled_C1_C3_S3_random": 7000,
+    "coupled_A1_B2_random": 3000,
+    "coupled_C3_B2_random": 2000
+  },
+  "split_policy": "New rows are training-only unless a later, explicit versioned split experiment changes validation/blind/stress benchmark definitions.",
+  "dataset_split_hint_field": "dataset_split_hint",
+  "new_row_split_hint": "training_only",
+  "feature_columns_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/feature_columns_enhanced.json",
+  "label_summary_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/label_summary.csv",
+  "new_targeted_label_summary_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/new_targeted_label_summary.csv",
+  "targeted25k_audit_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/targeted25k_audit.json",
+  "large_artifact_policy": "training_features_enhanced.csv is intentionally not pushed to GitHub"
+}

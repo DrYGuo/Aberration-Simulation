@@ -1,0 +1,244 @@
+{
+  "created_utc": "2026-06-14T20:16:16.231330+00:00",
+  "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v5_s3_tail60k_20260614_201244_utc/training_features_enhanced.csv",
+  "csv_sha256": "962496dba426a6fa08f3a82793c11a9b8f2f62a829946dde63fb8e85dd06347c",
+  "n_rows": 57446,
+  "field_count": 195,
+  "s3_vector_scale": 90.73979949951172,
+  "high_bin_fraction": 0.7,
+  "high_s3_threshold": 63.5178596496582,
+  "n_high_s3": 23931,
+  "feature_stats": {
+    "Eq43_S3_value_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.801592639746641,
+      "spearman_corr": 0.8249483789511179,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.040032231240547715,
+        "intercept": 0.2587507737951047,
+        "r2": 0.6425507600959885
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.038053458162031165,
+        "intercept": 0.46188375470865056,
+        "r2": 0.06413005257717608
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.7487772738954928,
+      "mean_feature_high_s3": 3.5712933123144173,
+      "std_feature_high_s3": 1.5798973980123643,
+      "high_to_low_mean_ratio": 4.769500075823433
+    },
+    "over_Mu_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": -0.21419640403754744,
+      "spearman_corr": -0.20212546589688082,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": -0.019055835444416636,
+        "intercept": 2.698474429431662,
+        "r2": 0.04588009950261662
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.0001855922076485581,
+        "intercept": 1.0712807397078223,
+        "r2": 5.988657809652409e-07
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 2.490362481635123,
+      "mean_feature_high_s3": 1.0864457788961772,
+      "std_feature_high_s3": 2.5215091031264474,
+      "high_to_low_mean_ratio": 0.43626009568704927
+    },
+    "over_Rho_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.8117695213965744,
+      "spearman_corr": 0.8224083951182165,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.02037146528964037,
+        "intercept": 0.2082617032304774,
+        "r2": 0.6589697558684244
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.020017242865409148,
+        "intercept": 0.25580435014902314,
+        "r2": 0.07911902659300596
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.45940370180307105,
+      "mean_feature_high_s3": 1.8914456108616284,
+      "std_feature_high_s3": 0.7482200512163338,
+      "high_to_low_mean_ratio": 4.117175291070394
+    },
+    "over_Xigma_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.515575164255157,
+      "spearman_corr": 0.5690593595048888,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.010129676998534554,
+        "intercept": 0.3024151892174739,
+        "r2": 0.2658177499967327
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.011396019963364697,
+        "intercept": 0.21589649481921064,
+        "r2": 0.025433536471070384
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.42179122402701585,
+      "mean_feature_high_s3": 1.1470837010350277,
+      "std_feature_high_s3": 0.7513034396943138,
+      "high_to_low_mean_ratio": 2.7195532019083086
+    },
+    "under_Mu_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": -0.20995649519196496,
+      "spearman_corr": -0.22193028780046448,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": -0.020050686124713203,
+        "intercept": 3.0805502287978825,
+        "r2": 0.04408172987329384
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": -0.00028109738368014013,
+        "intercept": 1.361473811808101,
+        "r2": 1.0776926168132306e-06
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 2.894317215326736,
+      "mean_feature_high_s3": 1.3385048903578796,
+      "std_feature_high_s3": 2.8469176273667935,
+      "high_to_low_mean_ratio": 0.46245963595326955
+    },
+    "under_Rho_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.7370508833138913,
+      "spearman_corr": 0.7538444593721721,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.01926165429809613,
+        "intercept": 0.23872999125166425,
+        "r2": 0.5432440045937874
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.01937804418363012,
+        "intercept": 0.24483870242664246,
+        "r2": 0.05517272822261887
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.47759405501070623,
+      "mean_feature_high_s3": 1.8282500059598024,
+      "std_feature_high_s3": 0.8673877086966909,
+      "high_to_low_mean_ratio": 3.828041719737071
+    },
+    "under_Xigma_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.59752334007238,
+      "spearman_corr": 0.6371479442538401,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.011686482640852983,
+        "intercept": 0.36184355162051174,
+        "r2": 0.35703414193125393
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.01327965427286267,
+        "intercept": 0.23524177521882708,
+        "r2": 0.04684456844957885
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.5109789260586458,
+      "mean_feature_high_s3": 1.320343784658261,
+      "std_feature_high_s3": 0.6450935493992023,
+      "high_to_low_mean_ratio": 2.5839495358507754
+    },
+    "under_minus_over_Mu_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": -0.06602626578070878,
+      "spearman_corr": -0.1121390657947202,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": -0.0015532767639548693,
+        "intercept": 0.5562987229697441,
+        "r2": 0.004359467772944603
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 7.500779436593301e-05,
+        "intercept": 0.36400542440237343,
+        "r2": 9.238804953293211e-07
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.5784393200653076,
+      "mean_feature_high_s3": 0.3701344324862983,
+      "std_feature_high_s3": 0.8204725346910908,
+      "high_to_low_mean_ratio": 0.6398846227218141
+    },
+    "under_minus_over_Rho_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.8015926397466409,
+      "spearman_corr": 0.8249483738783544,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.04003223124054771,
+        "intercept": 0.2587507737951049,
+        "r2": 0.6425507600959888
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.038053458162031165,
+        "intercept": 0.46188375470865056,
+        "r2": 0.06413005257717597
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.7487772738954928,
+      "mean_feature_high_s3": 3.5712933123144177,
+      "std_feature_high_s3": 1.5798973980123643,
+      "high_to_low_mean_ratio": 4.769500075823434
+    },
+    "under_minus_over_Xigma_h2_magnitude": {
+      "n": 57446,
+      "pearson_corr": 0.5535039888954736,
+      "spearman_corr": 0.6115951244833938,
+      "linear_feature_vs_true_s3_overall": {
+        "n": 57446,
+        "slope": 0.021588632590031995,
+        "intercept": 0.6399396275660056,
+        "r2": 0.30636666572320126
+      },
+      "linear_feature_vs_true_s3_high_s3": {
+        "n": 23931,
+        "slope": 0.024318499480076753,
+        "intercept": 0.44008722634335223,
+        "r2": 0.03320797355296534
+      },
+      "high_s3_threshold": 63.5178596496582,
+      "mean_feature_low_or_medium_s3": 0.9035881445490409,
+      "mean_feature_high_s3": 2.4271911155091868,
+      "std_feature_high_s3": 1.4030758152650589,
+      "high_to_low_mean_ratio": 2.6861696927850267
+    }
+  },
+  "requested_but_unavailable_features": [
+    "inner radial-band m=2 harmonic",
+    "middle radial-band m=2 harmonic",
+    "outer radial-band m=2 harmonic",
+    "r^4-weighted m=2 moment",
+    "r^6-weighted m=2 moment",
+    "contour/radius r50 angular anisotropy",
+    "contour/radius r80 angular anisotropy",
+    "contour/radius r95 angular anisotropy"
+  ],
+  "interpretation": "This audit is diagnostic only. If high-S3 model slope remains compressed after v5 data expansion, compare the high-S3 feature slopes here against new radial-band or radially weighted m=2 descriptors before expanding directly to 100k rows."
+}
