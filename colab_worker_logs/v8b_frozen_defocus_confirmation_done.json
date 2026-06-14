@@ -1,0 +1,17 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-14T05:47:25.743488+00:00",
+  "workflow": "scripts/run_colab_v8b_frozen_defocus_confirmation_workflow.sh",
+  "csv_paths": {
+    "v6": "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260613_230608_utc/training_features_enhanced.csv",
+    "c1diff_full": "training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv"
+  },
+  "frozen_benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
+  "diagnostics": [
+    "frozen_benchmark_split_manifest",
+    "defocus_difference_full_confirmation",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ],
+  "decision": "Compare full defocus-difference seed23/seed7 against the frozen 66-feature seed23 baseline before promotion."
+}

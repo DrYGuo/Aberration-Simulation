@@ -1,0 +1,1104 @@
+{
+  "created_utc": "2026-06-14T05:47:06.623158+00:00",
+  "output_dir": "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc",
+  "runs": [
+    {
+      "run_key": "old_v3_bin_diag",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05945300707235359,
+      "dataset": {
+        "dataset_version": "enhanced_v3_targeted25k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/training_features_enhanced.csv",
+        "csv_sha256": "64fbc87578287c5929311081151240bfbc556b67a0b28b36b3b69202437e9207",
+        "n_rows": 41446,
+        "training_only_new_rows": 25000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 34002,
+        "n_validation": 1976,
+        "n_blind": 2370,
+        "n_stress": 3098
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/old_v3_bin_diag_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/old_v3_bin_diag_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/old_v3_bin_diag_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 90.73979949951172,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 90.73979949951172,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 5.080995559692383,
+          "magnitude_rmse": 9.881091117858887,
+          "magnitude_bias": -0.37737467885017395,
+          "magnitude_slope": 0.8512885764309907,
+          "magnitude_r2": 0.9239111232597377,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.8948636651039124
+        },
+        "overall_angle": {
+          "angle_threshold": 9.073979949951172,
+          "angle_defined_count": 821,
+          "angle_undefined_near_zero_count": 1155,
+          "mean_abs_angle_error_deg": 9.401405334472656,
+          "median_abs_angle_error_deg": 2.7837677001953125,
+          "p95_abs_angle_error_deg": 41.06449890136719,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 321,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 7.736021041870117,
+            "MAE_y": 8.580368995666504,
+            "RMSE_x": 13.695119857788086,
+            "RMSE_y": 16.243783950805664
+          },
+          "magnitude": {
+            "magnitude_mae": 10.839306831359863,
+            "magnitude_bias": -8.766539573669434,
+            "magnitude_rmse": 18.386980056762695,
+            "true_magnitude_mean": 81.7567138671875,
+            "pred_magnitude_mean": 72.99018859863281,
+            "magnitude_compression_ratio": 1.6101771593093872,
+            "magnitude_slope": 0.6711227266242965,
+            "magnitude_r2": -1.1422645735415506,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 5.702573776245117,
+            "median_abs_angle_error_deg": 1.849029541015625,
+            "p95_abs_angle_error_deg": 20.931655883789062,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 321,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9736396670341492,
+            "median_cosine_similarity": 0.9994792938232422,
+            "p05_cosine_similarity": 0.9340071678161621,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v3_smoothl1_champion",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05567891693315827,
+      "dataset": {
+        "dataset_version": "enhanced_v3_targeted25k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/training_features_enhanced.csv",
+        "csv_sha256": "64fbc87578287c5929311081151240bfbc556b67a0b28b36b3b69202437e9207",
+        "n_rows": 41446,
+        "training_only_new_rows": 25000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 34002,
+        "n_validation": 1976,
+        "n_blind": 2370,
+        "n_stress": 3098
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v3_smoothl1_champion_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v3_smoothl1_champion_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v3_smoothl1_champion_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 90.73979949951172,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 90.73979949951172,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 4.666421890258789,
+          "magnitude_rmse": 9.300213813781738,
+          "magnitude_bias": -0.3376616835594177,
+          "magnitude_slope": 0.8661244615726796,
+          "magnitude_r2": 0.9309132690884913,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9051288366317749
+        },
+        "overall_angle": {
+          "angle_threshold": 9.073979949951172,
+          "angle_defined_count": 821,
+          "angle_undefined_near_zero_count": 1155,
+          "mean_abs_angle_error_deg": 8.860312461853027,
+          "median_abs_angle_error_deg": 2.8651580810546875,
+          "p95_abs_angle_error_deg": 38.334259033203125,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 321,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 7.157847881317139,
+            "MAE_y": 7.7761101722717285,
+            "RMSE_x": 13.256548881530762,
+            "RMSE_y": 15.705650329589844
+          },
+          "magnitude": {
+            "magnitude_mae": 9.54025936126709,
+            "magnitude_bias": -7.682642936706543,
+            "magnitude_rmse": 16.722692489624023,
+            "true_magnitude_mean": 81.7567138671875,
+            "pred_magnitude_mean": 74.0740737915039,
+            "magnitude_compression_ratio": 1.5304858684539795,
+            "magnitude_slope": 0.7208754515704693,
+            "magnitude_r2": -0.8227257999691886,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 5.484124660491943,
+            "median_abs_angle_error_deg": 1.701690673828125,
+            "p95_abs_angle_error_deg": 23.400314331054688,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 321,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9770578145980835,
+            "median_cosine_similarity": 0.9995589256286621,
+            "p05_cosine_similarity": 0.9177523255348206,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v5_s3tail60k_seed23",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05101536841489948,
+      "dataset": {
+        "dataset_version": "enhanced_v5_s3_tail60k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v5_s3_tail60k",
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v5_s3_tail60k_20260611_084005_utc/training_features_enhanced.csv",
+        "csv_sha256": "8258c18fa2da5cf100e53f196e92fa2071ab935b107edbbe3c615a5d03fb8e6d",
+        "n_rows": 57446,
+        "training_only_new_rows": 41000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 50002,
+        "n_validation": 1977,
+        "n_blind": 2370,
+        "n_stress": 3097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v5_s3tail60k_seed23_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v5_s3tail60k_seed23_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v5_s3tail60k_seed23_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 95.95117950439453,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 95.95117950439453,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 4.476938724517822,
+          "magnitude_rmse": 8.568373680114746,
+          "magnitude_bias": 0.29603680968284607,
+          "magnitude_slope": 0.8822202815839933,
+          "magnitude_r2": 0.9399910014774709,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9155990481376648
+        },
+        "overall_angle": {
+          "angle_threshold": 9.595117950439453,
+          "angle_defined_count": 819,
+          "angle_undefined_near_zero_count": 1158,
+          "mean_abs_angle_error_deg": 7.885438919067383,
+          "median_abs_angle_error_deg": 2.71484375,
+          "p95_abs_angle_error_deg": 29.678665161132812,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 289,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 6.535511493682861,
+            "MAE_y": 7.072212219238281,
+            "RMSE_x": 11.135224342346191,
+            "RMSE_y": 14.024415016174316
+          },
+          "magnitude": {
+            "magnitude_mae": 8.201061248779297,
+            "magnitude_bias": -6.3859076499938965,
+            "magnitude_rmse": 14.811809539794922,
+            "true_magnitude_mean": 83.56890869140625,
+            "pred_magnitude_mean": 77.18299865722656,
+            "magnitude_compression_ratio": 1.510501742362976,
+            "magnitude_slope": 0.7091327365257067,
+            "magnitude_r2": -0.7787457225950005,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 4.391916751861572,
+            "median_abs_angle_error_deg": 1.8972015380859375,
+            "p95_abs_angle_error_deg": 16.94594955444336,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 289,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9877913594245911,
+            "median_cosine_similarity": 0.9994518160820007,
+            "p05_cosine_similarity": 0.956515908241272,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v8b_frozen_d66_seed23",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc/selection_score.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_d66_seed23_20260614_042314_utc/s3_magnitude_metric_audit_validation.csv"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": true,
+      "weighted_score": 0.0366377102318578,
+      "dataset": {
+        "dataset_version": "enhanced_v6_benchmark_gap100k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_20260613_230608_utc/training_features_enhanced.csv",
+        "csv_sha256": "14508905427ab34203a8698e9a5559765fbac5ee76748e0c709104b3e11051f7",
+        "n_rows": 100446,
+        "training_only_new_rows": 84000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows_fixed_parent_stress_threshold",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "n_train": 93002,
+        "n_validation": 1977,
+        "n_blind": 2370,
+        "n_stress": 3097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 96.0678939819336,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 96.0678939819336,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 3.2557361125946045,
+          "magnitude_rmse": 6.610703468322754,
+          "magnitude_bias": 0.07716211676597595,
+          "magnitude_slope": 0.9191931798463208,
+          "magnitude_r2": 0.9625055662598468,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9393670558929443
+        },
+        "overall_angle": {
+          "angle_threshold": 9.60678939819336,
+          "angle_defined_count": 818,
+          "angle_undefined_near_zero_count": 1159,
+          "mean_abs_angle_error_deg": 5.7395548820495605,
+          "median_abs_angle_error_deg": 2.09893798828125,
+          "p95_abs_angle_error_deg": 22.685026168823242,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 289,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 4.613712310791016,
+            "MAE_y": 5.279510498046875,
+            "RMSE_x": 8.349013328552246,
+            "RMSE_y": 11.278857231140137
+          },
+          "magnitude": {
+            "magnitude_mae": 6.109638690948486,
+            "magnitude_bias": -4.443100929260254,
+            "magnitude_rmse": 11.617439270019531,
+            "true_magnitude_mean": 83.56890869140625,
+            "pred_magnitude_mean": 79.12580108642578,
+            "magnitude_compression_ratio": 1.3516308069229126,
+            "magnitude_slope": 0.812416315788721,
+            "magnitude_r2": -0.16688538950431941,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 2.917630910873413,
+            "median_abs_angle_error_deg": 1.2352294921875,
+            "p95_abs_angle_error_deg": 8.974971771240234,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 289,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.993618369102478,
+            "median_cosine_similarity": 0.9997677803039551,
+            "p05_cosine_similarity": 0.9877276420593262,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "s3_audit_csv_recompute",
+      "computed": {
+        "formula": "true_mag = sqrt(S3_x^2 + S3_y^2); pred_mag = sqrt(pred_S3_x^2 + pred_S3_y^2)",
+        "high_bin": "true_mag > 0.7 * vector_scale",
+        "vector_scale": 96.0678939819336,
+        "all_magnitude": {
+          "n": 1977,
+          "ols_slope": 0.9191931760947081,
+          "ols_intercept": 1.941004377067268,
+          "through_origin_slope": 0.9485593337830766,
+          "correlation": 0.9785239292545089,
+          "r2": 0.9575090801236819,
+          "mae": 3.2557362128466862,
+          "rmse": 6.610703534106584,
+          "bias": 0.07716197574701265,
+          "median_error": 0.4713328414630291,
+          "p95_abs_error": 12.63041569852923,
+          "true_range": [
+            0.0,
+            100.0
+          ],
+          "pred_range": [
+            0.007604230600092754,
+            103.2697673754671
+          ]
+        },
+        "high_magnitude": {
+          "n": 289,
+          "ols_slope": 0.8124163226555995,
+          "ols_intercept": 11.233060935862657,
+          "through_origin_slope": 0.9450131478998844,
+          "correlation": 0.6010638176546178,
+          "r2": 0.36127771289354305,
+          "mae": 6.109638835489218,
+          "rmse": 11.617439913164448,
+          "bias": -4.443101294806396,
+          "median_error": -1.2343725030173403,
+          "p95_abs_error": 25.412663399026695,
+          "true_range": [
+            67.43524135833647,
+            100.0
+          ],
+          "pred_range": [
+            23.279075045624204,
+            103.2697673754671
+          ]
+        },
+        "component_slopes": {
+          "S3_x_all": {
+            "n": 1977,
+            "ols_slope": 0.9493343754039463,
+            "ols_intercept": 0.17629663826888753,
+            "through_origin_slope": 0.9492327288594588,
+            "correlation": 0.981351382504637,
+            "r2": 0.9630505359437651,
+            "mae": 2.5543830103913843,
+            "rmse": 5.249925696140135,
+            "bias": 0.1979467061096939,
+            "median_error": 0.04034608602523804,
+            "p95_abs_error": 10.507843017578114,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -100.10543060302734,
+              99.90550994873047
+            ]
+          },
+          "S3_y_all": {
+            "n": 1977,
+            "ols_slope": 0.9351228170886442,
+            "ols_intercept": 0.12326716339480144,
+            "through_origin_slope": 0.9350397655780133,
+            "correlation": 0.9767408974499849,
+            "r2": 0.954022780751404,
+            "mae": 2.6054196793983606,
+            "rmse": 6.026963412102959,
+            "bias": 0.157510954737814,
+            "median_error": 0.0056610107421875,
+            "p95_abs_error": 10.381820678710923,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.80500793457031,
+              99.89002990722656
+            ]
+          },
+          "S3_x_high": {
+            "n": 289,
+            "ols_slope": 0.9504637048868575,
+            "ols_intercept": 0.9574858406928397,
+            "through_origin_slope": 0.9493382578315327,
+            "correlation": 0.9903194404891331,
+            "r2": 0.9807325942107091,
+            "mae": 4.613712009571003,
+            "rmse": 8.349013413844537,
+            "bias": 1.1554773824231435,
+            "median_error": -0.0075450986623809965,
+            "p95_abs_error": 19.23325805664061,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -100.10543060302734,
+              99.90550994873047
+            ]
+          },
+          "S3_y_high": {
+            "n": 289,
+            "ols_slope": 0.9323908976536278,
+            "ols_intercept": -0.2053419477335789,
+            "through_origin_slope": 0.9325963675283815,
+            "correlation": 0.9831075334969989,
+            "r2": 0.9665004224185525,
+            "mae": 5.279510967162757,
+            "rmse": 11.278856464516354,
+            "bias": 0.043561290769119215,
+            "median_error": 0.01866463944314992,
+            "p95_abs_error": 22.987423706054663,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.80500793457031,
+              99.89002990722656
+            ]
+          }
+        },
+        "high_angle": {
+          "mean_abs_angle_error_deg": 2.917631046828591,
+          "p95_abs_angle_error_deg": 8.974965832988168,
+          "n": 289
+        }
+      },
+      "generated_plots": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_x_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_y_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_mag_pred_vs_true_all.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_mag_pred_vs_true_high.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_mag_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_vector_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_d66_seed23_S3_angle_error_vs_true_mag.png"
+      ]
+    },
+    {
+      "run_key": "v8b_frozen_c1diff_full_seed23",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed23_20260614_045013_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed23_20260614_045013_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed23_20260614_045013_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed23_20260614_045013_utc/selection_score.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed23_20260614_045013_utc/s3_magnitude_metric_audit_validation.csv"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": true,
+      "weighted_score": 0.036357190888016845,
+      "dataset": {
+        "dataset_version": "enhanced_v6_benchmark_gap100k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv",
+        "csv_sha256": "31cf54658ab280dc7269443bc7b13852f11be1de4b23213d89296eaf5a1dacb3",
+        "n_rows": 100446,
+        "training_only_new_rows": 84000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows_fixed_parent_stress_threshold",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "n_train": 93002,
+        "n_validation": 1977,
+        "n_blind": 2370,
+        "n_stress": 3097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 96.0678939819336,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 96.0678939819336,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 3.0858190059661865,
+          "magnitude_rmse": 5.95801305770874,
+          "magnitude_bias": 0.10839170962572098,
+          "magnitude_slope": 0.9221423277758073,
+          "magnitude_r2": 0.9703086767918576,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9381033182144165
+        },
+        "overall_angle": {
+          "angle_threshold": 9.60678939819336,
+          "angle_defined_count": 818,
+          "angle_undefined_near_zero_count": 1159,
+          "mean_abs_angle_error_deg": 5.389554500579834,
+          "median_abs_angle_error_deg": 2.2298507690429688,
+          "p95_abs_angle_error_deg": 19.697284698486328,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 289,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 4.6541643142700195,
+            "MAE_y": 5.26616907119751,
+            "RMSE_x": 7.942933559417725,
+            "RMSE_y": 9.33143424987793
+          },
+          "magnitude": {
+            "magnitude_mae": 5.779057025909424,
+            "magnitude_bias": -4.318144798278809,
+            "magnitude_rmse": 10.25460147857666,
+            "true_magnitude_mean": 83.56890869140625,
+            "pred_magnitude_mean": 79.2507553100586,
+            "magnitude_compression_ratio": 1.24905526638031,
+            "magnitude_slope": 0.8288086753370688,
+            "magnitude_r2": 0.12678505637454396,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 2.879251480102539,
+            "median_abs_angle_error_deg": 1.4830322265625,
+            "p95_abs_angle_error_deg": 10.402411460876465,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 289,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9958013296127319,
+            "median_cosine_similarity": 0.9996650218963623,
+            "p05_cosine_similarity": 0.9835495948791504,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "s3_audit_csv_recompute",
+      "computed": {
+        "formula": "true_mag = sqrt(S3_x^2 + S3_y^2); pred_mag = sqrt(pred_S3_x^2 + pred_S3_y^2)",
+        "high_bin": "true_mag > 0.7 * vector_scale",
+        "vector_scale": 96.0678939819336,
+        "all_magnitude": {
+          "n": 1977,
+          "ols_slope": 0.9221423288535381,
+          "ols_intercept": 1.9042106955069416,
+          "through_origin_slope": 0.9509518216176018,
+          "correlation": 0.9829859140766144,
+          "r2": 0.9662613072730363,
+          "mae": 3.085819175945884,
+          "rmse": 5.958013106524588,
+          "bias": 0.1083917072380588,
+          "median_error": 0.45617478765651787,
+          "p95_abs_error": 11.677144381114172,
+          "true_range": [
+            0.0,
+            100.0
+          ],
+          "pred_range": [
+            0.010869458811835616,
+            103.83991330741159
+          ]
+        },
+        "high_magnitude": {
+          "n": 289,
+          "ols_slope": 0.8288086852053931,
+          "ols_intercept": 9.988125451111827,
+          "through_origin_slope": 0.9467100953838787,
+          "correlation": 0.6635485087564631,
+          "r2": 0.4402966234729253,
+          "mae": 5.779057023412182,
+          "rmse": 10.25460178821123,
+          "bias": -4.318145015452864,
+          "median_error": -1.6761851719782896,
+          "p95_abs_error": 22.931718717468534,
+          "true_range": [
+            67.43524135833647,
+            100.0
+          ],
+          "pred_range": [
+            30.088669193404467,
+            103.83991330741159
+          ]
+        },
+        "component_slopes": {
+          "S3_x_all": {
+            "n": 1977,
+            "ols_slope": 0.9479729639414574,
+            "ols_intercept": 0.17929781727545197,
+            "through_origin_slope": 0.9478695870209491,
+            "correlation": 0.9829577116462568,
+            "r2": 0.9662058628848459,
+            "mae": 2.499672222998748,
+            "rmse": 5.033427749012505,
+            "bias": 0.20152963360464868,
+            "median_error": 0.02008698880672455,
+            "p95_abs_error": 10.014829415082927,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.62938690185547,
+              99.62301635742188
+            ]
+          },
+          "S3_y_all": {
+            "n": 1977,
+            "ols_slope": 0.9434000624766733,
+            "ols_intercept": 0.16691199616451446,
+            "through_origin_slope": 0.9432876051681569,
+            "correlation": 0.9830843761726841,
+            "r2": 0.9664548906748376,
+            "mae": 2.487000165966028,
+            "rmse": 5.1710437236085,
+            "bias": 0.19678685144645192,
+            "median_error": -0.01029205322265625,
+            "p95_abs_error": 10.397762107849113,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.37983703613281,
+              99.68485260009766
+            ]
+          },
+          "S3_x_high": {
+            "n": 289,
+            "ols_slope": 0.9486515018884807,
+            "ols_intercept": 0.9759908098392498,
+            "through_origin_slope": 0.9475043037407118,
+            "correlation": 0.9914479573658008,
+            "r2": 0.9829690521648176,
+            "mae": 4.654164194699802,
+            "rmse": 7.942933277228015,
+            "bias": 1.1812255429458454,
+            "median_error": 0.21945953369140625,
+            "p95_abs_error": 17.682522964477457,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.62938690185547,
+              99.62301635742188
+            ]
+          },
+          "S3_y_high": {
+            "n": 289,
+            "ols_slope": 0.9401293597590253,
+            "ols_intercept": 0.26978224109892884,
+            "through_origin_slope": 0.9398594094449216,
+            "correlation": 0.9888171416840279,
+            "r2": 0.9777593396881705,
+            "mae": 5.266169054001879,
+            "rmse": 9.331434689829981,
+            "bias": 0.49019629379354146,
+            "median_error": -0.02274322509765625,
+            "p95_abs_error": 20.05926361083983,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.37983703613281,
+              99.68485260009766
+            ]
+          }
+        },
+        "high_angle": {
+          "mean_abs_angle_error_deg": 2.87925139503587,
+          "p95_abs_angle_error_deg": 10.402405195520409,
+          "n": 289
+        }
+      },
+      "generated_plots": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_x_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_y_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_mag_pred_vs_true_all.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_mag_pred_vs_true_high.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_mag_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_vector_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed23_S3_angle_error_vs_true_mag.png"
+      ]
+    },
+    {
+      "run_key": "v8b_frozen_c1diff_full_seed7",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed7_20260614_051836_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed7_20260614_051836_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed7_20260614_051836_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed7_20260614_051836_utc/selection_score.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v8b_frozen_c1diff_full_seed7_20260614_051836_utc/s3_magnitude_metric_audit_validation.csv"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": true,
+      "weighted_score": 0.036933075145531735,
+      "dataset": {
+        "dataset_version": "enhanced_v6_benchmark_gap100k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "parent"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v8_c1diff_full_20260613_231542_utc/training_features_enhanced.csv",
+        "csv_sha256": "31cf54658ab280dc7269443bc7b13852f11be1de4b23213d89296eaf5a1dacb3",
+        "n_rows": 100446,
+        "training_only_new_rows": 84000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows_fixed_parent_stress_threshold",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "n_train": 93002,
+        "n_validation": 1977,
+        "n_blind": 2370,
+        "n_stress": 3097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 96.0678939819336,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 96.0678939819336,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 3.1507527828216553,
+          "magnitude_rmse": 6.065942287445068,
+          "magnitude_bias": 0.11479824036359787,
+          "magnitude_slope": 0.9197985132384612,
+          "magnitude_r2": 0.9693730774629672,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.936299204826355
+        },
+        "overall_angle": {
+          "angle_threshold": 9.60678939819336,
+          "angle_defined_count": 818,
+          "angle_undefined_near_zero_count": 1159,
+          "mean_abs_angle_error_deg": 5.657247066497803,
+          "median_abs_angle_error_deg": 2.2232818603515625,
+          "p95_abs_angle_error_deg": 20.38780403137207,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 289,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 4.822695732116699,
+            "MAE_y": 5.24784517288208,
+            "RMSE_x": 9.231451988220215,
+            "RMSE_y": 9.849464416503906
+          },
+          "magnitude": {
+            "magnitude_mae": 5.803321361541748,
+            "magnitude_bias": -4.541013240814209,
+            "magnitude_rmse": 10.726603507995605,
+            "true_magnitude_mean": 83.56890869140625,
+            "pred_magnitude_mean": 79.02788543701172,
+            "magnitude_compression_ratio": 1.2656769752502441,
+            "magnitude_slope": 0.8083499475737017,
+            "magnitude_r2": 0.05149173642433047,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 3.3570640087127686,
+            "median_abs_angle_error_deg": 1.3646697998046875,
+            "p95_abs_angle_error_deg": 10.731555938720703,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 289,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9894989132881165,
+            "median_cosine_similarity": 0.9997165203094482,
+            "p05_cosine_similarity": 0.9825096726417542,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "s3_audit_csv_recompute",
+      "computed": {
+        "formula": "true_mag = sqrt(S3_x^2 + S3_y^2); pred_mag = sqrt(pred_S3_x^2 + pred_S3_y^2)",
+        "high_bin": "true_mag > 0.7 * vector_scale",
+        "vector_scale": 96.0678939819336,
+        "all_magnitude": {
+          "n": 1977,
+          "ols_slope": 0.9197985120115866,
+          "ols_intercept": 1.9646782359354358,
+          "through_origin_slope": 0.9495228400785638,
+          "correlation": 0.9823766741190266,
+          "r2": 0.9650639298531595,
+          "mae": 3.1507528432645073,
+          "rmse": 6.065942452565798,
+          "bias": 0.11479815480541262,
+          "median_error": 0.5009247574485035,
+          "p95_abs_error": 12.710914223742975,
+          "true_range": [
+            0.0,
+            100.0
+          ],
+          "pred_range": [
+            0.011283610592719179,
+            101.37073833813146
+          ]
+        },
+        "high_magnitude": {
+          "n": 289,
+          "ols_slope": 0.8083499589936174,
+          "ols_intercept": 11.474970449247339,
+          "through_origin_slope": 0.9438023223369425,
+          "correlation": 0.6386701017379973,
+          "r2": 0.4078994988540242,
+          "mae": 5.8033215089605195,
+          "rmse": 10.726603065580695,
+          "bias": -4.541013333896658,
+          "median_error": -1.7876696796650862,
+          "p95_abs_error": 22.716527013247493,
+          "true_range": [
+            67.43524135833647,
+            100.0
+          ],
+          "pred_range": [
+            16.13894289913216,
+            101.37073833813146
+          ]
+        },
+        "component_slopes": {
+          "S3_x_all": {
+            "n": 1977,
+            "ols_slope": 0.9479598842338933,
+            "ols_intercept": 0.08236176444398009,
+            "through_origin_slope": 0.9479123972889586,
+            "correlation": 0.9811274417916773,
+            "r2": 0.9626110570366817,
+            "mae": 2.542181792243025,
+            "rmse": 5.280112983268236,
+            "bias": 0.10459916989910703,
+            "median_error": -0.023487091064453125,
+            "p95_abs_error": 10.647989296913146,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.4974594116211,
+              99.48609924316406
+            ]
+          },
+          "S3_y_all": {
+            "n": 1977,
+            "ols_slope": 0.9389142395530106,
+            "ols_intercept": 0.18269492659107972,
+            "through_origin_slope": 0.9387911484619196,
+            "correlation": 0.9822687818129211,
+            "r2": 0.9648519597242416,
+            "mae": 2.5635600304085013,
+            "rmse": 5.302624659863874,
+            "bias": 0.21493751082341359,
+            "median_error": 0.012697219848632812,
+            "p95_abs_error": 10.509101104736287,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.73075866699219,
+              99.59243774414062
+            ]
+          },
+          "S3_x_high": {
+            "n": 289,
+            "ols_slope": 0.9467207371996095,
+            "ols_intercept": 1.0987570189384752,
+            "through_origin_slope": 0.9454292373163455,
+            "correlation": 0.9880383750462575,
+            "r2": 0.9762198305640499,
+            "mae": 4.822695476708734,
+            "rmse": 9.23145212706943,
+            "bias": 1.3117088224597042,
+            "median_error": 0.1420917510986328,
+            "p95_abs_error": 17.43752822875976,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.4974594116211,
+              99.48609924316406
+            ]
+          },
+          "S3_y_high": {
+            "n": 289,
+            "ols_slope": 0.9333769602003639,
+            "ols_intercept": 0.20667320413078466,
+            "through_origin_slope": 0.9331701582398471,
+            "correlation": 0.987624027436658,
+            "r2": 0.9754012195702059,
+            "mae": 5.247844931924116,
+            "rmse": 9.849464870523867,
+            "bias": 0.4519462485807371,
+            "median_error": 0.0016121864318847656,
+            "p95_abs_error": 19.764413261413548,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.73075866699219,
+              99.59243774414062
+            ]
+          }
+        },
+        "high_angle": {
+          "mean_abs_angle_error_deg": 3.3570637759533213,
+          "p95_abs_angle_error_deg": 10.731559939917254,
+          "n": 289
+        }
+      },
+      "generated_plots": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_x_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_y_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_mag_pred_vs_true_all.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_mag_pred_vs_true_high.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_mag_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_vector_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260614_054703_utc/plots/v8b_frozen_c1diff_full_seed7_S3_angle_error_vs_true_mag.png"
+      ]
+    }
+  ],
+  "artifact_limitation": "The current GitHub artifact policy excludes raw predictions and model checkpoints. This report therefore verifies the stored metric and code path, but cannot recompute the 0.71 slope, through-origin slope, component slopes, or intercept from saved raw predictions."
+}
