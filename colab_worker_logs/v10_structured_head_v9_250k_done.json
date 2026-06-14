@@ -1,0 +1,19 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-14T11:37:54.637690+00:00",
+  "workflow": "scripts/run_colab_v10_structured_head_v9_250k_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_055608_utc/training_features_enhanced.csv",
+  "frozen_benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
+  "run_args": [
+    "--run",
+    "training_results/model_selection_loop/D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k_seed23_20260614_090413_utc",
+    "--run",
+    "training_results/model_selection_loop/D66_grouped_structured_width320_lr6e-4_dropout0.075_v10_v9gap250k_seed7_20260614_102033_utc"
+  ],
+  "diagnostics": [
+    "v10_structured_head_training",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit"
+  ],
+  "decision": "Compare the structured grouped-head architecture against the promoted v9 d66 seed23 baseline before any further data expansion."
+}
