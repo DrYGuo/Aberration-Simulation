@@ -1,12 +1,14 @@
 {
-  "created_utc": "2026-06-14T23:50:32.409466+00:00",
+  "created_utc": "2026-06-15T00:05:10.580977+00:00",
+  "sampling_quality_logic_version": "dataset_version_focus_v2",
   "csv_path": "training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc/training_features_enhanced.csv",
   "config": "configs/targeted_expansion_v11_500k.json",
   "benchmark_split_manifest": "configs/benchmark_split_v6_frozen_row_keys.json",
   "counts": {
+    "focus_dataset_version": "enhanced_v11_gap500k",
     "total_rows": 500000,
-    "parent_rows": 16446,
-    "new_training_only_rows": 483554,
+    "parent_rows": 250000,
+    "new_training_only_rows": 250000,
     "dataset_versions": {
       "parent_cached_dataset": 16446,
       "enhanced_v3_targeted25k": 25000,
@@ -29,33 +31,11 @@
     }
   },
   "quota": {
+    "focus_dataset_version": "enhanced_v11_gap500k",
     "planned_total_new_rows": 250000,
-    "observed_total_new_rows": 483554,
-    "quota_warning_labels": [
-      "S3_high_random",
-      "coupled_A1_B2_S3_random",
-      "coupled_A1_B2_random",
-      "coupled_A1_S3_random",
-      "coupled_A2_B2_random",
-      "coupled_A3_S3_random",
-      "coupled_B2_S3_random",
-      "coupled_C1_A1_C3_A2_random",
-      "coupled_C1_A1_C3_random",
-      "coupled_C1_A1_S3_random",
-      "coupled_C1_A1_random",
-      "coupled_C1_A2_random",
-      "coupled_C1_A3_random",
-      "coupled_C1_B2_random",
-      "coupled_C1_C3_A2_random",
-      "coupled_C1_C3_S3_random",
-      "coupled_C1_C3_random",
-      "coupled_C1_S3_random",
-      "coupled_C3_A3_S3_random",
-      "coupled_C3_B2_random",
-      "coupled_full_random",
-      "coupled_sparse_random"
-    ],
-    "quota_pass": false
+    "observed_total_new_rows": 250000,
+    "quota_warning_labels": [],
+    "quota_pass": true
   },
   "split": {
     "status": "available",
@@ -73,8 +53,7 @@
     "training_only_leakage_pass": true
   },
   "warnings": [
-    "Regime quota mismatch >1% for: S3_high_random, coupled_A1_B2_S3_random, coupled_A1_B2_random, coupled_A1_S3_random, coupled_A2_B2_random, coupled_A3_S3_random, coupled_B2_S3_random, coupled_C1_A1_C3_A2_random, coupled_C1_A1_C3_random, coupled_C1_A1_S3_random, coupled_C1_A1_random, coupled_C1_A2_random, coupled_C1_A3_random, coupled_C1_B2_random, coupled_C1_C3_A2_random, coupled_C1_C3_S3_random, coupled_C1_C3_random, coupled_C1_S3_random, coupled_C3_A3_S3_random, coupled_C3_B2_random, coupled_full_random, coupled_sparse_random",
     "Low new-row marginal entropy: new_training_only:A2_amp, new_training_only:A2_phase"
   ],
-  "recommendation": "FAIL"
+  "recommendation": "PASS_WITH_WARNINGS"
 }
