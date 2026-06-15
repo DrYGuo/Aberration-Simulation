@@ -1,0 +1,135 @@
+{
+  "description": "Expansion from the v12 benchmark-v2 500K evaluation CSV to roughly 1M train-eligible rows plus the fixed 75K benchmark-v2 held-out rows. The new 500K rows use a broader space-filling mix to improve 12D coverage while preserving hard S3/A3/B2/A1 coupling diagnostics.",
+  "dataset_version": "enhanced_v13_1m_spacefill",
+  "parent_dataset_version": "enhanced_v12_benchmark_v2",
+  "expected_parent_rows": 575000,
+  "expected_new_training_only_rows": 500000,
+  "expected_total_rows": 1075000,
+  "case_counts": {
+    "coupled_full_random": 160000,
+    "coupled_sparse_random": 80000,
+    "S3_high_random": 35000,
+    "coupled_A3_S3_random": 35000,
+    "coupled_B2_S3_random": 30000,
+    "coupled_A1_B2_S3_random": 35000,
+    "coupled_C3_A3_S3_random": 30000,
+    "coupled_A1_S3_random": 20000,
+    "coupled_C1_C3_random": 15000,
+    "coupled_C1_S3_random": 10000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C1_C3_S3_random": 8000,
+    "coupled_C1_A3_S3_random": 8000,
+    "coupled_C1_C3_A2_random": 10000,
+    "coupled_A2_B2_random": 6000,
+    "coupled_A1_B2_random": 5000,
+    "coupled_C3_B2_random": 5000
+  },
+  "sampling": {
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_A2_B2_random",
+        "coupled_A1_B2_random",
+        "coupled_C3_B2_random"
+      ],
+      "note": "This is not an exact orthogonal design. It is a per-regime Latin-hypercube, physics-guided space-filling expansion. The large coupled_full_random and coupled_sparse_random quotas are intended to improve broad 12D interpolation rather than only local hard-regime performance."
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_S3_random": [["C1", "S3"]],
+        "coupled_C1_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_C3_S3_random": [["C3", "S3"]],
+        "coupled_C1_A3_S3_random": [["A3", "S3"]]
+      },
+      "note": "Only vector-vector pairs are actively angle-constrained by the generator. Scalar-vector labels are retained for traceability."
+    },
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random",
+        "coupled_C1_C3_A2_random"
+      ],
+      "note": "C1 is intentionally monitored but not allowed to dominate model selection because current defocus settings limit intrinsic C1 sensitivity."
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_S3_random",
+        "coupled_C1_A1_S3_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C1_A3_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "coverage_metrics_to_track": {
+    "primary": [
+      "marginal_empty_bins",
+      "marginal_normalized_entropy",
+      "marginal_max_to_median_bin_count",
+      "pairwise_nonempty_fraction",
+      "pairwise_normalized_entropy",
+      "pairwise_max_to_median_bin_count",
+      "nearest_neighbor_distance_p95",
+      "relative_angle_bin_balance",
+      "training_only_leakage_counts"
+    ],
+    "decision_rule": "Do not approve a 2M expansion only because model metrics improve. Require sampling diagnostics to show remaining coverage gaps or benchmark/stress errors that cannot be fixed by architecture/optimizer tuning."
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+    "do_not_train_on_blind_or_stress": true
+  },
+  "decision_note": {
+    "purpose": "Move from targeted 500K training to a broader 1M train-eligible dataset while preserving fixed benchmark-v2 validation/blind/stress evaluation.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc",
+    "fixed_architecture_and_features": true,
+    "feature_set": "d66",
+    "split_seed": 7,
+    "resource_note": "Use mini-batch training and chunked evaluation/prediction. Back up the generated v13 CSV to Google Drive before training so the 1M simulation is not lost if the runtime disconnects.",
+    "promotion_rule": "Promote only if v13 improves or preserves weighted score, blind/stress normalized MAE, high-S3 vector metrics, B2/A3 vector diagnostics, and sampling-quality coverage without easy-target regression."
+  }
+}
