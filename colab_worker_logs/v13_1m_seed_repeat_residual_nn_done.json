@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-15T10:12:25.627733+00:00",
+  "workflow": "scripts/run_colab_v13_seed_repeat_residual_nn_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "benchmark_v2_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "drive_backup_run_name": "v13_seed_repeat_residual_nn_20260615_065555_utc",
+  "diagnostics": [
+    "v13_1m_seed_repeat_training",
+    "residual_vs_12d_nearest_neighbor_distance",
+    "vector_diagnostics",
+    "per_target_diagnostics",
+    "drive_backup"
+  ],
+  "decision": "Use seed variation plus residual-vs-NN distance to decide whether the next move is targeted data expansion or feature/model/loss improvement."
+}

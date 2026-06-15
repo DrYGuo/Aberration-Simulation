@@ -1,0 +1,51 @@
+{
+  "diagnostic": "residual_vs_12d_nearest_neighbor_distance",
+  "created_utc": "2026-06-15T10:10:52.106369+00:00",
+  "target_space": "12 target components normalized by physical target scales",
+  "reference_split": "train",
+  "query_splits": [
+    "blind",
+    "stress"
+  ],
+  "nearest_neighbor_method": "sklearn_exact",
+  "n_query": 55467,
+  "n_train_reference": 992556,
+  "correlation_weighted_abs_error_vs_nn_distance": 0.7445857269670574,
+  "spearman_weighted_abs_error_vs_nn_distance": 0.7735352471219937,
+  "all_blind_stress": {
+    "group": "all_blind_stress",
+    "n": 55467,
+    "median_weighted_abs_error": 0.0030103600583970547,
+    "median_nn_distance_12d": 0.08132940530776978,
+    "p95_weighted_abs_error": 0.02126203645020722,
+    "p95_nn_distance_12d": 0.5988839209079742
+  },
+  "top_1_percent_residuals": {
+    "group": "top_1_percent_residuals",
+    "n": 555,
+    "median_weighted_abs_error": 0.04483802616596222,
+    "median_nn_distance_12d": 0.6089372038841248,
+    "p95_weighted_abs_error": 0.07401129975914954,
+    "p95_nn_distance_12d": 0.8168496310710905
+  },
+  "top_5_percent_residuals": {
+    "group": "top_5_percent_residuals",
+    "n": 2774,
+    "median_weighted_abs_error": 0.02733448799699545,
+    "median_nn_distance_12d": 0.5740039646625519,
+    "p95_weighted_abs_error": 0.05484841801226137,
+    "p95_nn_distance_12d": 0.768213152885437
+  },
+  "top_5_to_all_median_nn_distance_ratio": 7.05776665266867,
+  "decision_interpretation": "coverage_limited",
+  "decision_rule": {
+    "coverage_limited": "top 5% residual median NN distance is at least 1.25x all blind/stress median NN distance",
+    "model_or_feature_limited": "top 5% residual median NN distance is near the all blind/stress median"
+  },
+  "artifacts": {
+    "full_row_csv": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed37_residual_nn_20260615_083331_utc/residual_vs_nn_distance.csv",
+    "top_residuals_csv": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed37_residual_nn_20260615_083331_utc/residual_vs_nn_distance_top_residuals.csv",
+    "binned_summary_csv": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed37_residual_nn_20260615_083331_utc/residual_vs_nn_distance_binned_summary.csv",
+    "regime_quartile_csv": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed37_residual_nn_20260615_083331_utc/residual_vs_nn_distance_by_regime_quartile.csv"
+  }
+}
