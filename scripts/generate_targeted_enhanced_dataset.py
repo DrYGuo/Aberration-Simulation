@@ -251,11 +251,11 @@ def attach_parent_metadata(rows: list[dict[str, Any]]) -> None:
         row.setdefault(SPLIT_HINT_FIELD, "")
 
 
-def attach_new_row_metadata(rows: list[dict[str, Any]]) -> None:
+def attach_new_row_metadata(rows: list[dict[str, Any]], split_hint: str = SPLIT_HINT_TRAINING_ONLY) -> None:
     for row in rows:
         row[DATASET_VERSION_FIELD] = DATASET_VERSION
         row[DATASET_SOURCE_FIELD] = DATASET_VERSION
-        row[SPLIT_HINT_FIELD] = SPLIT_HINT_TRAINING_ONLY
+        row[SPLIT_HINT_FIELD] = split_hint
 
 
 def extra_feature_columns() -> list[str]:
@@ -956,6 +956,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=31)
     parser.add_argument("--batch-base-cases", type=int, default=64)
     parser.add_argument(
+        "--new-row-split-hint",
+        default=SPLIT_HINT_TRAINING_ONLY,
+        help=(
+            "dataset_split_hint assigned to newly generated rows. The default "
+            "keeps expansion rows training-only. Use a non-training hint, such "
+            "as benchmark_v2, only with an explicit frozen split manifest."
+        ),
+    )
+    parser.add_argument(
         "--bootstrap-if-missing",
         action="store_true",
         help="Run the enhanced dataset bootstrap notebook if no parent training_features_enhanced.csv exists.",
@@ -999,7 +1008,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     new_rows = simulate_rows(target_cases, args.batch_base_cases)
-    attach_new_row_metadata(new_rows)
+    attach_new_row_metadata(new_rows, args.new_row_split_hint)
     combined_rows: list[dict[str, Any]] = [*source_rows, *new_rows]
     output_fieldnames = fieldnames_with_metadata(source_fieldnames)
     output_csv = output_dir / "training_features_enhanced.csv"
@@ -1023,7 +1032,12 @@ def main() -> int:
         "output_csv": str(output_csv),
         "output_csv_sha256": file_sha256(output_csv),
         "row_count_before_expansion": len(source_rows),
-        "appended_training_only_row_count": len(new_rows),
+        "appended_training_only_row_count": (
+            len(new_rows) if args.new_row_split_hint == SPLIT_HINT_TRAINING_ONLY else 0
+        ),
+        "appended_non_training_benchmark_row_count": (
+            0 if args.new_row_split_hint == SPLIT_HINT_TRAINING_ONLY else len(new_rows)
+        ),
         "total_rows": len(combined_rows),
         "random_seed": args.seed,
         "targeted_case_counts": case_counts,
@@ -1035,7 +1049,7 @@ def main() -> int:
         "new_rows_per_regime": audit["new_rows_per_regime"],
         "split_policy": "New rows are training-only unless a later, explicit versioned split experiment changes validation/blind/stress benchmark definitions.",
         "dataset_split_hint_field": SPLIT_HINT_FIELD,
-        "new_row_split_hint": SPLIT_HINT_TRAINING_ONLY,
+        "new_row_split_hint": args.new_row_split_hint,
         "feature_columns_path": str(output_dir / "feature_columns_enhanced.json"),
         "label_summary_path": str(output_dir / "label_summary.csv"),
         "new_targeted_label_summary_path": str(output_dir / "new_targeted_label_summary.csv"),

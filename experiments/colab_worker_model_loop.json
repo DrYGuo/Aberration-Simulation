@@ -1,6 +1,6 @@
 {
-  "description": "v11 500K d66 data-scale workflow. If the completed v11 done marker exists, run or refresh the corrected sampling-quality dashboard against the cached v11 CSV without regenerating data or retraining. Otherwise, run the full v11 expansion/training workflow.",
-  "config_id": "v11-gap500k-d66-sampling-quality-v2",
+  "description": "v12 benchmark-v2 500K protocol check. Reuse the cached v11 500K training data, append 75K held-out benchmark-v2 rows, write a larger frozen validation/blind/stress manifest, and retrain/evaluate the current D66 grouped-head baseline without adding new training rows.",
+  "config_id": "v12-benchmark-v2-500k",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,10 +12,11 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v11_gap500k_d66_workflow.sh"
+    "scripts/run_colab_v12_benchmark_v2_500k_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
+    "configs/benchmark_split_v12_v2_row_keys.json",
     "colab_worker_logs/*.json",
     "colab_worker_logs/*.log",
     "training_results/feature_regression_enhanced/**/dataset_manifest.json",

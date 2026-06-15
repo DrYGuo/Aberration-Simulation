@@ -1,0 +1,98 @@
+{
+  "description": "Held-out benchmark-v2 append for evaluating the 500K v11 baseline with larger validation/blind/stress sets before any 1M training expansion. These rows are not training data.",
+  "dataset_version": "enhanced_v12_benchmark_v2",
+  "parent_dataset_version": "enhanced_v11_gap500k",
+  "expected_parent_rows": 500000,
+  "expected_new_benchmark_rows": 75000,
+  "expected_total_rows": 575000,
+  "case_counts": {
+    "coupled_full_random": 10000,
+    "coupled_sparse_random": 8000,
+    "S3_high_random": 7000,
+    "coupled_A3_S3_random": 7000,
+    "coupled_B2_S3_random": 7000,
+    "coupled_A1_B2_S3_random": 7000,
+    "coupled_C3_A3_S3_random": 6000,
+    "coupled_A1_S3_random": 5000,
+    "coupled_A2_B2_random": 6000,
+    "coupled_C1_C3_A2_random": 5000,
+    "coupled_C1_A1_C3_A2_random": 3000,
+    "coupled_C1_C3_S3_random": 2000,
+    "coupled_C3_B2_random": 2000
+  },
+  "sampling": {
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_A2_B2_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_C1_C3_S3_random",
+        "coupled_C3_B2_random"
+      ]
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_C3_S3_random": [["C3", "S3"]]
+      }
+    },
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_C1_C3_A2_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_C1_C3_S3_random"
+      ]
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_C3_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "selection_policy": {
+    "training_only_append_rows": false,
+    "benchmark_v2_append_rows": true,
+    "new_row_split_hint": "benchmark_v2",
+    "requires_explicit_v2_split_manifest": true,
+    "validation_blind_stress_source": "benchmark_v2_manifest",
+    "do_not_train_on_benchmark_v2": true
+  },
+  "decision_note": {
+    "purpose": "Increase validation/blind/stress statistical power before 1M data expansion while keeping the 500K training dataset fixed.",
+    "target_new_split_counts": "Approximately 25K validation, 25K blind, and 25K stress rows, stratified by regime label.",
+    "success_rule": "Use this benchmark to confirm v11-style performance under larger held-out hard-regime tests before approving 1M training expansion."
+  }
+}
