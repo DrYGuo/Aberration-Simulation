@@ -1,6 +1,6 @@
 {
-  "description": "v12 benchmark-v2 500K protocol check. Reuse the cached v11 500K training data, append 75K held-out benchmark-v2 rows, write a larger frozen validation/blind/stress manifest, and retrain/evaluate the current D66 grouped-head baseline without adding new training rows.",
-  "config_id": "v12-benchmark-v2-500k",
+  "description": "Back up the current live Colab training data, configs, logs, and compact result artifacts to Google Drive before preparing the 1M expansion. This does not start model training or data generation.",
+  "config_id": "drive-backup-before-1m",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v12_benchmark_v2_500k_workflow.sh"
+    "scripts/run_colab_drive_backup_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
