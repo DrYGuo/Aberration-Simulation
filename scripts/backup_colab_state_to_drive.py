@@ -52,7 +52,19 @@ def mount_google_drive(mount_point: Path) -> bool:
     except Exception:
         return False
     print(f"mounting Google Drive at {mount_point}", flush=True)
-    drive.mount(str(mount_point), force_remount=False)
+    try:
+        drive.mount(str(mount_point), force_remount=False)
+    except Exception as exc:
+        print(
+            "Google Drive mount could not be started from this Python process. "
+            "In Colab/VS Code, run this in a notebook cell first:\n\n"
+            "from google.colab import drive\n"
+            "drive.mount('/content/drive')\n\n"
+            "Then rerun the worker cell.",
+            flush=True,
+        )
+        print(f"mount error: {type(exc).__name__}: {exc}", flush=True)
+        return False
     return mount_point.exists() and any(mount_point.iterdir())
 
 
@@ -133,8 +145,10 @@ def main() -> int:
     if not args.no_mount and str(drive_root).startswith("/content/drive"):
         if not mount_google_drive(mount_point):
             raise RuntimeError(
-                "Google Drive is not mounted. In Colab, authorize the Drive mount prompt, "
-                "or pass --drive-root to an already mounted/shared path."
+                "Google Drive is not mounted. Run the Drive mount cell in the notebook "
+                "kernel first, then rerun this worker. For Shared Drives, mount Drive "
+                "first and set ABERRATION_DRIVE_BACKUP_ROOT to a path under "
+                "/content/drive/Shareddrives/<drive-name>/."
             )
 
     run_name = args.run_name or f"backup_{utc_stamp()}"
