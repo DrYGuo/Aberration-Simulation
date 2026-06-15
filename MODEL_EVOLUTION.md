@@ -5,19 +5,20 @@ reason for each change, and the minimum information needed to reproduce a run.
 Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
 summarized in `model_registry*.csv`.
 
-## 2026-06-14 Current Model-Loop Status
+## 2026-06-15 Current Model-Loop Status
 
 Current baseline:
 
-- Dataset: `enhanced_v11_gap500k`
-- Parent dataset: `enhanced_v9_gap250k`
+- Dataset: `enhanced_v13_1m_spacefill`
+- Parent dataset: `enhanced_v12_benchmark_v2`
 - Dataset run:
-  - `training_results/feature_regression_enhanced/enhanced_v11_gap500k_20260614_205607_utc`
-- Total rows: `500,000`
-- Appended training-only rows: `250,000`
-- Training rows / validation / blind / stress:
-  - frozen benchmark validation/blind/stress from the v6 split policy; all v11
-    appended rows are training-only
+  - `training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc`
+- Total rows: `1,075,000`
+- New v13 training-only rows: `500,000`
+- Training / validation / blind / stress rows:
+  - `992,556 / 26,977 / 27,370 / 28,097`
+- Benchmark split manifest:
+  - `configs/benchmark_split_v12_v2_row_keys.json`
 - Feature family: 66 enhanced harmonic-summary features
 - Architecture: grouped-head residual MLP
 - Width: 320
@@ -25,69 +26,81 @@ Current baseline:
 - Dropout: `0.075`
 - Optimizer path: AdamW, SmoothL1 component loss, gradient clipping, plateau LR scheduler
 - Split seed: `7`
-- Current baseline runs:
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed23_20260614_214818_utc`
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
+- Current baseline run:
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed7_20260615_042743_utc`
 
 Best promoted run:
 
-- `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
+- `D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed7_20260615_042743_utc`
 
-Comparison against the v9 250K baseline:
+Comparison against the v12 500K benchmark-v2 baseline:
 
-| Metric | v9 seed23 | v9 seed7 | v11 seed23 | v11 seed7 | Direction |
-|---|---:|---:|---:|---:|---|
-| weighted score | `0.03051` | `0.03069` | `0.02710` | `0.02619` | better |
-| true hard-target normalized MAE | `0.01537` | `0.01557` | `0.01403` | `0.01372` | better |
-| validation normalized MAE | `0.01186` | `0.01199` | `0.01071` | `0.01056` | better |
-| blind normalized MAE | `0.00969` | `0.00968` | `0.00884` | `0.00886` | better |
-| stress normalized MAE | `0.00872` | `0.00878` | `0.00770` | `0.00761` | better |
-| high-S3 magnitude MAE | `4.73` | `4.66` | `4.32` | `4.09` | better |
-| high-S3 magnitude bias | `-3.12` | `-3.00` | `-3.04` | `-2.91` | better |
-| high-S3 magnitude slope | `0.865` | `0.851` | `0.858` | `0.845` | mixed |
-| high-S3 mean angle error | n/a | n/a | `2.23 deg` | `2.15 deg` | tracked |
-| high-S3 p95 angle error | n/a | n/a | `7.94 deg` | `7.00 deg` | tracked |
-| B2 magnitude MAE | `0.0553` | `0.0552` | `0.0498` | `0.0498` | better |
-| A3 magnitude MAE | `1.208` | `1.237` | `1.099` | `1.145` | better |
-| validation C1 MAE | `1.50` | `1.59` | `1.41` | `1.36` | better |
-| blind C1 MAE | `1.09` | `1.09` | `0.97` | `0.98` | better |
-| stress C1 MAE | `1.02` | `1.05` | `0.88` | `0.87` | better |
+| Metric | v12 500K benchmark-v2 | v13 1M | Direction |
+|---|---:|---:|---|
+| weighted score | `0.01342` | `0.01258` | better |
+| true hard-target normalized MAE | `0.00717` | `0.00674` | better |
+| hard-label normalized MAE | `0.00580` | `0.00554` | better |
+| validation normalized MAE | `0.00547` | `0.00521` | better |
+| blind normalized MAE | `0.00601` | `0.00565` | better |
+| stress normalized MAE | `0.00623` | `0.00584` | better |
+| high-S3 magnitude MAE | `0.949` | `0.876` | better |
+| high-S3 magnitude bias | `-0.580` | `-0.480` | better |
+| high-S3 magnitude slope | `0.970` | `0.974` | slightly better |
+| high-S3 mean angle error | `0.419 deg` | `0.342 deg` | better |
+| high-S3 p95 angle error | `1.683 deg` | `1.349 deg` | better |
+| B2 magnitude MAE | `0.0225` | `0.0220` | slightly better |
+| A3 magnitude MAE | `0.592` | `0.559` | better |
+| C1 validation MAE | `0.748` | `0.755` | slightly worse |
+| C1 blind MAE | `0.737` | `0.717` | better |
+| C1 stress MAE | `0.715` | `0.695` | better |
 
 Interpretation:
 
-- The v11 500K expansion is a clean, seed-stable improvement and replaces v9 as
-  the current baseline family.
-- The best current model is the v11 seed7 run by weighted score.
-- The main data-scale trend remains positive: the learning-curve report shows
-  v9 250K -> v11 500K improvements of `14.2%` weighted score, `10.7%` hard
-  MAE, `8.6%` blind MAE, and `12.7%` stress MAE.
-- The high-S3 slope is slightly mixed relative to v9, but high-S3 magnitude MAE
-  and bias improve, so the v11 result is still promoted.
+- The v13 1M expansion is the current promoted baseline. It improves weighted
+  score, true hard-target MAE, validation/blind/stress MAE, S3 high-magnitude
+  compression, and B2/A3 vector diagnostics relative to the v12 500K
+  benchmark-v2 run.
+- The v13 result used the same v12 benchmark-v2 validation/blind/stress split
+  manifest as v12, so the v12 -> v13 comparison is a clean training-data-scale
+  comparison.
+- The main data-scale trend remains positive: the latest learning-curve report
+  shows v9 250K -> v13 1M improvements of `58.8%` weighted score, `56.1%`
+  true hard-target MAE, `41.7%` blind MAE, and `33.0%` stress MAE.
 - The 66-feature representation remains the promoted feature set. The v8b
   full defocus-difference features improved selected high-S3/B2 diagnostics but
   were not seed-stable enough on blind, stress, and A3 metrics to promote.
-- C1 improved with v9, but it remains a secondary target because the current
+- C1 remains a secondary target because the current
   under/over defocus geometry likely limits direct C1 sensitivity. The method
   measures C1 through differences of already strongly defocused probe features,
   so C1 should not dominate model selection.
-- The narrow v10 architecture test did not improve generalization, so the next
-  useful experiment was a controlled data-scale step while keeping the v9
-  architecture and feature set fixed. That v11 500K step succeeded.
+- The narrow v10 architecture test did not improve generalization. The successful
+  route since v9 has been controlled data-scale expansion while keeping the
+  grouped-head 66-feature architecture fixed.
 
 Sampling-quality status:
 
-- Current v11 results include compact dataset audit artifacts:
-  - `targeted25k_audit.json`
-  - `label_summary.csv`
-  - `new_targeted_label_summary.csv`
-  - hard-target 2D histogram plots
-- The standalone sampling-quality dashboard planned for v11 was not generated in
-  the current pushed results. The v11 simulation/training began from commit
-  `8cba0d5`, before the dashboard integration commit was active in the worker
-  run.
-- Before the next data expansion, run a dashboard-only follow-up on the existing
-  v11 500K CSV if the CSV is still available in Colab. Do not regenerate data or
-  retrain just to obtain this dashboard.
+- Current v13 results include the standalone sampling-quality dashboard:
+  - `training_results/model_selection_reports/sampling_quality_v13_1m_d66/sampling_quality_report.md`
+  - `training_results/model_selection_reports/sampling_quality_v13_1m_d66/sampling_quality_summary.json`
+- Sampling-quality recommendation: `PASS`.
+- The v13 dataset has `1,075,000` total rows, including `500,000` new
+  training-only v13 rows and the `75,000` row v12 benchmark-v2 split.
+- Training-only leakage into validation/blind/stress is `0`.
+- Relative-angle coverage for A1-S3, B2-S3, and A3-S3 is balanced across
+  aligned, orthogonal, anti-aligned, and random categories.
+- Coverage diagnostics still show nonuniform marginal and pairwise density, as
+  expected for a physics-weighted hard-regime sampler rather than a uniform
+  12D grid. The dashboard is used to diagnose coverage, not as the sole
+  criterion for model selection.
+
+Coefficient uncertainty table:
+
+- Presentation table:
+  - `docs/regression_uncertainty_by_training_size.md`
+- The table reports validation p95 absolute error. For vector coefficients it
+  uses the worse x/y component as a conservative one-number uncertainty level.
+  This is more useful as an error-bar style presentation number than RMSE
+  because it describes a 95% absolute-error envelope.
 
 Rejected v10 architecture test:
 
@@ -118,7 +131,8 @@ Decision:
   main weighted score, true hard-target score, blind score, A3, and seed-stable
   high-S3 behavior.
 - Keep the original grouped-head architecture for the next data-scale step. The
-  later v11 500K run supersedes v9 as the current baseline.
+  later v11 500K run superseded v9, and the later v13 1M run now supersedes
+  both.
 
 Completed v11 500K data-scale implementation:
 

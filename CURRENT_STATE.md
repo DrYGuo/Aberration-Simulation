@@ -1,10 +1,10 @@
 # Current Project State
 
-Last updated: 2026-06-14
+Last updated: 2026-06-15
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `46d5264`
+- Latest evaluated Colab result commit: `47c91bf`
 - Documentation in this file reflects the evaluated Colab results through that commit.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
@@ -33,12 +33,16 @@ small plots, and concise reports.
 - Raw-angle regression notebook: `notebooks/uno_feature_regression_raw_angles.ipynb`
 - Colab model-selection worker notebook: `notebooks/colab_worker_model_loop.ipynb`
 - Colab worker config: `experiments/colab_worker_model_loop.json`
-- Latest completed model-selection batch config: `configs/model_selection_batch_v11_gap500k_d66.json`
+- Latest completed model-selection batch config: `configs/model_selection_batch_v13_1m_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
 - Latest completed model-selection batch results:
-  - `training_results/model_selection_batches/v11_gap500k_d66_20260614_214817_utc/batch_summary.csv`
-- Latest completed 500k expansion config:
-  - `configs/targeted_expansion_v11_500k.json`
+  - `training_results/model_selection_batches/v13_1m_d66_20260615_042743_utc/batch_summary.csv`
+- Latest completed 1M expansion config:
+  - `configs/targeted_expansion_v13_1m.json`
+- Latest sampling-quality report:
+  - `training_results/model_selection_reports/sampling_quality_v13_1m_d66/sampling_quality_report.md`
+- Presentation uncertainty table:
+  - `docs/regression_uncertainty_by_training_size.md`
 - Previous model-selection batch config:
   - `configs/model_selection_batch_v10_structured_head_v9_250k.json`
 - Completed 250k expansion config:
@@ -110,13 +114,13 @@ Model decisions, run history, and the reproducibility/tracking standard are in
 Current baseline:
 
 - Run:
-  - `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed7_20260614_223556_utc`
-  - seed-repeat check: `D66_grouped_width320_lr6e-4_dropout0.075_v11gap500k_d66_seed23_20260614_214818_utc`
+  - `D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed7_20260615_042743_utc`
 - Dataset:
-  - `enhanced_v11_gap500k_20260614_205607_utc`
-  - `500,000` total rows
-  - `250,000` targeted hard-regime training-only rows appended to the v9 parent
-  - validation/blind/stress remain the frozen benchmark splits from the v6 split policy
+  - `enhanced_v13_1m_spacefill_20260615_021848_utc`
+  - `1,075,000` total rows
+  - `500,000` v13 space-filling training-only rows appended to the v12 parent
+  - validation/blind/stress use `configs/benchmark_split_v12_v2_row_keys.json`
+  - split rows: `992,556 / 26,977 / 27,370 / 28,097`
 - Feature family:
   - 66 enhanced harmonic-summary features
 - Model:
@@ -131,29 +135,20 @@ Current baseline:
 
 Key metrics for the current baseline:
 
-- Weighted score: `0.02619` for seed7, `0.02710` for seed23
-- True hard-target normalized MAE: `0.01372` / `0.01403`
-- Overall validation normalized MAE: `0.01056` / `0.01071`
-- Blind/stress normalized MAE:
-  - seed7: `0.00886` / `0.00761`
-  - seed23: `0.00884` / `0.00770`
-- B2/A3 magnitude MAE:
-  - seed7: `0.0498` / `1.145`
-  - seed23: `0.0498` / `1.099`
-- High-S3 magnitude MAE/bias/slope:
-  - seed7: `4.09` / `-2.91` / `0.845`
-  - seed23: `4.32` / `-3.04` / `0.858`
-- High-S3 angle diagnostics:
-  - seed7: mean `2.15 deg`, p95 `7.00 deg`
-  - seed23: mean `2.23 deg`, p95 `7.94 deg`
-- C1 validation/blind/stress MAE:
-  - seed7: `1.36` / `0.98` / `0.87`
-  - seed23: `1.41` / `0.97` / `0.88`
+- Weighted score: `0.01258`
+- True hard-target normalized MAE: `0.00674`
+- Hard-label normalized MAE / p95: `0.00554` / `0.01878`
+- Overall validation normalized MAE / p95: `0.00521` / `0.02184`
+- Blind/stress normalized MAE: `0.00565` / `0.00584`
+- B2/A3 magnitude MAE: `0.0220` / `0.559`
+- High-S3 magnitude MAE/bias/slope: `0.876` / `-0.480` / `0.974`
+- High-S3 angle diagnostics: mean `0.342 deg`, p95 `1.349 deg`
+- C1 validation/blind/stress MAE: `0.755` / `0.717` / `0.695`
 
 Current interpretation:
 
-- The v11 500K hard-regime expansion is the current best result and replaces v9
-  as the baseline family.
+- The v13 1M expansion is the current best result and replaces v12 as the
+  baseline family.
 - Standalone S3 magnitude-loss remains rejected as the main direction.
 - The v7 C1-focused expansion is rejected, and v8/v8b defocus-difference
   feature variants are not promoted. The v8b full defocus-difference features
@@ -168,66 +163,38 @@ Current interpretation:
   - true hard-target normalized MAE worsened to `0.01584` / `0.01598`
   - A3 magnitude MAE worsened to `1.329` / `1.383`
   - B2 improved slightly, but not enough to justify promotion.
-- The completed v11 500K data-scale test kept the v9 66-feature grouped-head
+- The completed v13 1M data-scale test kept the 66-feature grouped-head
   architecture fixed:
-  - expansion config: `configs/targeted_expansion_v11_500k.json`
-  - batch config: `configs/model_selection_batch_v11_gap500k_d66.json`
-  - worker script: `scripts/run_colab_v11_gap500k_d66_workflow.sh`
-  - total rows: `500,000`
-  - new rows: `250,000` appended training-only rows
+  - expansion config: `configs/targeted_expansion_v13_1m.json`
+  - batch config: `configs/model_selection_batch_v13_1m_d66.json`
+  - worker script: `scripts/run_colab_v13_1m_d66_workflow.sh`
+  - total rows: `1,075,000`
+  - new rows: `500,000` appended training-only rows
   - batch training: `batch_size=65536`, `eval_batch_size=65536`, `predict_batch_size=65536`
-  - sampler: per-regime Latin-hypercube space filling for all v11 labels, plus
-    balanced relative-angle strata for vector-vector S3 couplings.
-  - current result includes `targeted25k_audit.json`, label summaries, and
-    hard-target histograms.
-  - the standalone sampling-quality dashboard was not generated in the pushed
-    v11 result because the workflow began before the dashboard integration was
-    active. Run a dashboard-only follow-up on the existing v11 CSV before the
-    next expansion if the CSV is still available in Colab.
-  - `data_scale_learning_curve_20260614_232346_utc.md/json` confirms continued
-    improvement from 100K -> 250K -> 500K.
-
-500K data-distribution plan:
-
-- Broad hard-regime coverage:
-  - `coupled_full_random`: `40,000`
-  - `coupled_sparse_random`: `35,000`
-- S3/A3/B2 hard-vector coverage:
-  - `S3_high_random`: `24,000`
-  - `coupled_A3_S3_random`: `24,000`
-  - `coupled_B2_S3_random`: `20,000`
-  - `coupled_A1_B2_S3_random`: `24,000`
-  - `coupled_C3_A3_S3_random`: `22,000`
-  - `coupled_A1_S3_random`: `16,000`
-- C1 retained but not dominant:
-  - `coupled_C1_C3_random`: `8,000`
-  - `coupled_C1_S3_random`: `8,000`
-  - `coupled_C1_A1_S3_random`: `8,000`
-  - `coupled_C1_C3_S3_random`: `7,000`
-  - `coupled_C1_A3_S3_random`: `6,000`
-- Secondary B2 couplings:
-  - `coupled_A1_B2_random`: `3,000`
-  - `coupled_A2_B2_random`: `3,000`
-  - `coupled_C3_B2_random`: `2,000`
+  - sampler: physics-weighted hard-regime space filling with broad coupled-full
+    and coupled-sparse coverage plus balanced A1-S3, B2-S3, and A3-S3
+    relative-angle strata.
+  - sampling-quality report: `training_results/model_selection_reports/sampling_quality_v13_1m_d66/sampling_quality_report.md`
+  - learning-curve report: `training_results/model_selection_reports/data_scale_learning_curve_20260615_060407_utc.md`
+  - coefficient uncertainty table: `docs/regression_uncertainty_by_training_size.md`
 
 Resource notes:
 
-- The v10/v9 250K run used about `8.87/15 GB` GPU RAM on T4. A 500K full-batch
-  run could exceed memory, so the v11 batch uses mini-batch training and chunked
-  evaluation/prediction.
-- The current implementation still keeps normalized tensors on GPU. This should
-  be acceptable for 500K because the tensor storage is small compared with
-  full-batch activations, but a future 1M run may need CPU-resident batch loading
-  if GPU memory becomes tight.
+- The 1M run used mini-batch training and chunked evaluation/prediction. The
+  reported GPU RAM stayed within the T4 limit because batch size controls the
+  activation memory; full dataset size mainly affects CPU RAM/disk and epoch
+  time.
+- Keep `batch_size`, `eval_batch_size`, and `predict_batch_size` explicit for
+  future larger runs. If GPU RAM becomes tight, lower these before changing the
+  sampling plan.
 - Current disk usage around `49.56/235.68 GB` is not an immediate blocker for
-  500K. For 1M, disk can become an issue if multiple large feature CSVs are kept
-  simultaneously. Keep only needed cached CSV generations in Colab and continue
-  pushing only compact artifacts to GitHub.
+  1M. For future expansions, keep large CSV/checkpoint/result folders in Google
+  Drive backups and continue pushing only compact artifacts to GitHub.
 
 Benchmark note:
 
 - Appended rows are marked `dataset_split_hint=training_only`.
-- Validation/blind/stress are controlled by the frozen v6 benchmark split
+- Validation/blind/stress are controlled by the frozen v12 benchmark-v2 split
   manifest. New appended rows are training-only and should not leak into
   model-selection validation, blind, or stress splits.
 
