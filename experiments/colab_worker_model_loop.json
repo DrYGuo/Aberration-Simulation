@@ -1,6 +1,6 @@
 {
-  "description": "v13 1M data-scale run. Append 500K train-only rows to the cached v12 benchmark-v2 CSV, keep benchmark-v2 rows held out, run sampling-quality coverage diagnostics, train the current D66 grouped-head baseline once, and back up large data/results to Google Drive.",
-  "config_id": "v13-1m-d66-spacefill",
+  "description": "v13 1M seed-repeat and residual-vs-12D-nearest-neighbor diagnostic run. Use the cached v13 1M CSV only, do not generate simulations, run seed repeats for the current D66 grouped-head baseline, and classify residuals as coverage-limited or model/feature-limited.",
+  "config_id": "v13-1m-seed-repeat-residual-nn",
   "cycles": 8,
   "sleep_seconds": 30,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v13_1m_d66_workflow.sh"
+    "scripts/run_colab_v13_seed_repeat_residual_nn_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -50,6 +50,11 @@
     "training_results/model_selection_loop/**/*failure*.json",
     "training_results/model_selection_loop/**/selection*.json",
     "training_results/model_selection_loop/**/s3_magnitude_metric_audit_validation.csv",
+    "training_results/model_selection_loop/**/residual_vs_nn_distance_summary.json",
+    "training_results/model_selection_loop/**/residual_vs_nn_distance_report.md",
+    "training_results/model_selection_loop/**/residual_vs_nn_distance_top_residuals.csv",
+    "training_results/model_selection_loop/**/residual_vs_nn_distance_binned_summary.csv",
+    "training_results/model_selection_loop/**/residual_vs_nn_distance_by_regime_quartile.csv",
     "training_results/model_selection_loop/**/model_registry*.csv",
     "training_results/model_selection_loop/**/*summary.csv",
     "training_results/model_selection_loop/**/*.png",

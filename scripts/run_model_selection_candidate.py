@@ -930,6 +930,394 @@ def write_s3_magnitude_metric_audit_csv(
     )
 
 
+def _rankdata(values: np.ndarray) -> np.ndarray:
+    order = np.argsort(values, kind="mergesort")
+    ranks = np.empty(len(values), dtype=float)
+    sorted_values = values[order]
+    start = 0
+    while start < len(values):
+        end = start + 1
+        while end < len(values) and sorted_values[end] == sorted_values[start]:
+            end += 1
+        ranks[order[start:end]] = 0.5 * (start + end - 1)
+        start = end
+    return ranks
+
+
+def _safe_corr(left: np.ndarray, right: np.ndarray, *, rank: bool = False) -> float | None:
+    if len(left) < 3 or len(right) < 3:
+        return None
+    x = _rankdata(left) if rank else left.astype(float)
+    y_values = _rankdata(right) if rank else right.astype(float)
+    if float(np.std(x)) <= 1e-12 or float(np.std(y_values)) <= 1e-12:
+        return None
+    return float(np.corrcoef(x, y_values)[0, 1])
+
+
+def _target_space_matrix(y_values: np.ndarray, target_physical_scales: dict[str, float]) -> np.ndarray:
+    scales = np.asarray([target_physical_scales[name] for name in TARGET_COLUMNS], dtype=np.float32)
+    return (y_values / scales[None, :]).astype(np.float32)
+
+
+def _nearest_train_distances(
+    train_matrix: np.ndarray,
+    query_matrix: np.ndarray,
+    *,
+    sample_size: int = 100_000,
+    seed: int = 123,
+) -> tuple[np.ndarray, str]:
+    if len(train_matrix) == 0 or len(query_matrix) == 0:
+        return np.asarray([], dtype=np.float32), "empty"
+    try:
+        from sklearn.neighbors import NearestNeighbors
+
+        model = NearestNeighbors(n_neighbors=1, algorithm="auto", metric="euclidean")
+        model.fit(train_matrix)
+        distances, _ = model.kneighbors(query_matrix)
+        return distances[:, 0].astype(np.float32), "sklearn_exact"
+    except Exception:
+        rng = np.random.default_rng(seed)
+        method = "numpy_sampled_reference"
+        reference = train_matrix
+        if len(reference) > sample_size:
+            reference = reference[rng.choice(len(reference), size=sample_size, replace=False)]
+        chunks = []
+        for start in range(0, len(query_matrix), 512):
+            block = query_matrix[start : start + 512]
+            distances = np.sqrt(np.sum((block[:, None, :] - reference[None, :, :]) ** 2, axis=2))
+            chunks.append(np.min(distances, axis=1))
+        return np.concatenate(chunks).astype(np.float32), method
+
+
+def _wrapped_degrees(left_deg: float, right_deg: float) -> float:
+    return float((left_deg - right_deg + 180.0) % 360.0 - 180.0)
+
+
+def _vector_angle_deg(x_value: float, y_value: float) -> float:
+    return float(np.rad2deg(np.arctan2(y_value, x_value)))
+
+
+def _vector_residual(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    row_index: int,
+    x_name: str,
+    y_name: str,
+) -> float:
+    x_index = TARGET_COLUMNS.index(x_name)
+    y_index = TARGET_COLUMNS.index(y_name)
+    dx = float(y_pred[row_index, x_index] - y_true[row_index, x_index])
+    dy = float(y_pred[row_index, y_index] - y_true[row_index, y_index])
+    return float(np.hypot(dx, dy))
+
+
+def _true_vector_magnitude(y_true: np.ndarray, row_index: int, x_name: str, y_name: str) -> float:
+    x_index = TARGET_COLUMNS.index(x_name)
+    y_index = TARGET_COLUMNS.index(y_name)
+    return float(np.hypot(float(y_true[row_index, x_index]), float(y_true[row_index, y_index])))
+
+
+def _true_relative_angle(
+    y_true: np.ndarray,
+    row_index: int,
+    left: str,
+    right: str,
+) -> float:
+    left_angle = _vector_angle_deg(
+        float(y_true[row_index, TARGET_COLUMNS.index(f"{left}_x")]),
+        float(y_true[row_index, TARGET_COLUMNS.index(f"{left}_y")]),
+    )
+    right_angle = _vector_angle_deg(
+        float(y_true[row_index, TARGET_COLUMNS.index(f"{right}_x")]),
+        float(y_true[row_index, TARGET_COLUMNS.index(f"{right}_y")]),
+    )
+    return _wrapped_degrees(left_angle, right_angle)
+
+
+def _quartile_label(values: np.ndarray) -> np.ndarray:
+    if len(values) == 0:
+        return np.asarray([], dtype=object)
+    edges = np.quantile(values, [0.25, 0.50, 0.75])
+    labels = []
+    for value in values:
+        if value <= edges[0]:
+            labels.append("q1_nearest")
+        elif value <= edges[1]:
+            labels.append("q2")
+        elif value <= edges[2]:
+            labels.append("q3")
+        else:
+            labels.append("q4_farthest")
+    return np.asarray(labels, dtype=object)
+
+
+def _summarize_residual_group(
+    name: str,
+    rows_payload: list[dict[str, Any]],
+) -> dict[str, Any]:
+    if not rows_payload:
+        return {
+            "group": name,
+            "n": 0,
+            "median_weighted_abs_error": None,
+            "median_nn_distance_12d": None,
+            "p95_weighted_abs_error": None,
+            "p95_nn_distance_12d": None,
+        }
+    errors = np.asarray([float(row["weighted_abs_error"]) for row in rows_payload], dtype=float)
+    distances = np.asarray([float(row["nn_distance_12d"]) for row in rows_payload], dtype=float)
+    return {
+        "group": name,
+        "n": int(len(rows_payload)),
+        "median_weighted_abs_error": float(np.median(errors)),
+        "median_nn_distance_12d": float(np.median(distances)),
+        "p95_weighted_abs_error": float(np.quantile(errors, 0.95)),
+        "p95_nn_distance_12d": float(np.quantile(distances, 0.95)),
+    }
+
+
+def write_residual_vs_nn_distance_diagnostics(
+    output_dir: Path,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    rows: list[dict[str, str]],
+    split_indices: dict[str, np.ndarray],
+    target_physical_scales: dict[str, float],
+    *,
+    top_fraction: float = 0.05,
+) -> dict[str, Any]:
+    train_index = split_indices["train"]
+    diagnostic_splits = ["blind", "stress"]
+    query_index = np.concatenate([split_indices[name] for name in diagnostic_splits])
+    train_matrix = _target_space_matrix(y_true[train_index], target_physical_scales)
+    query_matrix = _target_space_matrix(y_true[query_index], target_physical_scales)
+    nn_distances, nn_method = _nearest_train_distances(train_matrix, query_matrix)
+
+    scale_array = np.asarray([target_physical_scales[name] for name in TARGET_COLUMNS], dtype=np.float32)
+    target_weights = np.asarray([TARGET_WEIGHTS[name] for name in TARGET_COLUMNS], dtype=np.float32)
+    target_weights = target_weights / max(float(np.sum(target_weights)), 1e-8)
+    errors = y_pred - y_true
+    abs_errors = np.abs(errors)
+    normalized_abs_errors = abs_errors / scale_array[None, :]
+
+    split_lookup: dict[int, str] = {}
+    for split_name in diagnostic_splits:
+        for index in split_indices[split_name]:
+            split_lookup[int(index)] = split_name
+
+    payload_rows: list[dict[str, Any]] = []
+    for position, row_index_raw in enumerate(query_index):
+        row_index = int(row_index_raw)
+        row = rows[row_index]
+        row_key_raw = frozen_benchmark_row_key(row, row_index)
+        weighted_abs_error = float(np.sum(normalized_abs_errors[row_index] * target_weights))
+        payload_rows.append(
+            {
+                "split": split_lookup[row_index],
+                "row_key": hashlib.sha256(row_key_raw.encode("utf-8")).hexdigest()[:20],
+                "row_index": row_index,
+                "sweep_label": row.get("sweep_label", ""),
+                "dataset_version": row.get("dataset_version", ""),
+                "nn_distance_12d": float(nn_distances[position]) if len(nn_distances) else None,
+                "overall_abs_error": float(np.mean(abs_errors[row_index])),
+                "weighted_abs_error": weighted_abs_error,
+                "C1_abs_error": float(abs_errors[row_index, TARGET_COLUMNS.index("C1")]),
+                "C3_abs_error": float(abs_errors[row_index, TARGET_COLUMNS.index("C3")]),
+                "A1_vector_error": _vector_residual(y_true, y_pred, row_index, "A1_x", "A1_y"),
+                "B2_vector_error": _vector_residual(y_true, y_pred, row_index, "B2_x", "B2_y"),
+                "A2_vector_error": _vector_residual(y_true, y_pred, row_index, "A2_x", "A2_y"),
+                "S3_vector_error": _vector_residual(y_true, y_pred, row_index, "S3_x", "S3_y"),
+                "A3_vector_error": _vector_residual(y_true, y_pred, row_index, "A3_x", "A3_y"),
+                "true_S3_amp": _true_vector_magnitude(y_true, row_index, "S3_x", "S3_y"),
+                "true_A3_amp": _true_vector_magnitude(y_true, row_index, "A3_x", "A3_y"),
+                "true_B2_amp": _true_vector_magnitude(y_true, row_index, "B2_x", "B2_y"),
+                "relative_angle_A3_S3": _true_relative_angle(y_true, row_index, "A3", "S3"),
+                "relative_angle_B2_S3": _true_relative_angle(y_true, row_index, "B2", "S3"),
+            }
+        )
+
+    fieldnames = [
+        "split",
+        "row_key",
+        "row_index",
+        "sweep_label",
+        "dataset_version",
+        "nn_distance_12d",
+        "overall_abs_error",
+        "weighted_abs_error",
+        "C1_abs_error",
+        "C3_abs_error",
+        "A1_vector_error",
+        "B2_vector_error",
+        "A2_vector_error",
+        "S3_vector_error",
+        "A3_vector_error",
+        "true_S3_amp",
+        "true_A3_amp",
+        "true_B2_amp",
+        "relative_angle_A3_S3",
+        "relative_angle_B2_S3",
+    ]
+    full_csv_path = output_dir / "residual_vs_nn_distance.csv"
+    write_csv(full_csv_path, payload_rows, fieldnames)
+
+    weighted_errors = np.asarray([float(row["weighted_abs_error"]) for row in payload_rows], dtype=float)
+    distances = np.asarray([float(row["nn_distance_12d"]) for row in payload_rows], dtype=float)
+    quartile_labels = _quartile_label(distances)
+    for row, label in zip(payload_rows, quartile_labels):
+        row["nn_distance_quartile"] = str(label)
+
+    sorted_rows = sorted(payload_rows, key=lambda row: float(row["weighted_abs_error"]), reverse=True)
+    top_n_5 = max(1, int(math.ceil(top_fraction * len(sorted_rows)))) if sorted_rows else 0
+    top_n_1 = max(1, int(math.ceil(0.01 * len(sorted_rows)))) if sorted_rows else 0
+    top_rows = sorted_rows[:top_n_5]
+    top_csv_path = output_dir / "residual_vs_nn_distance_top_residuals.csv"
+    write_csv(top_csv_path, top_rows, [*fieldnames, "nn_distance_quartile"])
+
+    binned_rows = []
+    for split_name in ["blind", "stress", "blind+stress"]:
+        split_rows = payload_rows if split_name == "blind+stress" else [row for row in payload_rows if row["split"] == split_name]
+        for quartile in ["q1_nearest", "q2", "q3", "q4_farthest"]:
+            group_rows = [row for row in split_rows if row.get("nn_distance_quartile") == quartile]
+            summary = _summarize_residual_group(f"{split_name}:{quartile}", group_rows)
+            summary["split"] = split_name
+            summary["nn_distance_quartile"] = quartile
+            binned_rows.append(summary)
+    binned_csv_path = output_dir / "residual_vs_nn_distance_binned_summary.csv"
+    write_csv(
+        binned_csv_path,
+        binned_rows,
+        [
+            "split",
+            "nn_distance_quartile",
+            "group",
+            "n",
+            "median_weighted_abs_error",
+            "median_nn_distance_12d",
+            "p95_weighted_abs_error",
+            "p95_nn_distance_12d",
+        ],
+    )
+
+    regime_quartile_rows = []
+    regimes = sorted({str(row["sweep_label"]) for row in payload_rows})
+    for regime in regimes:
+        regime_rows = [row for row in payload_rows if str(row["sweep_label"]) == regime]
+        if len(regime_rows) < 20:
+            continue
+        for quartile in ["q1_nearest", "q2", "q3", "q4_farthest"]:
+            group_rows = [row for row in regime_rows if row.get("nn_distance_quartile") == quartile]
+            if not group_rows:
+                continue
+            summary = _summarize_residual_group(f"{regime}:{quartile}", group_rows)
+            summary["sweep_label"] = regime
+            summary["nn_distance_quartile"] = quartile
+            regime_quartile_rows.append(summary)
+    regime_csv_path = output_dir / "residual_vs_nn_distance_by_regime_quartile.csv"
+    write_csv(
+        regime_csv_path,
+        regime_quartile_rows,
+        [
+            "sweep_label",
+            "nn_distance_quartile",
+            "group",
+            "n",
+            "median_weighted_abs_error",
+            "median_nn_distance_12d",
+            "p95_weighted_abs_error",
+            "p95_nn_distance_12d",
+        ],
+    )
+
+    all_summary = _summarize_residual_group("all_blind_stress", payload_rows)
+    top_1_summary = _summarize_residual_group("top_1_percent_residuals", sorted_rows[:top_n_1])
+    top_5_summary = _summarize_residual_group("top_5_percent_residuals", top_rows)
+    median_distance = all_summary["median_nn_distance_12d"]
+    top_5_distance = top_5_summary["median_nn_distance_12d"]
+    distance_ratio = None
+    if median_distance not in (None, 0):
+        distance_ratio = float(top_5_distance / median_distance)
+    interpretation = "inconclusive"
+    if distance_ratio is not None:
+        interpretation = "coverage_limited" if distance_ratio >= 1.25 else "model_or_feature_limited"
+
+    summary_payload = {
+        "diagnostic": "residual_vs_12d_nearest_neighbor_distance",
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "target_space": "12 target components normalized by physical target scales",
+        "reference_split": "train",
+        "query_splits": diagnostic_splits,
+        "nearest_neighbor_method": nn_method,
+        "n_query": int(len(payload_rows)),
+        "n_train_reference": int(len(train_index)),
+        "correlation_weighted_abs_error_vs_nn_distance": _safe_corr(weighted_errors, distances),
+        "spearman_weighted_abs_error_vs_nn_distance": _safe_corr(weighted_errors, distances, rank=True),
+        "all_blind_stress": all_summary,
+        "top_1_percent_residuals": top_1_summary,
+        "top_5_percent_residuals": top_5_summary,
+        "top_5_to_all_median_nn_distance_ratio": distance_ratio,
+        "decision_interpretation": interpretation,
+        "decision_rule": {
+            "coverage_limited": "top 5% residual median NN distance is at least 1.25x all blind/stress median NN distance",
+            "model_or_feature_limited": "top 5% residual median NN distance is near the all blind/stress median",
+        },
+        "artifacts": {
+            "full_row_csv": str(full_csv_path),
+            "top_residuals_csv": str(top_csv_path),
+            "binned_summary_csv": str(binned_csv_path),
+            "regime_quartile_csv": str(regime_csv_path),
+        },
+    }
+    summary_path = output_dir / "residual_vs_nn_distance_summary.json"
+    summary_path.write_text(json.dumps(summary_payload, indent=2) + "\n")
+
+    report_lines = [
+        "# Residual vs 12D Nearest-Neighbor Distance",
+        "",
+        f"Created UTC: `{summary_payload['created_utc']}`",
+        "",
+        "This diagnostic asks whether the largest blind/stress residuals live far",
+        "from the training set in normalized 12D target space. If they do, the",
+        "remaining error is likely coverage-limited. If they do not, the bottleneck",
+        "is more likely feature sensitivity, model bias, loss weighting, or inverse",
+        "problem degeneracy.",
+        "",
+        f"- query splits: `{', '.join(diagnostic_splits)}`",
+        f"- train reference rows: `{summary_payload['n_train_reference']}`",
+        f"- query rows: `{summary_payload['n_query']}`",
+        f"- NN method: `{nn_method}`",
+        f"- Pearson corr(error, NN distance): `{summary_payload['correlation_weighted_abs_error_vs_nn_distance']}`",
+        f"- Spearman corr(error, NN distance): `{summary_payload['spearman_weighted_abs_error_vs_nn_distance']}`",
+        f"- top 5% / all median NN distance ratio: `{distance_ratio}`",
+        f"- interpretation: **{interpretation}**",
+        "",
+        "| Group | n | Median weighted error | Median NN distance | p95 weighted error | p95 NN distance |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in [all_summary, top_1_summary, top_5_summary]:
+        report_lines.append(
+            f"| {row['group']} | {row['n']} | {row['median_weighted_abs_error']} | "
+            f"{row['median_nn_distance_12d']} | {row['p95_weighted_abs_error']} | {row['p95_nn_distance_12d']} |"
+        )
+    report_lines.extend(
+        [
+            "",
+            "Compact CSV outputs:",
+            "",
+            f"- `{top_csv_path}`",
+            f"- `{binned_csv_path}`",
+            f"- `{regime_csv_path}`",
+            "",
+            "The full row-level CSV is written in the run directory for Drive backup,",
+            "but may be too large for GitHub push policy.",
+            "",
+        ]
+    )
+    report_path = output_dir / "residual_vs_nn_distance_report.md"
+    report_path.write_text("\n".join(report_lines))
+    return summary_payload
+
+
 def write_scale_summary(path: Path, names: list[str], data: np.ndarray) -> None:
     rows = []
     for i, name in enumerate(names):
@@ -1752,6 +2140,14 @@ def main() -> int:
         validation_index,
         vector_diag,
     )
+    residual_nn_summary = write_residual_vs_nn_distance_diagnostics(
+        output_dir,
+        y,
+        y_pred,
+        rows,
+        split_indices,
+        target_physical_scales,
+    )
 
     baseline_path = args.baseline_metrics or default_baseline_metrics(csv_path, args.family)
     baseline = json.loads(baseline_path.read_text()) if baseline_path and baseline_path.exists() else None
@@ -1840,6 +2236,8 @@ def main() -> int:
         "per_target_diagnostics_path": str(output_dir / "per_target_diagnostics.json"),
         "vector_diagnostics_path": str(vector_diagnostics_path),
         "s3_magnitude_metric_audit_path": str(s3_magnitude_metric_audit_path),
+        "residual_vs_nn_distance_summary_path": str(output_dir / "residual_vs_nn_distance_summary.json"),
+        "residual_vs_nn_distance_interpretation": residual_nn_summary["decision_interpretation"],
     }
     (output_dir / "run_manifest_model_loop.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
