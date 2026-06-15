@@ -60,7 +60,7 @@ MILESTONES = [
         "training_rows_k": 500,
     },
     {
-        "label": "500K + benchmark-v2",
+        "label": "500K + larger validation set",
         "title": "v12 500K + benchmark-v2",
         "batch_summary": "training_results/model_selection_batches/v12_benchmark_v2_500k_20260615_005333_utc/batch_summary.csv",
         "training_rows_k": 575,
@@ -128,6 +128,7 @@ def collect_data() -> list[dict[str, Any]]:
         for target in TARGET_COLUMNS:
             target_metrics = targets.get(target, {})
             record[f"{target}_normalized_mae"] = as_float(target_metrics.get("normalized_mae"))
+            record[f"{target}_mae"] = as_float(target_metrics.get("mae"))
         records.append(record)
     return records
 
@@ -146,6 +147,7 @@ def write_plot_data(records: list[dict[str, Any]]) -> None:
         "stress_normalized_mae",
         "S3_high_magnitude_mae_normalized",
         *[f"{target}_normalized_mae" for target in TARGET_COLUMNS],
+        *[f"{target}_mae" for target in TARGET_COLUMNS],
     ]
     with (OUTPUT_DIR / "model_scaling_plot_data.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
@@ -206,7 +208,7 @@ def plot_key_metrics(records: list[dict[str, Any]]) -> None:
     ax.text(
         0.01,
         0.965,
-        "v12: same 500K training scale, larger benchmark-v2 held-out set",
+        "v12: same 500K training scale, larger held-out validation/blind/stress set",
         transform=ax.transAxes,
         fontsize=8.8,
         color="0.28",
@@ -289,16 +291,92 @@ def plot_coefficient_errors(records: list[dict[str, Any]]) -> None:
     plt.close(fig)
 
 
+def plot_coefficient_absolute_mae(records: list[dict[str, Any]]) -> None:
+    x = list(range(len(records)))
+    labels = [record["label"] for record in records]
+    colors = {
+        "C1": "#1f77b4",
+        "C3": "#17becf",
+        "A1_x": "#2ca02c",
+        "A1_y": "#98df8a",
+        "B2_x": "#9467bd",
+        "B2_y": "#c5b0d5",
+        "A2_x": "#8c564b",
+        "A2_y": "#c49c94",
+        "S3_x": "#d62728",
+        "S3_y": "#ff9896",
+        "A3_x": "#ff7f0e",
+        "A3_y": "#ffbb78",
+    }
+    markers = {
+        "C1": "o",
+        "C3": "s",
+        "A1_x": "^",
+        "A1_y": "v",
+        "B2_x": "D",
+        "B2_y": "P",
+        "A2_x": "X",
+        "A2_y": "*",
+        "S3_x": "<",
+        "S3_y": ">",
+        "A3_x": "h",
+        "A3_y": "H",
+    }
+
+    fig, ax = plt.subplots(figsize=(11.8, 6.9), constrained_layout=True)
+    for target in TARGET_COLUMNS:
+        y = [record.get(f"{target}_mae") for record in records]
+        ax.plot(
+            x,
+            y,
+            label=target,
+            color=colors[target],
+            marker=markers[target],
+            linewidth=2.0,
+            markersize=5.7,
+            alpha=0.95,
+        )
+
+    ax.set_yscale("log")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_xlabel("Training data scale")
+    ax.set_ylabel("Validation MAE in target units (log scale)")
+    ax.set_title("Absolute prediction error by coefficient versus training data scale")
+    ax.legend(
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        ncol=1,
+        frameon=True,
+        title="Coefficient",
+        borderaxespad=0.0,
+    )
+    ax.text(
+        0.01,
+        0.02,
+        "Absolute MAE is not directly comparable across coefficients because their physical scales differ.",
+        transform=ax.transAxes,
+        fontsize=8.8,
+        color="0.28",
+    )
+    for ext in ("png", "svg"):
+        fig.savefig(OUTPUT_DIR / f"model_scaling_per_coefficient_absolute_mae.{ext}", bbox_inches="tight")
+    plt.close(fig)
+
+
 def main() -> int:
     setup_style()
     records = collect_data()
     write_plot_data(records)
     plot_key_metrics(records)
     plot_coefficient_errors(records)
+    plot_coefficient_absolute_mae(records)
     print("wrote:", OUTPUT_DIR / "model_scaling_key_metrics.png")
     print("wrote:", OUTPUT_DIR / "model_scaling_key_metrics.svg")
     print("wrote:", OUTPUT_DIR / "model_scaling_per_coefficient_errors.png")
     print("wrote:", OUTPUT_DIR / "model_scaling_per_coefficient_errors.svg")
+    print("wrote:", OUTPUT_DIR / "model_scaling_per_coefficient_absolute_mae.png")
+    print("wrote:", OUTPUT_DIR / "model_scaling_per_coefficient_absolute_mae.svg")
     print("wrote:", OUTPUT_DIR / "model_scaling_plot_data.csv")
     return 0
 
