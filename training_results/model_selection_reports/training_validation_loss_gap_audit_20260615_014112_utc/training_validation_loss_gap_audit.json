@@ -1,0 +1,180 @@
+{
+  "created_utc": "2026-06-15T01:41:35.616971+00:00",
+  "classification": {
+    "primary": "C_loss_logging_mismatch_plus_D_split_benchmark_distribution_difference",
+    "secondary": "F_real_generalization_gap_on_parent_validation_benchmark",
+    "not_supported_by_current_artifacts": "B_MSE_tail_effect and top-row outlier dominance cannot be tested without raw train predictions."
+  },
+  "source_code_findings": {
+    "plot_history": "training_history_model_loop.png plots history train_loss and validation_loss on log y-axis with label weighted scaled MSE.",
+    "train_loss": "Eval-mode weighted_mse(model(x_train), y_train, target_weights) on standardized targets.",
+    "validation_loss": "Eval-mode weighted_mse(model(x_validation), y_validation, target_weights) on standardized targets.",
+    "optimized_objective": "For SmoothL1 runs, training optimizes SmoothL1 component loss plus optional S3 magnitude loss plus residual penalty, not the plotted weighted MSE.",
+    "scalers": "x_scaler and y_scaler are fit on train_index only; all splits use the same frozen scaler and target weights."
+  },
+  "first_large_gap_run": null,
+  "history_rows": [
+    {
+      "run": "D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc",
+      "dataset": "enhanced_v9_gap250k",
+      "train_rows": 492556,
+      "validation_rows": 26977,
+      "training_only": 483554,
+      "loss_kind": "smooth_l1",
+      "best_epoch": 1930,
+      "best_val_mse": 0.002056725323200226,
+      "final_train_mse": 0.0017245874238598846,
+      "final_val_mse": 0.0020977414678782225,
+      "val/train final": 1.2163729358429178,
+      "weighted_score": 0.013415860509301932,
+      "overall_norm_mae": 0.005346932914108038
+    }
+  ],
+  "dataset_summaries": {
+    "enhanced_v9_gap250k": {
+      "csv_path": "training_results/feature_regression_enhanced/enhanced_v9_gap250k_20260614_202549_utc/training_features_enhanced.csv",
+      "n_rows": 250000,
+      "split_seed": 7,
+      "s3_vector_scale_training_p95": 96.14497675949605,
+      "splits": {
+        "train": {
+          "n": 242566,
+          "dataset_source_counts": {
+            "enhanced_v3_targeted25k": 25000,
+            "enhanced_v5_s3_tail60k": 16000,
+            "enhanced_v6_benchmark_gap100k": 43000,
+            "enhanced_v9_gap250k": 149554,
+            "parent": 9012
+          },
+          "dataset_split_hint_counts": {
+            "training_only": 233554,
+            "unhinted_parent": 9012
+          },
+          "sweep_label_counts": {
+            "A1_B2_S3_grid": 96,
+            "A2": 20,
+            "A3": 20,
+            "A3_wide": 45,
+            "B2/C21": 32,
+            "C1": 4,
+            "C1_A1_C3_grid": 68,
+            "C3": 5,
+            "S3/C32": 36,
+            "S3_high_random": 9500,
+            "coupled_A1_B2_S3_random": 14000,
+            "coupled_A1_B2_random": 6000,
+            "coupled_A1_S3_random": 12500,
+            "coupled_A2_B2_random": 5500,
+            "coupled_A3_S3_random": 16000,
+            "coupled_B2_S3_random": 9500,
+            "coupled_C1_A1_C3_A2_random": 11925,
+            "coupled_C1_A1_C3_random": 5500,
+            "coupled_C1_A1_S3_random": 4000,
+            "coupled_C1_A1_random": 6000,
+            "coupled_C1_A2_random": 5000,
+            "coupled_C1_A3_random": 4000,
+            "coupled_C1_B2_random": 2500,
+            "coupled_C1_C3_A2_random": 10552,
+            "coupled_C1_C3_S3_random": 11000,
+            "coupled_C1_C3_random": 10000,
+            "coupled_C1_S3_random": 5500,
+            "coupled_C3_A3_S3_random": 14500,
+            "coupled_C3_B2_random": 5000,
+            "coupled_full_random": 38368,
+            "coupled_sparse_random": 35395
+          },
+          "s3_magnitude_bin_counts": {
+            "near_zero": 95131,
+            "low": 11890,
+            "medium": 33542,
+            "high": 102003
+          }
+        },
+        "validation": {
+          "n": 1979,
+          "dataset_source_counts": {
+            "parent": 1979
+          },
+          "dataset_split_hint_counts": {
+            "unhinted_parent": 1979
+          },
+          "sweep_label_counts": {
+            "A1": 32,
+            "C1": 2,
+            "C1_A1_C3_grid": 32,
+            "C3": 1,
+            "S3_C32_wide": 45,
+            "coupled_C1_A1_C3_A2_random": 399,
+            "coupled_C1_C3_A2_random": 276,
+            "coupled_full_random": 797,
+            "coupled_sparse_random": 395
+          },
+          "s3_magnitude_bin_counts": {
+            "near_zero": 1161,
+            "low": 162,
+            "medium": 367,
+            "high": 289
+          }
+        },
+        "blind": {
+          "n": 2371,
+          "dataset_source_counts": {
+            "parent": 2371
+          },
+          "dataset_split_hint_counts": {
+            "unhinted_parent": 2371
+          },
+          "sweep_label_counts": {
+            "coupled_A1_A2_B2_random": 1500,
+            "coupled_C1_A1_C3_A2_random": 143,
+            "coupled_C1_C3_A2_random": 147,
+            "coupled_full_random": 396,
+            "coupled_sparse_random": 185
+          },
+          "s3_magnitude_bin_counts": {
+            "near_zero": 1972,
+            "low": 73,
+            "medium": 184,
+            "high": 142
+          }
+        },
+        "stress": {
+          "n": 3084,
+          "dataset_source_counts": {
+            "parent": 3084
+          },
+          "dataset_split_hint_counts": {
+            "unhinted_parent": 3084
+          },
+          "sweep_label_counts": {
+            "C1_A1_C3_grid": 8,
+            "coupled_A1_B2_S3_random": 1500,
+            "coupled_C1_A1_C3_A2_random": 33,
+            "coupled_C1_C3_A2_random": 25,
+            "coupled_full_random": 993,
+            "coupled_sparse_random": 525
+          },
+          "s3_magnitude_bin_counts": {
+            "near_zero": 885,
+            "low": 468,
+            "medium": 902,
+            "high": 829
+          }
+        }
+      }
+    }
+  },
+  "per_target_rows": [],
+  "label_rows": [],
+  "plots": [
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_20260615_014112_utc/plots/audited_train_validation_history.png",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_20260615_014112_utc/plots/validation_over_train_ratio.png",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_20260615_014112_utc/plots/split_normalized_mae.png",
+    "training_results/model_selection_reports/training_validation_loss_gap_audit_20260615_014112_utc/plots/enhanced_v9_gap250k_s3_bin_counts.png"
+  ],
+  "limitations": [
+    "Raw per-row train predictions are not present in audited historical run folders.",
+    "Model checkpoints were not pushed, so top training outliers and exact source-level MSE cannot be reconstructed without rerunning.",
+    "Existing aggregate metrics provide split/label/target MAE/RMSE, not source-separated parent-vs-training-only losses."
+  ]
+}

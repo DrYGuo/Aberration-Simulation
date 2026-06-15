@@ -1,0 +1,594 @@
+{
+  "created_utc": "2026-06-15T01:41:12.497325+00:00",
+  "output_dir": "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc",
+  "runs": [
+    {
+      "run_key": "old_v3_bin_diag",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_bin_diag_20260609_073514_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05945300707235359,
+      "dataset": {
+        "dataset_version": "enhanced_v3_targeted25k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260609_073003_utc/training_features_enhanced.csv",
+        "csv_sha256": "64fbc87578287c5929311081151240bfbc556b67a0b28b36b3b69202437e9207",
+        "n_rows": 41446,
+        "training_only_new_rows": 25000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 34002,
+        "n_validation": 1976,
+        "n_blind": 2370,
+        "n_stress": 3098
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/old_v3_bin_diag_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/old_v3_bin_diag_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/old_v3_bin_diag_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 90.73979949951172,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 90.73979949951172,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 5.080995559692383,
+          "magnitude_rmse": 9.881091117858887,
+          "magnitude_bias": -0.37737467885017395,
+          "magnitude_slope": 0.8512885764309907,
+          "magnitude_r2": 0.9239111232597377,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.8948636651039124
+        },
+        "overall_angle": {
+          "angle_threshold": 9.073979949951172,
+          "angle_defined_count": 821,
+          "angle_undefined_near_zero_count": 1155,
+          "mean_abs_angle_error_deg": 9.401405334472656,
+          "median_abs_angle_error_deg": 2.7837677001953125,
+          "p95_abs_angle_error_deg": 41.06449890136719,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 321,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 7.736021041870117,
+            "MAE_y": 8.580368995666504,
+            "RMSE_x": 13.695119857788086,
+            "RMSE_y": 16.243783950805664
+          },
+          "magnitude": {
+            "magnitude_mae": 10.839306831359863,
+            "magnitude_bias": -8.766539573669434,
+            "magnitude_rmse": 18.386980056762695,
+            "true_magnitude_mean": 81.7567138671875,
+            "pred_magnitude_mean": 72.99018859863281,
+            "magnitude_compression_ratio": 1.6101771593093872,
+            "magnitude_slope": 0.6711227266242965,
+            "magnitude_r2": -1.1422645735415506,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 5.702573776245117,
+            "median_abs_angle_error_deg": 1.849029541015625,
+            "p95_abs_angle_error_deg": 20.931655883789062,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 321,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9736396670341492,
+            "median_cosine_similarity": 0.9994792938232422,
+            "p05_cosine_similarity": 0.9340071678161621,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v3_smoothl1_champion",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_targeted25k_plateau_clip_smoothl1_20260610_071108_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05567891693315827,
+      "dataset": {
+        "dataset_version": "enhanced_v3_targeted25k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v3_targeted25k_20260610_051853_utc/training_features_enhanced.csv",
+        "csv_sha256": "64fbc87578287c5929311081151240bfbc556b67a0b28b36b3b69202437e9207",
+        "n_rows": 41446,
+        "training_only_new_rows": 25000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 34002,
+        "n_validation": 1976,
+        "n_blind": 2370,
+        "n_stress": 3098
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v3_smoothl1_champion_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v3_smoothl1_champion_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v3_smoothl1_champion_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 90.73979949951172,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 90.73979949951172,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 4.666421890258789,
+          "magnitude_rmse": 9.300213813781738,
+          "magnitude_bias": -0.3376616835594177,
+          "magnitude_slope": 0.8661244615726796,
+          "magnitude_r2": 0.9309132690884913,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9051288366317749
+        },
+        "overall_angle": {
+          "angle_threshold": 9.073979949951172,
+          "angle_defined_count": 821,
+          "angle_undefined_near_zero_count": 1155,
+          "mean_abs_angle_error_deg": 8.860312461853027,
+          "median_abs_angle_error_deg": 2.8651580810546875,
+          "p95_abs_angle_error_deg": 38.334259033203125,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 321,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 7.157847881317139,
+            "MAE_y": 7.7761101722717285,
+            "RMSE_x": 13.256548881530762,
+            "RMSE_y": 15.705650329589844
+          },
+          "magnitude": {
+            "magnitude_mae": 9.54025936126709,
+            "magnitude_bias": -7.682642936706543,
+            "magnitude_rmse": 16.722692489624023,
+            "true_magnitude_mean": 81.7567138671875,
+            "pred_magnitude_mean": 74.0740737915039,
+            "magnitude_compression_ratio": 1.5304858684539795,
+            "magnitude_slope": 0.7208754515704693,
+            "magnitude_r2": -0.8227257999691886,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 5.484124660491943,
+            "median_abs_angle_error_deg": 1.701690673828125,
+            "p95_abs_angle_error_deg": 23.400314331054688,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 321,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9770578145980835,
+            "median_cosine_similarity": 0.9995589256286621,
+            "p05_cosine_similarity": 0.9177523255348206,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v5_s3tail60k_seed23",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_s3tail60k_plateau_clip_smoothl1_seed23_20260611_090007_utc/selection_score.json"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": false,
+      "weighted_score": 0.05101536841489948,
+      "dataset": {
+        "dataset_version": "enhanced_v5_s3_tail60k",
+        "dataset_versions_present": [
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v5_s3_tail60k",
+          "parent",
+          "targeted25k"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v5_s3_tail60k_20260611_084005_utc/training_features_enhanced.csv",
+        "csv_sha256": "8258c18fa2da5cf100e53f196e92fa2071ab935b107edbbe3c615a5d03fb8e6d",
+        "n_rows": 57446,
+        "training_only_new_rows": 41000,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows.",
+        "n_train": 50002,
+        "n_validation": 1977,
+        "n_blind": 2370,
+        "n_stress": 3097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v5_s3tail60k_seed23_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v5_s3tail60k_seed23_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v5_s3tail60k_seed23_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 95.95117950439453,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 95.95117950439453,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 4.476938724517822,
+          "magnitude_rmse": 8.568373680114746,
+          "magnitude_bias": 0.29603680968284607,
+          "magnitude_slope": 0.8822202815839933,
+          "magnitude_r2": 0.9399910014774709,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9155990481376648
+        },
+        "overall_angle": {
+          "angle_threshold": 9.595117950439453,
+          "angle_defined_count": 819,
+          "angle_undefined_near_zero_count": 1158,
+          "mean_abs_angle_error_deg": 7.885438919067383,
+          "median_abs_angle_error_deg": 2.71484375,
+          "p95_abs_angle_error_deg": 29.678665161132812,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 289,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 6.535511493682861,
+            "MAE_y": 7.072212219238281,
+            "RMSE_x": 11.135224342346191,
+            "RMSE_y": 14.024415016174316
+          },
+          "magnitude": {
+            "magnitude_mae": 8.201061248779297,
+            "magnitude_bias": -6.3859076499938965,
+            "magnitude_rmse": 14.811809539794922,
+            "true_magnitude_mean": 83.56890869140625,
+            "pred_magnitude_mean": 77.18299865722656,
+            "magnitude_compression_ratio": 1.510501742362976,
+            "magnitude_slope": 0.7091327365257067,
+            "magnitude_r2": -0.7787457225950005,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 4.391916751861572,
+            "median_abs_angle_error_deg": 1.8972015380859375,
+            "p95_abs_angle_error_deg": 16.94594955444336,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 289,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9877913594245911,
+            "median_cosine_similarity": 0.9994518160820007,
+            "p05_cosine_similarity": 0.956515908241272,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "compact_artifact_limited",
+      "limitation": "Raw y_true/y_pred validation predictions are not present in the compact GitHub artifacts, so through-origin slope, component slopes, residual plots, and exact recomputation from saved predictions cannot be performed for this local audit."
+    },
+    {
+      "run_key": "v12_benchmark_v2_500k_seed7",
+      "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc",
+      "files_read": [
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc/vector_diagnostics.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc/run_manifest_model_loop.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc/selection_score.json",
+        "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc/s3_magnitude_metric_audit_validation.csv"
+      ],
+      "has_raw_validation_predictions": false,
+      "has_s3_audit_csv": true,
+      "weighted_score": 0.013415860509301932,
+      "dataset": {
+        "dataset_version": "enhanced_v9_gap250k",
+        "dataset_versions_present": [
+          "enhanced_v11_gap500k",
+          "enhanced_v12_benchmark_v2",
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "enhanced_v9_gap250k",
+          "parent_cached_dataset"
+        ],
+        "dataset_sources_present": [
+          "enhanced_v11_gap500k",
+          "enhanced_v12_benchmark_v2",
+          "enhanced_v3_targeted25k",
+          "enhanced_v5_s3_tail60k",
+          "enhanced_v6_benchmark_gap100k",
+          "enhanced_v9_gap250k",
+          "parent"
+        ],
+        "csv_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_500k_eval_20260615_003057_utc/training_features_enhanced.csv",
+        "csv_sha256": "17f8d7d7c1eb1432154d187900634cd51052016716e15075e4e650b3e3dcd83f",
+        "n_rows": 575000,
+        "training_only_new_rows": 483554,
+        "training_only_rows_respected": true,
+        "split_policy": "stable_hash_parent_benchmark_with_training_only_append_rows_fixed_parent_stress_threshold",
+        "validation_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "blind_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "stress_provenance": "Rows marked dataset_split_hint=training_only are assigned only to training. Validation, blind, and stress benchmarks are drawn from unhinted parent rows. Stress hardness threshold is computed only from unhinted benchmark-eligible rows.",
+        "n_train": 492556,
+        "n_validation": 26977,
+        "n_blind": 27370,
+        "n_stress": 28097
+      },
+      "existing_plots_copied": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_pred_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_angle_error_vs_true_magnitude.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_pred_vs_true_angle.png"
+      ],
+      "stored_vector_diagnostics": {
+        "vector_scale": 96.94523620605469,
+        "scale_source": "training_split_true_magnitude_p95",
+        "overall_magnitude": {
+          "vector_scale": 96.94523620605469,
+          "scale_source": "training_split_true_magnitude_p95",
+          "magnitude_mae": 1.1907103061676025,
+          "magnitude_rmse": 2.9016759395599365,
+          "magnitude_bias": -0.04233752563595772,
+          "magnitude_slope": 0.979775707094033,
+          "magnitude_r2": 0.9943473248077103,
+          "magnitude_fit_available": true,
+          "magnitude_compression_ratio": 0.9826561808586121
+        },
+        "overall_angle": {
+          "angle_threshold": 9.69452362060547,
+          "angle_defined_count": 18821,
+          "angle_undefined_near_zero_count": 8156,
+          "mean_abs_angle_error_deg": 1.1141046285629272,
+          "median_abs_angle_error_deg": 0.12005615234375,
+          "p95_abs_angle_error_deg": 5.213226318359375,
+          "p95_reliable": true
+        },
+        "high_bin": {
+          "n": 13366,
+          "true_magnitude_range_normalized": [
+            0.7,
+            null
+          ],
+          "component_errors": {
+            "MAE_x": 0.7639303803443909,
+            "MAE_y": 0.7767296433448792,
+            "RMSE_x": 2.5513691902160645,
+            "RMSE_y": 2.568413496017456
+          },
+          "magnitude": {
+            "magnitude_mae": 0.9485458135604858,
+            "magnitude_bias": -0.5804201364517212,
+            "magnitude_rmse": 3.0717291831970215,
+            "true_magnitude_mean": 82.59346771240234,
+            "pred_magnitude_mean": 82.01305389404297,
+            "magnitude_compression_ratio": 1.018504023551941,
+            "magnitude_slope": 0.9695358934678342,
+            "magnitude_r2": 0.9026493643348202,
+            "magnitude_fit_available": true,
+            "magnitude_fit_minimum_n": 30
+          },
+          "angle": {
+            "defined": true,
+            "mean_abs_angle_error_deg": 0.4193219542503357,
+            "median_abs_angle_error_deg": 0.09287261962890625,
+            "p95_abs_angle_error_deg": 1.6831588745117188,
+            "p95_reliable": true
+          },
+          "directional_cosine": {
+            "defined_count": 13366,
+            "undefined_zero_pred_count": 0,
+            "mean_cosine_similarity": 0.9995909929275513,
+            "median_cosine_similarity": 0.9999986886978149,
+            "p05_cosine_similarity": 0.9995685815811157,
+            "p05_reliable": true
+          }
+        }
+      },
+      "audit_mode": "s3_audit_csv_recompute",
+      "computed": {
+        "formula": "true_mag = sqrt(S3_x^2 + S3_y^2); pred_mag = sqrt(pred_S3_x^2 + pred_S3_y^2)",
+        "high_bin": "true_mag > 0.7 * vector_scale",
+        "vector_scale": 96.94523620605469,
+        "all_magnitude": {
+          "n": 26977,
+          "ols_slope": 0.9797757071443247,
+          "ols_intercept": 0.9898436750574872,
+          "through_origin_slope": 0.9924259996474846,
+          "correlation": 0.9970687164120513,
+          "r2": 0.9941460252475738,
+          "mae": 1.1907102911545526,
+          "rmse": 2.9016759920021813,
+          "bias": -0.042337521969964716,
+          "median_error": 0.02367283529558506,
+          "p95_abs_error": 4.760323529395115,
+          "true_range": [
+            0.0,
+            100.0
+          ],
+          "pred_range": [
+            0.0012660198388226727,
+            111.8849626072433
+          ]
+        },
+        "high_magnitude": {
+          "n": 13366,
+          "ols_slope": 0.9695358976591086,
+          "ols_intercept": 1.935715897901226,
+          "through_origin_slope": 0.9926587567813279,
+          "correlation": 0.9519214968190588,
+          "r2": 0.9061545361062374,
+          "mae": 0.9485458390053487,
+          "rmse": 3.0717291135143214,
+          "bias": -0.5804201151694133,
+          "median_error": -0.10555749932462533,
+          "p95_abs_error": 3.7421847026753454,
+          "true_range": [
+            67.8629366499173,
+            100.0
+          ],
+          "pred_range": [
+            9.922695104896256,
+            111.8849626072433
+          ]
+        },
+        "component_slopes": {
+          "S3_x_all": {
+            "n": 26977,
+            "ols_slope": 0.9921160988352347,
+            "ols_intercept": 0.04536754821021327,
+            "through_origin_slope": 0.9921122477888179,
+            "correlation": 0.998417621979987,
+            "r2": 0.996837747880175,
+            "mae": 0.9516695313923077,
+            "rmse": 2.5162569412847353,
+            "bias": 0.046697647373754425,
+            "median_error": 0.006320953369140625,
+            "p95_abs_error": 3.9782613754272376,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.9983139038086,
+              102.17859649658203
+            ]
+          },
+          "S3_y_all": {
+            "n": 26977,
+            "ols_slope": 0.9916889298424063,
+            "ols_intercept": 0.019923181404433294,
+            "through_origin_slope": 0.9916860902169693,
+            "correlation": 0.9984411096688428,
+            "r2": 0.9968846494767496,
+            "mae": 0.9535811300787889,
+            "rmse": 2.5107324295586944,
+            "bias": 0.02229935383656864,
+            "median_error": -0.0277099609375,
+            "p95_abs_error": 4.011375045776367,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -100.16127014160156,
+              103.45480346679688
+            ]
+          },
+          "S3_x_high": {
+            "n": 13366,
+            "ols_slope": 0.9926549652228186,
+            "ols_intercept": 0.0343947153704724,
+            "through_origin_slope": 0.9926522100722576,
+            "correlation": 0.9990710028413275,
+            "r2": 0.9981428687183765,
+            "mae": 0.763930403204716,
+            "rmse": 2.551369220309213,
+            "bias": 0.03642367419038265,
+            "median_error": -7.62939453125e-06,
+            "p95_abs_error": 3.1502809897065163,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -99.9983139038086,
+              102.17859649658203
+            ]
+          },
+          "S3_y_high": {
+            "n": 13366,
+            "ols_slope": 0.9921366952160849,
+            "ols_intercept": 0.008125130947287259,
+            "through_origin_slope": 0.9921357082938544,
+            "correlation": 0.9990658501989473,
+            "r2": 0.998132573033746,
+            "mae": 0.776729666949501,
+            "rmse": 2.5684133195662104,
+            "bias": 0.011435381111828756,
+            "median_error": -0.027092933654785156,
+            "p95_abs_error": 3.136381149291992,
+            "true_range": [
+              -100.0,
+              100.0
+            ],
+            "pred_range": [
+              -100.16127014160156,
+              103.45480346679688
+            ]
+          }
+        },
+        "high_angle": {
+          "mean_abs_angle_error_deg": 0.4193219408486018,
+          "p95_abs_angle_error_deg": 1.6831482351906573,
+          "n": 13366
+        }
+      },
+      "generated_plots": [
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_x_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_y_pred_vs_true.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_mag_pred_vs_true_all.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_mag_pred_vs_true_high.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_mag_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_vector_residual_vs_true_mag.png",
+        "training_results/model_selection_reports/s3_magnitude_metric_audit_20260615_014110_utc/plots/v12_benchmark_v2_500k_seed7_S3_angle_error_vs_true_mag.png"
+      ]
+    }
+  ],
+  "artifact_limitation": "The current GitHub artifact policy excludes raw predictions and model checkpoints. This report therefore verifies the stored metric and code path, but cannot recompute the 0.71 slope, through-origin slope, component slopes, or intercept from saved raw predictions."
+}

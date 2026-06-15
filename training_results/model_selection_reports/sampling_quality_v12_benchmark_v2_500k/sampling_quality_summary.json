@@ -1,0 +1,62 @@
+{
+  "created_utc": "2026-06-15T00:53:20.926036+00:00",
+  "sampling_quality_logic_version": "dataset_version_focus_v2",
+  "csv_path": "training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_500k_eval_20260615_003057_utc/training_features_enhanced.csv",
+  "config": "configs/targeted_benchmark_v2_75k.json",
+  "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "counts": {
+    "focus_dataset_version": "enhanced_v12_benchmark_v2",
+    "total_rows": 575000,
+    "parent_rows": 500000,
+    "new_training_only_rows": 75000,
+    "dataset_versions": {
+      "parent_cached_dataset": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000,
+      "enhanced_v12_benchmark_v2": 75000
+    },
+    "dataset_sources": {
+      "parent": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000,
+      "enhanced_v12_benchmark_v2": 75000
+    },
+    "split_hints": {
+      "": 16446,
+      "training_only": 483554,
+      "benchmark_v2": 75000
+    }
+  },
+  "quota": {
+    "focus_dataset_version": "enhanced_v12_benchmark_v2",
+    "planned_total_new_rows": 75000,
+    "observed_total_new_rows": 75000,
+    "quota_warning_labels": [],
+    "quota_pass": true
+  },
+  "split": {
+    "status": "available",
+    "split_counts": {
+      "train": 492556,
+      "validation": 26977,
+      "blind": 27370,
+      "stress": 28097
+    },
+    "training_only_leakage_counts": {
+      "validation": 0,
+      "blind": 0,
+      "stress": 0
+    },
+    "training_only_leakage_pass": true
+  },
+  "warnings": [
+    "Low new-row marginal entropy: new_training_only:C1"
+  ],
+  "recommendation": "PASS_WITH_WARNINGS"
+}
