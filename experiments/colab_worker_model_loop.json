@@ -1,8 +1,8 @@
 {
-  "description": "v13 1M seed-repeat and residual-vs-12D-nearest-neighbor diagnostic run. Use the cached v13 1M CSV only, do not generate simulations, run seed repeats for the current D66 grouped-head baseline, and classify residuals as coverage-limited or model/feature-limited.",
-  "config_id": "v13-1m-seed-repeat-residual-nn",
+  "description": "v14 1.5M far-NN targeted expansion. Restore/reuse the cached v13 1M CSV, append 500K coverage-gap-aware rows using 80% far-NN and 20% bridge/anchor selection, train one controlled D66 grouped-head seed23 candidate, back up large artifacts to Drive, push compact summaries to GitHub, then disconnect the Colab runtime after the final push.",
+  "config_id": "v14-1p5m-far-nn-d66-seed23",
   "cycles": 8,
-  "sleep_seconds": 30,
+  "sleep_seconds": 0,
   "branch": "main",
   "reload_config_each_cycle": true,
   "configure_token_remote": true,
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v13_seed_repeat_residual_nn_workflow.sh"
+    "scripts/run_colab_v14_1p5m_far_nn_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -86,6 +86,8 @@
   ],
   "push_every_n_cycles": 1,
   "push_on_final_cycle": true,
+  "disconnect_runtime_after_success": true,
+  "disconnect_runtime_delay_seconds": 60,
   "require_new_config_each_cycle": false,
   "wait_for_new_config_poll_seconds": 30,
   "wait_for_new_config_timeout_seconds": 7200

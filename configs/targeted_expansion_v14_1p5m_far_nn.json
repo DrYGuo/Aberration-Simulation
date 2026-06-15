@@ -1,0 +1,139 @@
+{
+  "description": "Expansion from v13 1M to roughly 1.5M train-eligible rows plus the fixed benchmark-v2 held-out rows. New rows are generated as a physics-guided candidate pool, then selected by 12D nearest-neighbor distance to the existing train-eligible v13 dataset: 80% far-NN candidates and 20% bridge/anchor candidates within each regime.",
+  "dataset_version": "enhanced_v14_1p5m_far_nn",
+  "parent_dataset_version": "enhanced_v13_1m_spacefill",
+  "expected_parent_rows": 1075000,
+  "expected_new_training_only_rows": 500000,
+  "expected_total_rows": 1575000,
+  "case_counts": {
+    "coupled_full_random": 210000,
+    "coupled_sparse_random": 85000,
+    "coupled_C1_A1_C3_A2_random": 45000,
+    "coupled_A1_A2_B2_random": 35000,
+    "coupled_A2_B2_random": 20000,
+    "coupled_C1_C3_A2_random": 20000,
+    "coupled_A1_B2_S3_random": 20000,
+    "coupled_C3_A3_S3_random": 18000,
+    "coupled_A3_S3_random": 13000,
+    "coupled_B2_S3_random": 13000,
+    "S3_high_random": 6000,
+    "coupled_A1_S3_random": 5000,
+    "coupled_C1_C3_random": 4000,
+    "coupled_C1_S3_random": 3000,
+    "coupled_A1_B2_random": 2000,
+    "coupled_C3_B2_random": 1000
+  },
+  "candidate_selection": {
+    "enabled": true,
+    "method": "parent_12d_nearest_neighbor_distance",
+    "oversample_multiplier": 3.0,
+    "far_fraction": 0.8,
+    "bridge_fraction": 0.2,
+    "bridge_quantile": 0.55,
+    "reference_sample_size": 250000,
+    "query_chunk_size": 25000,
+    "reference_split_hints": ["", "training_only"],
+    "note": "Generate three times the requested candidate count per regime, compute each candidate's normalized 12D nearest-neighbor distance to the current train-eligible parent dataset, select 80% from the farthest candidates and 20% near the middle-distance bridge/anchor quantile."
+  },
+  "sampling": {
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_A1_A2_B2_random",
+        "coupled_A2_B2_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "S3_high_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random",
+        "coupled_A1_B2_random",
+        "coupled_C3_B2_random"
+      ],
+      "note": "This is not exact orthogonality. It is per-regime Latin-hypercube candidate generation followed by coverage-gap-aware far-NN selection."
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]],
+        "coupled_C1_S3_random": [["C1", "S3"]]
+      },
+      "note": "Only vector-vector pairs are actively angle-constrained by the generator. Scalar-vector entries are retained for traceability."
+    },
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random",
+        "coupled_C1_A1_C3_A2_random",
+        "coupled_C1_C3_A2_random",
+        "coupled_C1_C3_random",
+        "coupled_C1_S3_random"
+      ],
+      "note": "C1 remains monitored but should not dominate model selection because the current defocus pair limits intrinsic C1 sensitivity."
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "S3_high_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_A1_S3_random",
+        "coupled_C1_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "coverage_metrics_to_track": {
+    "primary": [
+      "candidate_selection_role_counts",
+      "candidate_selection_parent_nn_distance_distribution",
+      "marginal_empty_bins",
+      "marginal_normalized_entropy",
+      "pairwise_nonempty_fraction",
+      "pairwise_normalized_entropy",
+      "nearest_neighbor_distance_p95",
+      "relative_angle_bin_balance",
+      "residual_vs_nn_distance_after_training"
+    ],
+    "decision_rule": "After v14 training, decide whether to expand again only if residual-vs-NN diagnostics still show worst blind/stress errors concentrated in sparse 12D regions. If residuals move to dense regions, prioritize feature/model/loss changes."
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+    "do_not_train_on_blind_or_stress": true
+  },
+  "decision_note": {
+    "purpose": "Test whether targeted coverage-gap expansion from 1M to 1.5M reduces the coverage-limited blind/stress residuals identified by v13 residual-vs-NN diagnostics.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn",
+    "fixed_architecture_and_features": true,
+    "feature_set": "d66",
+    "split_seed": 7,
+    "resource_note": "Use mini-batch training and chunked evaluation/prediction. Back up the generated v14 CSV and compact results to Google Drive before and after training.",
+    "promotion_rule": "Promote only if v14 improves weighted score, blind/stress metrics, residual-vs-NN coverage-limited tails, and key vector diagnostics without easy-target regression."
+  }
+}

@@ -148,6 +148,42 @@ def regime_quota_rows(rows: list[dict[str, str]], config: dict[str, Any]) -> tup
     return table, summary
 
 
+def candidate_selection_rows(
+    rows: list[dict[str, str]],
+    new_mask: np.ndarray,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    output: list[dict[str, Any]] = []
+    selected_rows = [row for row, is_new in zip(rows, new_mask) if bool(is_new)]
+    by_role: dict[str, list[float]] = {}
+    for row in selected_rows:
+        role = str(row.get("sampling_candidate_role", "")).strip() or "unlabeled"
+        value = row.get("sampling_parent_nn_distance_12d", "")
+        try:
+            distance = float(value)
+        except (TypeError, ValueError):
+            distance = float("nan")
+        by_role.setdefault(role, []).append(distance)
+    for role, distances in sorted(by_role.items()):
+        finite = np.asarray([value for value in distances if np.isfinite(value)], dtype=float)
+        output.append(
+            {
+                "sampling_candidate_role": role,
+                "row_count": int(len(distances)),
+                "fraction": float(len(distances) / max(len(selected_rows), 1)),
+                "distance_median": float(np.median(finite)) if len(finite) else None,
+                "distance_p05": float(np.percentile(finite, 5)) if len(finite) else None,
+                "distance_p95": float(np.percentile(finite, 95)) if len(finite) else None,
+                "distance_max": float(np.max(finite)) if len(finite) else None,
+            }
+        )
+    summary = {
+        "new_rows": int(len(selected_rows)),
+        "role_counts": {row["sampling_candidate_role"]: row["row_count"] for row in output},
+        "role_fractions": {row["sampling_candidate_role"]: row["fraction"] for row in output},
+    }
+    return output, summary
+
+
 def coefficient_marginal_rows(
     rows: list[dict[str, str]],
     masks: dict[str, np.ndarray],
@@ -471,6 +507,7 @@ def write_markdown(
     config_path: Path,
     summary: dict[str, Any],
     quota_table: list[dict[str, Any]],
+    candidate_selection_table: list[dict[str, Any]],
     marginal_table: list[dict[str, Any]],
     pairwise_table: list[dict[str, Any]],
     relative_table: list[dict[str, Any]],
@@ -499,6 +536,19 @@ def write_markdown(
     for row in quota_table:
         lines.append(
             f"| `{row['sweep_label']}` | {row['planned_count']} | {row['observed_new_training_only_count']} | {float(row['relative_error']):.4f} | {row['status']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Candidate Selection",
+            "",
+            "| role | rows | fraction | median NN distance | p95 NN distance | max NN distance |",
+            "|---|---:|---:|---:|---:|---:|",
+        ]
+    )
+    for row in candidate_selection_table:
+        lines.append(
+            f"| `{row['sampling_candidate_role']}` | {row['row_count']} | {float(row['fraction']):.3f} | {row['distance_median']} | {row['distance_p95']} | {row['distance_max']} |"
         )
     lines.extend(["", "## Key Warnings", ""])
     if warnings:
@@ -625,6 +675,7 @@ def main() -> int:
 
     split_indices, split_summary = load_split_indices(rows, args.benchmark_split_manifest)
     quota_table, quota_summary = regime_quota_rows(rows, config)
+    candidate_selection_table, candidate_selection_summary = candidate_selection_rows(rows, new_mask)
     marginal_table = coefficient_marginal_rows(rows, masks, bin_count=args.bins)
     pairwise_table = pairwise_occupancy_rows(rows, masks, grid_bins=args.pairwise_bins)
     relative_table = relative_angle_rows(rows, new_mask, angular_bins=args.angular_bins)
@@ -653,6 +704,7 @@ def main() -> int:
             "split_hints": dict(Counter(str(row.get(DATASET_SPLIT_HINT_FIELD, "")) for row in rows)),
         },
         "quota": quota_summary,
+        "candidate_selection": candidate_selection_summary,
         "split": split_summary,
         "warnings": warnings,
         "recommendation": recommendation,
@@ -671,6 +723,19 @@ def main() -> int:
             "absolute_error",
             "relative_error",
             "status",
+        ],
+    )
+    write_csv(
+        args.output_dir / "candidate_selection_summary.csv",
+        candidate_selection_table,
+        [
+            "sampling_candidate_role",
+            "row_count",
+            "fraction",
+            "distance_median",
+            "distance_p05",
+            "distance_p95",
+            "distance_max",
         ],
     )
     write_csv(
@@ -732,6 +797,7 @@ def main() -> int:
         config_path=args.config,
         summary=summary,
         quota_table=quota_table,
+        candidate_selection_table=candidate_selection_table,
         marginal_table=marginal_table,
         pairwise_table=pairwise_table,
         relative_table=relative_table,

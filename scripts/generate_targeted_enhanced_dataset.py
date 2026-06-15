@@ -60,7 +60,12 @@ COMBINATION_FIELDS = (
     "S3_phase",
     "C3",
 )
-SAMPLING_METADATA_FIELDS = ("sampling_method", "sampling_relative_angle_bin")
+SAMPLING_METADATA_FIELDS = (
+    "sampling_method",
+    "sampling_relative_angle_bin",
+    "sampling_candidate_role",
+    "sampling_parent_nn_distance_12d",
+)
 
 BASELINE_PARAMETERS = {
     "C1_offset": 0,
@@ -394,9 +399,190 @@ def load_generation_config(path: Path | None) -> dict[str, Any]:
     return config
 
 
-def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[dict[str, Any]]:
+def parent_reference_rows_for_candidate_selection(
+    parent_rows: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    split_hints = set(str(item) for item in config.get("reference_split_hints", ["", SPLIT_HINT_TRAINING_ONLY]))
+    dataset_versions = set(str(item) for item in config.get("reference_dataset_versions", []))
+    output: list[dict[str, Any]] = []
+    for row in parent_rows:
+        hint = str(row.get(SPLIT_HINT_FIELD, ""))
+        version = str(row.get(DATASET_VERSION_FIELD, ""))
+        if dataset_versions and version not in dataset_versions:
+            continue
+        if hint in split_hints:
+            output.append(row)
+    if output:
+        return output
+    return parent_rows
+
+
+def normalized_12d_target_matrix(rows: list[dict[str, Any]]) -> np.ndarray:
+    matrix = target_matrix(rows, tuple(TARGET_COLUMNS))
+    if not len(matrix):
+        return np.zeros((0, len(TARGET_COLUMNS)), dtype=np.float32)
+    return (matrix / target_scale_array()[None, :]).astype(np.float32)
+
+
+def nearest_distance_to_reference(
+    reference: np.ndarray,
+    query: np.ndarray,
+    *,
+    chunk_size: int = 25_000,
+) -> tuple[np.ndarray, str]:
+    if len(reference) == 0 or len(query) == 0:
+        return np.zeros(len(query), dtype=np.float32), "empty"
+    try:
+        from sklearn.neighbors import NearestNeighbors
+
+        model = NearestNeighbors(n_neighbors=1, algorithm="auto", metric="euclidean")
+        model.fit(reference)
+        chunks = []
+        for start in range(0, len(query), chunk_size):
+            distances, _ = model.kneighbors(query[start : start + chunk_size])
+            chunks.append(distances[:, 0])
+        return np.concatenate(chunks).astype(np.float32), "sklearn_exact_or_sampled_reference"
+    except Exception as exc:
+        if len(reference) * len(query) > 50_000_000:
+            raise RuntimeError(
+                "candidate_selection nearest-neighbor lookup requires scikit-learn for this dataset size; "
+                f"reference={len(reference)}, query={len(query)}"
+            ) from exc
+        chunks = []
+        for start in range(0, len(query), min(chunk_size, 1000)):
+            block = query[start : start + min(chunk_size, 1000)]
+            distances = np.sqrt(np.sum((block[:, None, :] - reference[None, :, :]) ** 2, axis=2))
+            chunks.append(np.min(distances, axis=1))
+        return np.concatenate(chunks).astype(np.float32), "numpy_reference"
+
+
+def select_bridge_indices(
+    distances: np.ndarray,
+    candidate_indices: np.ndarray,
+    count: int,
+    *,
+    quantile: float,
+) -> np.ndarray:
+    if count <= 0 or len(candidate_indices) == 0:
+        return np.asarray([], dtype=np.int64)
+    selected_distances = distances[candidate_indices]
+    target = float(np.quantile(distances, quantile))
+    order = np.argsort(np.abs(selected_distances - target), kind="mergesort")
+    return candidate_indices[order[: min(count, len(order))]]
+
+
+def select_candidate_cases_by_parent_nn(
+    cases: list[dict[str, Any]],
+    *,
+    desired_counts: dict[str, int],
+    parent_rows: list[dict[str, Any]],
+    config: dict[str, Any],
+    rng: np.random.Generator,
+) -> list[dict[str, Any]]:
+    reference_rows = parent_reference_rows_for_candidate_selection(parent_rows, config)
+    reference_sample_size = int(config.get("reference_sample_size", 250_000))
+    reference_matrix = normalized_12d_target_matrix(reference_rows)
+    if len(reference_matrix) > reference_sample_size:
+        sample_index = rng.choice(len(reference_matrix), size=reference_sample_size, replace=False)
+        reference_matrix = reference_matrix[sample_index]
+
+    query_matrix = normalized_12d_target_matrix(cases)
+    distances, method = nearest_distance_to_reference(
+        reference_matrix,
+        query_matrix,
+        chunk_size=int(config.get("query_chunk_size", 25_000)),
+    )
+    far_fraction = float(config.get("far_fraction", 0.8))
+    bridge_fraction = float(config.get("bridge_fraction", 1.0 - far_fraction))
+    bridge_quantile = float(config.get("bridge_quantile", 0.55))
+    if far_fraction < 0 or bridge_fraction < 0 or far_fraction + bridge_fraction <= 0:
+        raise ValueError("candidate_selection far_fraction/bridge_fraction must be nonnegative and nonzero")
+
+    by_label: dict[str, list[int]] = {}
+    for index, row in enumerate(cases):
+        by_label.setdefault(str(row.get("sweep_label", "")), []).append(index)
+
+    selected: list[dict[str, Any]] = []
+    selection_summary: dict[str, Any] = {}
+    for label, desired_count in desired_counts.items():
+        label_indices = np.asarray(by_label.get(label, []), dtype=np.int64)
+        if len(label_indices) < desired_count:
+            raise RuntimeError(
+                f"candidate selection for {label} has only {len(label_indices)} candidates for {desired_count} requested rows"
+            )
+        label_distances = distances[label_indices]
+        far_count = int(round(desired_count * far_fraction / max(far_fraction + bridge_fraction, 1e-8)))
+        far_count = min(max(far_count, 0), desired_count)
+        bridge_count = desired_count - far_count
+
+        far_order = np.argsort(label_distances, kind="mergesort")[::-1]
+        far_indices = label_indices[far_order[:far_count]]
+        remaining_mask = np.ones(len(label_indices), dtype=bool)
+        remaining_mask[far_order[:far_count]] = False
+        remaining = label_indices[remaining_mask]
+        bridge_indices = select_bridge_indices(
+            distances,
+            remaining,
+            bridge_count,
+            quantile=bridge_quantile,
+        )
+        chosen = np.concatenate([far_indices, bridge_indices])
+        if len(chosen) < desired_count:
+            chosen_set = set(int(index) for index in chosen)
+            fill = [int(index) for index in label_indices[far_order] if int(index) not in chosen_set]
+            chosen = np.concatenate([chosen, np.asarray(fill[: desired_count - len(chosen)], dtype=np.int64)])
+        for role, indices in [("far_nn", far_indices), ("bridge_anchor", bridge_indices)]:
+            for case_index in indices:
+                cases[int(case_index)]["sampling_candidate_role"] = role
+                cases[int(case_index)]["sampling_parent_nn_distance_12d"] = float(distances[int(case_index)])
+        chosen_set = set(int(index) for index in chosen)
+        for case_index in chosen_set:
+            cases[int(case_index)].setdefault("sampling_candidate_role", "fill")
+            cases[int(case_index)].setdefault("sampling_parent_nn_distance_12d", float(distances[int(case_index)]))
+        label_chosen_distances = distances[np.asarray(sorted(chosen_set), dtype=np.int64)]
+        selection_summary[label] = {
+            "candidate_count": int(len(label_indices)),
+            "selected_count": int(len(chosen_set)),
+            "far_count": int(len(far_indices)),
+            "bridge_count": int(len(bridge_indices)),
+            "selected_distance_median": float(np.median(label_chosen_distances)),
+            "selected_distance_p05": float(np.percentile(label_chosen_distances, 5)),
+            "selected_distance_p95": float(np.percentile(label_chosen_distances, 95)),
+        }
+        selected.extend(cases[index] for index in sorted(chosen_set))
+
+    rng.shuffle(selected)
+    selected_counts = Counter(str(row.get("sweep_label", "")) for row in selected)
+    if {label: int(selected_counts[label]) for label in desired_counts} != desired_counts:
+        raise RuntimeError(f"candidate selection count mismatch: selected={dict(selected_counts)}, desired={desired_counts}")
+    print("candidate selection method:", method, flush=True)
+    print("candidate selection reference rows:", len(reference_rows), "sampled:", len(reference_matrix), flush=True)
+    print("candidate selection summary:", json.dumps(selection_summary, sort_keys=True)[:4000], flush=True)
+    return selected
+
+
+def generate_target_cases(
+    seed: int,
+    generation_config: dict[str, Any],
+    *,
+    parent_rows: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     rng = np.random.default_rng(seed)
     case_counts = generation_config["case_counts"]
+    candidate_selection = generation_config.get("candidate_selection", {})
+    candidate_selection_enabled = bool(candidate_selection.get("enabled", False)) if isinstance(candidate_selection, dict) else False
+    oversample_multiplier = float(candidate_selection.get("oversample_multiplier", 1.0)) if isinstance(candidate_selection, dict) else 1.0
+    if candidate_selection_enabled and oversample_multiplier <= 1.0:
+        raise ValueError("candidate_selection.oversample_multiplier must be > 1 when candidate selection is enabled")
+    generation_case_counts = (
+        {
+            label: int(np.ceil(count * oversample_multiplier))
+            for label, count in case_counts.items()
+        }
+        if candidate_selection_enabled
+        else case_counts
+    )
     sampling = generation_config.get("sampling", {})
     space_filling = sampling.get("space_filling", {}) if isinstance(sampling, dict) else {}
     space_filling_enabled = bool(space_filling.get("enabled", False)) if isinstance(space_filling, dict) else False
@@ -463,12 +649,13 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
         "coupled_A1_B2_S3_random": ("A1", "B2", "S3"),
         "coupled_C3_A3_S3_random": ("C3", "A3", "S3"),
         "coupled_A1_B2_random": ("A1", "B2"),
+        "coupled_A1_A2_B2_random": ("A1", "A2", "B2"),
         "coupled_A2_B2_random": ("A2", "B2"),
         "coupled_C3_B2_random": ("C3", "B2"),
         "coupled_A3_S3_random": ("A3", "S3"),
     }
     cases: list[dict[str, Any]] = []
-    for label, count in case_counts.items():
+    for label, count in generation_case_counts.items():
         if label != "coupled_sparse_random" and label not in field_sets:
             raise KeyError(f"unknown targeted case label: {label}")
         use_space_filling = space_filling_enabled and label in space_filling_labels
@@ -521,6 +708,16 @@ def generate_target_cases(seed: int, generation_config: dict[str, Any]) -> list[
                 apply_relative_angle_controls(randomized, relative_pairs, angle_bin, rng)
                 cases.append(randomized)
     rng.shuffle(cases)
+    if candidate_selection_enabled:
+        if parent_rows is None:
+            raise ValueError("candidate selection requires parent_rows")
+        cases = select_candidate_cases_by_parent_nn(
+            cases,
+            desired_counts=case_counts,
+            parent_rows=parent_rows,
+            config=candidate_selection,
+            rng=rng,
+        )
     return cases
 
 
@@ -602,6 +799,8 @@ def simulate_rows(base_cases: list[dict[str, Any]], batch_base_cases: int) -> li
             feature_values = compute_uno_values(under_chars, over_chars, angles_deg)
 
             row = {field: params.get(field, 0.0) for field in COMBINATION_FIELDS}
+            for field in SAMPLING_METADATA_FIELDS:
+                row[field] = params.get(field, "")
             row["case_index"] = batch_start + local_case_index
             row["under_index"] = batch_start * len(C1_OFFSETS) + under_index
             row["over_index"] = batch_start * len(C1_OFFSETS) + over_index
@@ -995,7 +1194,7 @@ def main() -> int:
     attach_parent_metadata(source_rows)
     generation_config = load_generation_config(args.case_counts_json)
     case_counts = generation_config["case_counts"]
-    target_cases = generate_target_cases(args.seed, generation_config)
+    target_cases = generate_target_cases(args.seed, generation_config, parent_rows=source_rows)
     print("source CSV:", source_csv, flush=True)
     print("source rows:", len(source_rows), flush=True)
     print("feature columns:", len(feature_columns), flush=True)

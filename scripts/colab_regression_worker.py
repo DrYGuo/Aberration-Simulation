@@ -383,6 +383,29 @@ def wait_for_new_config(
         time.sleep(poll_seconds)
 
 
+def maybe_disconnect_colab_runtime(config: dict[str, Any]) -> None:
+    if not bool(config.get("disconnect_runtime_after_success", False)):
+        return
+    delay_seconds = int(config.get("disconnect_runtime_delay_seconds", 30))
+    if delay_seconds > 0:
+        print(
+            f"disconnect_runtime_after_success enabled; waiting {delay_seconds} seconds "
+            "after final push before requesting Colab runtime disconnect.",
+            flush=True,
+        )
+        time.sleep(delay_seconds)
+    try:
+        from google.colab import runtime  # type: ignore
+    except Exception as exc:
+        print(f"Colab runtime disconnect skipped; google.colab.runtime unavailable: {exc}", flush=True)
+        return
+    try:
+        print("Requesting Colab runtime disconnect now.", flush=True)
+        runtime.unassign()
+    except Exception as exc:
+        print(f"Colab runtime disconnect request failed: {type(exc).__name__}: {exc}", flush=True)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -561,6 +584,7 @@ def main() -> int:
             time.sleep(sleep_seconds)
 
     print("Colab worker finished all cycles.")
+    maybe_disconnect_colab_runtime(config)
     return 0
 
 
