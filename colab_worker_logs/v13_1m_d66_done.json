@@ -1,0 +1,19 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-15T06:04:09.329508+00:00",
+  "workflow": "scripts/run_colab_v13_1m_d66_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "benchmark_v2_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed7_20260615_042743_utc",
+  "sampling_quality_dir": "training_results/model_selection_reports/sampling_quality_v13_1m_d66",
+  "drive_backup_run_name": "v13_1m_20260615_021716_utc",
+  "diagnostics": [
+    "sampling_quality_v13_1m_d66",
+    "v13_1m_d66_training",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit",
+    "data_scale_learning_curve",
+    "drive_backup"
+  ],
+  "decision": "Evaluate v13 1M coverage and benchmark metrics before deciding whether any expansion beyond 1M is necessary."
+}

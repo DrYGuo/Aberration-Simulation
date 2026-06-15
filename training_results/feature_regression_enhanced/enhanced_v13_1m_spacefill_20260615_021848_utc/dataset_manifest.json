@@ -1,0 +1,385 @@
+{
+  "run_name": "enhanced_v13_1m_spacefill_20260615_021848_utc",
+  "dataset_version": "enhanced_v13_1m_spacefill",
+  "created_utc": "2026-06-15T04:07:52.743634+00:00",
+  "git_commit": "9ab2bfd",
+  "generation_script": "scripts/generate_targeted_enhanced_dataset.py",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "parent_dataset_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_500k_eval_20260615_003057_utc/training_features_enhanced.csv",
+  "parent_dataset_sha256": "17f8d7d7c1eb1432154d187900634cd51052016716e15075e4e650b3e3dcd83f",
+  "output_csv": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "output_csv_sha256": "08c72ebb7941244c8420ac4c88dd96676dac16288e3bf395e08e67529a9de2ad",
+  "row_count_before_expansion": 575000,
+  "appended_training_only_row_count": 500000,
+  "appended_non_training_benchmark_row_count": 0,
+  "total_rows": 1075000,
+  "random_seed": 131,
+  "targeted_case_counts": {
+    "coupled_full_random": 160000,
+    "coupled_sparse_random": 80000,
+    "S3_high_random": 35000,
+    "coupled_A3_S3_random": 35000,
+    "coupled_B2_S3_random": 30000,
+    "coupled_A1_B2_S3_random": 35000,
+    "coupled_C3_A3_S3_random": 30000,
+    "coupled_A1_S3_random": 20000,
+    "coupled_C1_C3_random": 15000,
+    "coupled_C1_S3_random": 10000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C1_C3_S3_random": 8000,
+    "coupled_C1_A3_S3_random": 8000,
+    "coupled_C1_C3_A2_random": 10000,
+    "coupled_A2_B2_random": 6000,
+    "coupled_A1_B2_random": 5000,
+    "coupled_C3_B2_random": 5000
+  },
+  "generation_config": {
+    "description": "Expansion from the v12 benchmark-v2 500K evaluation CSV to roughly 1M train-eligible rows plus the fixed 75K benchmark-v2 held-out rows. The new 500K rows use a broader space-filling mix to improve 12D coverage while preserving hard S3/A3/B2/A1 coupling diagnostics.",
+    "dataset_version": "enhanced_v13_1m_spacefill",
+    "parent_dataset_version": "enhanced_v12_benchmark_v2",
+    "expected_parent_rows": 575000,
+    "expected_new_training_only_rows": 500000,
+    "expected_total_rows": 1075000,
+    "case_counts": {
+      "coupled_full_random": 160000,
+      "coupled_sparse_random": 80000,
+      "S3_high_random": 35000,
+      "coupled_A3_S3_random": 35000,
+      "coupled_B2_S3_random": 30000,
+      "coupled_A1_B2_S3_random": 35000,
+      "coupled_C3_A3_S3_random": 30000,
+      "coupled_A1_S3_random": 20000,
+      "coupled_C1_C3_random": 15000,
+      "coupled_C1_S3_random": 10000,
+      "coupled_C1_A1_S3_random": 8000,
+      "coupled_C1_C3_S3_random": 8000,
+      "coupled_C1_A3_S3_random": 8000,
+      "coupled_C1_C3_A2_random": 10000,
+      "coupled_A2_B2_random": 6000,
+      "coupled_A1_B2_random": 5000,
+      "coupled_C3_B2_random": 5000
+    },
+    "sampling": {
+      "space_filling": {
+        "enabled": true,
+        "method": "latin_hypercube",
+        "labels": [
+          "coupled_full_random",
+          "coupled_sparse_random",
+          "S3_high_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "coupled_A1_S3_random",
+          "coupled_C1_C3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random",
+          "coupled_C1_C3_A2_random",
+          "coupled_A2_B2_random",
+          "coupled_A1_B2_random",
+          "coupled_C3_B2_random"
+        ],
+        "note": "This is not an exact orthogonal design. It is a per-regime Latin-hypercube, physics-guided space-filling expansion. The large coupled_full_random and coupled_sparse_random quotas are intended to improve broad 12D interpolation rather than only local hard-regime performance."
+      },
+      "relative_angles": {
+        "enabled": true,
+        "bins": [
+          "aligned",
+          "orthogonal",
+          "anti_aligned",
+          "random"
+        ],
+        "label_pairs": {
+          "coupled_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_B2_S3_random": [
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_A1_B2_S3_random": [
+            [
+              "A1",
+              "S3"
+            ],
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_C3_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_A1_S3_random": [
+            [
+              "A1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_S3_random": [
+            [
+              "C1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_A1_S3_random": [
+            [
+              "A1",
+              "S3"
+            ]
+          ],
+          "coupled_C1_C3_S3_random": [
+            [
+              "C3",
+              "S3"
+            ]
+          ],
+          "coupled_C1_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ]
+        },
+        "note": "Only vector-vector pairs are actively angle-constrained by the generator. Scalar-vector labels are retained for traceability."
+      },
+      "c1_balanced": {
+        "enabled": true,
+        "magnitude_bins": [
+          [
+            0.0,
+            10.0
+          ],
+          [
+            10.0,
+            40.0
+          ],
+          [
+            40.0,
+            75.0
+          ],
+          [
+            75.0,
+            100.0
+          ]
+        ],
+        "labels": [
+          "coupled_C1_C3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random",
+          "coupled_C1_C3_A2_random"
+        ],
+        "note": "C1 is intentionally monitored but not allowed to dominate model selection because current defocus settings limit intrinsic C1 sensitivity."
+      },
+      "s3_tail": {
+        "enabled": true,
+        "s3_amp_min": 63.5,
+        "s3_amp_max": 100.0,
+        "labels": [
+          "S3_high_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "coupled_A1_S3_random",
+          "coupled_C1_S3_random",
+          "coupled_C1_A1_S3_random",
+          "coupled_C1_C3_S3_random",
+          "coupled_C1_A3_S3_random"
+        ],
+        "force_s3_in_sparse": false
+      }
+    },
+    "coverage_metrics_to_track": {
+      "primary": [
+        "marginal_empty_bins",
+        "marginal_normalized_entropy",
+        "marginal_max_to_median_bin_count",
+        "pairwise_nonempty_fraction",
+        "pairwise_normalized_entropy",
+        "pairwise_max_to_median_bin_count",
+        "nearest_neighbor_distance_p95",
+        "relative_angle_bin_balance",
+        "training_only_leakage_counts"
+      ],
+      "decision_rule": "Do not approve a 2M expansion only because model metrics improve. Require sampling diagnostics to show remaining coverage gaps or benchmark/stress errors that cannot be fixed by architecture/optimizer tuning."
+    },
+    "selection_policy": {
+      "training_only_append_rows": true,
+      "requires_fixed_benchmark_split": true,
+      "split_seed": 7,
+      "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+      "do_not_train_on_blind_or_stress": true
+    },
+    "decision_note": {
+      "purpose": "Move from targeted 500K training to a broader 1M train-eligible dataset while preserving fixed benchmark-v2 validation/blind/stress evaluation.",
+      "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v12benchmarkv2_500k_seed7_20260615_005333_utc",
+      "fixed_architecture_and_features": true,
+      "feature_set": "d66",
+      "split_seed": 7,
+      "resource_note": "Use mini-batch training and chunked evaluation/prediction. Back up the generated v13 CSV to Google Drive before training so the 1M simulation is not lost if the runtime disconnects.",
+      "promotion_rule": "Promote only if v13 improves or preserves weighted score, blind/stress normalized MAE, high-S3 vector metrics, B2/A3 vector diagnostics, and sampling-quality coverage without easy-target regression."
+    }
+  },
+  "target_columns": [
+    "C1",
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "A2_x",
+    "A2_y",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y"
+  ],
+  "feature_columns": [
+    "C1_value_real",
+    "C3_value_real",
+    "A1_value_real",
+    "A1_value_imag",
+    "B2_value_real",
+    "B2_value_imag",
+    "A2_value_real",
+    "A2_value_imag",
+    "S3_value_real",
+    "S3_value_imag",
+    "A3_value_real",
+    "A3_value_imag",
+    "under_Xigma_mean",
+    "under_Xigma_h1_real",
+    "under_Xigma_h1_imag",
+    "under_Xigma_h2_real",
+    "under_Xigma_h2_imag",
+    "under_Xigma_h3_real",
+    "under_Xigma_h3_imag",
+    "under_Xigma_h4_real",
+    "under_Xigma_h4_imag",
+    "under_Mu_mean",
+    "under_Mu_h1_real",
+    "under_Mu_h1_imag",
+    "under_Mu_h2_real",
+    "under_Mu_h2_imag",
+    "under_Mu_h3_real",
+    "under_Mu_h3_imag",
+    "under_Mu_h4_real",
+    "under_Mu_h4_imag",
+    "under_Rho_mean",
+    "under_Rho_h1_real",
+    "under_Rho_h1_imag",
+    "under_Rho_h2_real",
+    "under_Rho_h2_imag",
+    "under_Rho_h3_real",
+    "under_Rho_h3_imag",
+    "under_Rho_h4_real",
+    "under_Rho_h4_imag",
+    "over_Xigma_mean",
+    "over_Xigma_h1_real",
+    "over_Xigma_h1_imag",
+    "over_Xigma_h2_real",
+    "over_Xigma_h2_imag",
+    "over_Xigma_h3_real",
+    "over_Xigma_h3_imag",
+    "over_Xigma_h4_real",
+    "over_Xigma_h4_imag",
+    "over_Mu_mean",
+    "over_Mu_h1_real",
+    "over_Mu_h1_imag",
+    "over_Mu_h2_real",
+    "over_Mu_h2_imag",
+    "over_Mu_h3_real",
+    "over_Mu_h3_imag",
+    "over_Mu_h4_real",
+    "over_Mu_h4_imag",
+    "over_Rho_mean",
+    "over_Rho_h1_real",
+    "over_Rho_h1_imag",
+    "over_Rho_h2_real",
+    "over_Rho_h2_imag",
+    "over_Rho_h3_real",
+    "over_Rho_h3_imag",
+    "over_Rho_h4_real",
+    "over_Rho_h4_imag"
+  ],
+  "feature_count": 66,
+  "regime_counts_after_merge": {
+    "C1": 6,
+    "C3": 6,
+    "A1": 32,
+    "B2/C21": 32,
+    "A2": 20,
+    "A3": 20,
+    "S3/C32": 36,
+    "A3_wide": 45,
+    "S3_C32_wide": 45,
+    "C1_A1_C3_grid": 108,
+    "A1_B2_S3_grid": 96,
+    "coupled_full_random": 250554,
+    "coupled_C1_C3_A2_random": 26000,
+    "coupled_C1_A1_C3_A2_random": 15500,
+    "coupled_A1_A2_B2_random": 1500,
+    "coupled_A1_B2_S3_random": 81500,
+    "coupled_A3_S3_random": 82000,
+    "coupled_sparse_random": 159500,
+    "coupled_A2_B2_random": 20500,
+    "coupled_A1_S3_random": 53500,
+    "coupled_C3_A3_S3_random": 72500,
+    "coupled_C1_C3_random": 33000,
+    "coupled_A1_B2_random": 14000,
+    "coupled_C3_B2_random": 14000,
+    "coupled_C1_C3_S3_random": 28000,
+    "S3_high_random": 75500,
+    "coupled_B2_S3_random": 66500,
+    "coupled_C1_S3_random": 23500,
+    "coupled_C1_A1_random": 6000,
+    "coupled_C1_A1_S3_random": 20000,
+    "coupled_C1_A2_random": 5000,
+    "coupled_C1_A1_C3_random": 5500,
+    "coupled_C1_A3_random": 4000,
+    "coupled_C1_B2_random": 2500,
+    "coupled_C1_A3_S3_random": 14000
+  },
+  "new_rows_per_regime": {
+    "coupled_C3_A3_S3_random": 30000,
+    "coupled_sparse_random": 80000,
+    "coupled_full_random": 160000,
+    "coupled_A3_S3_random": 35000,
+    "coupled_A1_S3_random": 20000,
+    "coupled_C1_C3_S3_random": 8000,
+    "coupled_C1_C3_A2_random": 10000,
+    "coupled_A1_B2_S3_random": 35000,
+    "coupled_C1_C3_random": 15000,
+    "S3_high_random": 35000,
+    "coupled_A1_B2_random": 5000,
+    "coupled_C3_B2_random": 5000,
+    "coupled_A2_B2_random": 6000,
+    "coupled_B2_S3_random": 30000,
+    "coupled_C1_A1_S3_random": 8000,
+    "coupled_C1_S3_random": 10000,
+    "coupled_C1_A3_S3_random": 8000
+  },
+  "split_policy": "New rows are training-only unless a later, explicit versioned split experiment changes validation/blind/stress benchmark definitions.",
+  "dataset_split_hint_field": "dataset_split_hint",
+  "new_row_split_hint": "training_only",
+  "feature_columns_path": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/feature_columns_enhanced.json",
+  "label_summary_path": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/label_summary.csv",
+  "new_targeted_label_summary_path": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/new_targeted_label_summary.csv",
+  "targeted25k_audit_path": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/targeted25k_audit.json",
+  "large_artifact_policy": "training_features_enhanced.csv is intentionally not pushed to GitHub"
+}
