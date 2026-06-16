@@ -21,30 +21,102 @@ else
   printf '%s\n' "$DRIVE_BACKUP_RUN_NAME" > "$DRIVE_BACKUP_RUN_NAME_FILE"
 fi
 
+restore_csv_folder_from_drive() {
+  local label="$1"
+  local local_glob="$2"
+  local drive_glob="$3"
+  local dest_parent="$4"
+  local found
+  found=$(ls -td $local_glob 2>/dev/null | head -1 || true)
+  if [ -n "$found" ]; then
+    printf '%s\n' "$found"
+    return 0
+  fi
+  echo "Missing cached $label CSV in the live runtime; trying Drive restore." >&2
+  found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    echo "Could not find $label CSV locally or in Drive backup root: $DRIVE_BACKUP_ROOT" >&2
+    return 1
+  fi
+  mkdir -p "$dest_parent"
+  local source_dir
+  source_dir=$(dirname "$found")
+  echo "Restoring $label CSV folder from Drive: $source_dir" >&2
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --info=progress2 "$source_dir" "$dest_parent"/ >&2
+  else
+    cp -a "$source_dir" "$dest_parent"/ >&2
+  fi
+  ls -td $local_glob 2>/dev/null | head -1
+}
+
+restore_file_from_drive() {
+  local label="$1"
+  local local_path="$2"
+  local drive_glob="$3"
+  if [ -f "$local_path" ]; then
+    return 0
+  fi
+  local found
+  found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    return 1
+  fi
+  echo "Restoring $label from Drive: $found"
+  mkdir -p "$(dirname "$local_path")"
+  cp "$found" "$local_path"
+}
+
 V2_SPLIT_MANIFEST="configs/benchmark_split_v12_v2_row_keys.json"
 if [ ! -f "$V2_SPLIT_MANIFEST" ]; then
-  echo "Missing frozen benchmark-v2 split manifest at $V2_SPLIT_MANIFEST. Restore it from GitHub before v14."
-  exit 1
+  if ! restore_file_from_drive "benchmark-v2 split manifest" "$V2_SPLIT_MANIFEST" "$DRIVE_BACKUP_ROOT/*/configs/benchmark_split_v12_v2_row_keys.json"; then
+    echo "Missing frozen benchmark-v2 split manifest; recreating it from cached v12/v6 CSVs."
+    V1_SPLIT_MANIFEST="configs/benchmark_split_v6_frozen_row_keys.json"
+    if [ ! -f "$V1_SPLIT_MANIFEST" ]; then
+      if ! restore_file_from_drive "benchmark-v1 split manifest" "$V1_SPLIT_MANIFEST" "$DRIVE_BACKUP_ROOT/*/configs/benchmark_split_v6_frozen_row_keys.json"; then
+        V6_CSV=$(restore_csv_folder_from_drive \
+          "v6 benchmark-gap" \
+          "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv" \
+          "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv" \
+          "training_results/feature_regression_enhanced")
+        if [ -z "$V6_CSV" ]; then
+          echo "Missing v6 cached CSV required to recreate benchmark-v1 split manifest."
+          exit 1
+        fi
+        python3 scripts/write_benchmark_split_manifest.py \
+          --csv-path "$V6_CSV" \
+          --output "$V1_SPLIT_MANIFEST" \
+          --dataset-version enhanced_v6_benchmark_gap100k \
+          --overwrite
+      fi
+    fi
+    V12_CSV=$(restore_csv_folder_from_drive \
+      "v12 benchmark-v2" \
+      "training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_*/training_features_enhanced.csv" \
+      "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_*/training_features_enhanced.csv" \
+      "training_results/feature_regression_enhanced")
+    if [ -z "$V12_CSV" ]; then
+      echo "Missing v12 cached CSV required to recreate benchmark-v2 split manifest."
+      exit 1
+    fi
+    python3 scripts/write_benchmark_v2_split_manifest.py \
+      --csv-path "$V12_CSV" \
+      --base-manifest "$V1_SPLIT_MANIFEST" \
+      --output "$V2_SPLIT_MANIFEST" \
+      --new-dataset-version enhanced_v12_benchmark_v2 \
+      --dataset-version enhanced_v12_benchmark_v2 \
+      --overwrite
+  fi
 fi
 
-V13_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+V13_CSV=$(restore_csv_folder_from_drive \
+  "v13 1M" \
+  "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
+  "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
+  "training_results/feature_regression_enhanced")
 if [ -z "$V13_CSV" ]; then
-  echo "Missing cached v13 1M CSV in the live runtime; trying Drive restore."
-  DRIVE_V13_CSV=$(ls -td "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
-  if [ -z "$DRIVE_V13_CSV" ]; then
-    echo "Could not find v13 1M CSV locally or in Drive backup root: $DRIVE_BACKUP_ROOT"
-    echo "Mount Drive first, or restore the v13 CSV folder before running v14."
-    exit 1
-  fi
-  mkdir -p training_results/feature_regression_enhanced
-  DRIVE_V13_DIR=$(dirname "$DRIVE_V13_CSV")
-  echo "Restoring v13 CSV folder from Drive: $DRIVE_V13_DIR"
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a --info=progress2 "$DRIVE_V13_DIR" training_results/feature_regression_enhanced/
-  else
-    cp -a "$DRIVE_V13_DIR" training_results/feature_regression_enhanced/
-  fi
-  V13_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv | head -1)
+  echo "Mount Drive first, or restore the v13 CSV folder before running v14."
+  exit 1
 fi
 
 V14_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
