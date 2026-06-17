@@ -1,6 +1,6 @@
 {
-  "description": "Active 12D hole-search inference-repair workflow. Reuse the cycle-1 simulated active probes, rebuild/save the v13 seed23 checkpoint if the original run folder lacks model_loop_candidate.pt, run frozen-config inference on the active probes, write compact failure/hole reports and a recommended future sampling plan, back up large artifacts to Drive, and wait for the next Codex steering config.",
-  "config_id": "active-12d-hole-search-v1-inference-repair",
+  "description": "Drive checkpoint inventory workflow for active 12D hole-search. Search mounted Drive and local model-selection folders for v13 seed23 checkpoint candidates before deciding whether an explicit one-time rebuild is unavoidable. No training, no simulation, no inference.",
+  "config_id": "active-12d-hole-search-v1-drive-checkpoint-inventory",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_inference_repair_workflow.sh"
+    "scripts/run_colab_drive_checkpoint_inventory_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
