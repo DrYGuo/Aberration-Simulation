@@ -1,6 +1,6 @@
 {
-  "description": "Drive checkpoint inventory workflow for active 12D hole-search. Search mounted Drive and local model-selection folders for v13 seed23 checkpoint candidates before deciding whether an explicit one-time rebuild is unavoidable. No training, no simulation, no inference.",
-  "config_id": "active-12d-hole-search-v1-drive-checkpoint-inventory",
+  "description": "No-op stop cycle. Finish the current Colab worker cleanly and disconnect while the active 12D hole-search checkpoint issue is resolved. No training, no simulation, no inference.",
+  "config_id": "noop-stop-after-active-hole-search-checkpoint-missing",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_drive_checkpoint_inventory_workflow.sh"
+    "scripts/run_colab_noop_stop_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
