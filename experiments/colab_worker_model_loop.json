@@ -1,6 +1,6 @@
 {
-  "description": "One-time active 12D hole-search checkpoint repair. Restore v13 data/probe features from Drive, explicitly rebuild the frozen v13 seed23 checkpoint with --save-model because no model_loop_candidate.pt exists in Drive, run active-probe inference, back up the checkpoint/results to Drive, and then wait for the next Codex steering config.",
-  "config_id": "active-12d-hole-search-v1-explicit-checkpoint-rebuild",
+  "description": "Google Drive model file presence check. Inspect /content/drive/MyDrive/Aberration-Simulation-Colab-Backups from Colab for v13 seed23 model_loop_candidate.pt before running any training or inference.",
+  "config_id": "drive-model-file-presence-check",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,8 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "-lc",
-    "ALLOW_CHECKPOINT_REBUILD=1 bash scripts/run_colab_active_12d_hole_search_v1_inference_repair_workflow.sh"
+    "scripts/run_colab_drive_model_file_presence_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
