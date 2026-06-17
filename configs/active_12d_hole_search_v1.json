@@ -1,0 +1,97 @@
+{
+  "workflow_id": "active_12d_hole_search_v1",
+  "run_prefix": "v13_active_12d_hole_search",
+  "description": "Diagnostic-only active 12D hole search using the frozen v13 1M seed23 D66 grouped-head model. This does not train or expand the training set.",
+  "champion": {
+    "name": "v13 1M seed23 D66 grouped-head",
+    "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*",
+    "dataset_glob": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv",
+    "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json"
+  },
+  "target_scales": {
+    "C1": 100.0,
+    "C3": 2.0,
+    "A1_x": 60.0,
+    "A1_y": 60.0,
+    "B2_x": 3.0,
+    "B2_y": 3.0,
+    "A2_x": 16.0,
+    "A2_y": 16.0,
+    "S3_x": 100.0,
+    "S3_y": 100.0,
+    "A3_x": 100.0,
+    "A3_y": 100.0
+  },
+  "proposal": {
+    "seed": 1507,
+    "selected_probe_count": 3000,
+    "candidate_pool_size": 45000,
+    "reference_sample_size": 300000,
+    "nearest_neighbor_chunk_size": 25000,
+    "top_residual_seed_count": 1200,
+    "mode_counts": {
+      "far_nn": 900,
+      "sobol_lhs": 650,
+      "genetic_algorithm": 800,
+      "residual_jitter": 350,
+      "bridge_anchor": 300
+    },
+    "regime_weights": {
+      "coupled_full_random": 0.30,
+      "coupled_sparse_random": 0.18,
+      "coupled_A3_S3_random": 0.12,
+      "coupled_B2_S3_random": 0.10,
+      "coupled_A1_B2_S3_random": 0.10,
+      "coupled_A1_S3_random": 0.08,
+      "coupled_C3_A3_S3_random": 0.08,
+      "S3_high_random": 0.04
+    },
+    "genetic_algorithm": {
+      "population_size": 768,
+      "generations": 24,
+      "elite_fraction": 0.16,
+      "mutation_probability": 0.18,
+      "mutation_scale": 0.10,
+      "immigrant_fraction": 0.08,
+      "fitness_weights": {
+        "nearest_neighbor_distance": 0.50,
+        "known_residual_similarity": 0.22,
+        "physical_relevance": 0.14,
+        "diversity_proxy": 0.08,
+        "boundary_penalty": 0.06
+      }
+    }
+  },
+  "simulation": {
+    "enabled": true,
+    "batch_base_cases": 192
+  },
+  "inference": {
+    "enabled": true,
+    "predict_batch_size": 65536
+  },
+  "classification": {
+    "failure_top_fraction": 0.10,
+    "coverage_limited_nn_quantile": 0.75,
+    "dense_failure_nn_quantile": 0.50
+  },
+  "recommended_plan": {
+    "future_dataset_name": "v15_active_hole_targeted",
+    "do_not_train_in_this_workflow": true,
+    "starting_policy": "Use the resulting failure clusters to allocate a future diagnostic-to-training expansion. Do not promote a data-expansion plan until this active search finishes."
+  },
+  "artifact_policy": {
+    "github_lightweight_only": true,
+    "drive_backup_large_artifacts": true,
+    "do_not_push": [
+      "active_hole_search_probe_features.csv",
+      "*.pt",
+      "*.pth",
+      "*.ckpt",
+      "*.npy",
+      "*.npz",
+      "*.h5",
+      "*.zip"
+    ]
+  }
+}

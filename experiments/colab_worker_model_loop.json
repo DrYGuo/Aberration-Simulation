@@ -1,6 +1,6 @@
 {
-  "description": "v14 1.5M far-NN targeted expansion. Restore/reuse the cached v13 1M CSV, append 500K coverage-gap-aware rows using 80% far-NN and 20% bridge/anchor selection, train one controlled D66 grouped-head seed23 candidate, back up large artifacts to Drive, push compact summaries to GitHub, then disconnect the Colab runtime after the final push.",
-  "config_id": "v14-1p5m-far-nn-d66-seed23",
+  "description": "Active 12D hole-search diagnostic workflow. Restore/reuse the cached v13 1M CSV and frozen v13 seed23 model, generate multi-mode diagnostic probes including GA proposals, simulate/extract features for selected probes, run frozen v13 inference, write compact hole/failure reports and a recommended future sampling plan, back up large artifacts to Drive, and disconnect after final push.",
+  "config_id": "active-12d-hole-search-v1",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v14_1p5m_far_nn_workflow.sh"
+    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -39,6 +39,20 @@
     "training_results/model_selection_reports/sampling_quality_*/*.json",
     "training_results/model_selection_reports/sampling_quality_*/*.csv",
     "training_results/model_selection_reports/sampling_quality_*/plots/*.png",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_search_report.md",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_search_summary.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_search_state.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_search_recommended_sampling_plan.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/proposal_summary.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/simulation_manifest.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/inference_manifest.json",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/selected_probe_design.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_search_top_failures.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_clusters.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_nn_error_summary.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_regime_summary.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_relative_angle_summary.csv",
+    "training_results/model_selection_reports/v13_active_12d_hole_search_*/plots/*.png",
     "training_results/model_selection_reports/c1_feature_sensitivity_*.md",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.json",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.csv",
@@ -82,6 +96,7 @@
   ],
   "artifact_blocked_patterns": [
     "training_features",
+    "probe_features",
     "predictions",
     "checkpoint"
   ],
