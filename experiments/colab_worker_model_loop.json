@@ -1,6 +1,6 @@
 {
-  "description": "Active 12D hole-search broad local checkpoint pickup. Search all live Colab /content training_results/model_selection_loop folders for model_loop_candidate.pt, prefer v13 seed23, run active-probe inference, and back up the checkpoint/results to Drive. No training.",
-  "config_id": "active-12d-hole-search-v1-broad-local-checkpoint-pickup",
+  "description": "Active 12D hole-search diagnostic workflow. Restore/reuse the cached v13 1M CSV and frozen v13 seed23 model, generate multi-mode diagnostic probes including GA proposals, simulate/extract features for selected probes, run frozen v13 inference, write compact hole/failure reports and a recommended future sampling plan, back up large artifacts to Drive, and disconnect after final push.",
+  "config_id": "active-12d-hole-search-v1",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_inference_repair_workflow.sh"
+    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
