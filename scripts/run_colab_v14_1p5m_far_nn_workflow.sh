@@ -189,6 +189,13 @@ fi
 
 V14_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
 if [ -z "$V14_CSV" ]; then
+  V14_CSV=$(restore_csv_folder_from_drive \
+    "v14 1.5M far-NN" \
+    "training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_*/training_features_enhanced.csv" \
+    "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_*/training_features_enhanced.csv" \
+    "training_results/feature_regression_enhanced" || true)
+fi
+if [ -z "$V14_CSV" ]; then
   python3 scripts/generate_targeted_enhanced_dataset.py \
     --parent-csv "$V13_CSV" \
     --run-prefix enhanced_v14_1p5m_far_nn \
@@ -199,6 +206,15 @@ if [ -z "$V14_CSV" ]; then
     --new-row-split-hint training_only
   V14_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_*/training_features_enhanced.csv | head -1)
 fi
+
+V14_DIR=$(dirname "$V14_CSV")
+python3 scripts/write_dataset_recovery_manifest.py \
+  --csv-path "$V14_CSV" \
+  --config configs/targeted_expansion_v14_1p5m_far_nn.json \
+  --output "$V14_DIR/dataset_recovery_manifest.json" \
+  --dataset-version enhanced_v14_1p5m_far_nn \
+  --expected-total-rows 1575000 \
+  --expected-new-rows 500000
 
 echo "Backing up v14 generated dataset and current Colab state to Drive before training."
 python3 scripts/backup_colab_state_to_drive.py --run-name "$DRIVE_BACKUP_RUN_NAME"
