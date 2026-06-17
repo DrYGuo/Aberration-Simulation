@@ -1,0 +1,75 @@
+{
+  "created_utc": "2026-06-17T07:25:46.136664+00:00",
+  "sampling_quality_logic_version": "dataset_version_focus_v2",
+  "csv_path": "training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_20260617_051304_utc/training_features_enhanced.csv",
+  "config": "configs/targeted_expansion_v14_1p5m_far_nn.json",
+  "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "counts": {
+    "focus_dataset_version": "enhanced_v14_1p5m_far_nn",
+    "total_rows": 1575000,
+    "parent_rows": 1075000,
+    "new_training_only_rows": 500000,
+    "dataset_versions": {
+      "parent_cached_dataset": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000,
+      "enhanced_v12_benchmark_v2": 75000,
+      "enhanced_v13_1m_spacefill": 500000,
+      "enhanced_v14_1p5m_far_nn": 500000
+    },
+    "dataset_sources": {
+      "parent": 16446,
+      "enhanced_v3_targeted25k": 25000,
+      "enhanced_v5_s3_tail60k": 16000,
+      "enhanced_v6_benchmark_gap100k": 43000,
+      "enhanced_v9_gap250k": 149554,
+      "enhanced_v11_gap500k": 250000,
+      "enhanced_v12_benchmark_v2": 75000,
+      "enhanced_v13_1m_spacefill": 500000,
+      "enhanced_v14_1p5m_far_nn": 500000
+    },
+    "split_hints": {
+      "": 16446,
+      "training_only": 1483554,
+      "benchmark_v2": 75000
+    }
+  },
+  "quota": {
+    "focus_dataset_version": "enhanced_v14_1p5m_far_nn",
+    "planned_total_new_rows": 500000,
+    "observed_total_new_rows": 500000,
+    "quota_warning_labels": [],
+    "quota_pass": true
+  },
+  "candidate_selection": {
+    "new_rows": 500000,
+    "role_counts": {
+      "bridge_anchor": 100000,
+      "far_nn": 400000
+    },
+    "role_fractions": {
+      "bridge_anchor": 0.2,
+      "far_nn": 0.8
+    }
+  },
+  "split": {
+    "status": "available",
+    "split_counts": {
+      "train": 1492556,
+      "validation": 26977,
+      "blind": 27370,
+      "stress": 28097
+    },
+    "training_only_leakage_counts": {
+      "validation": 0,
+      "blind": 0,
+      "stress": 0
+    },
+    "training_only_leakage_pass": true
+  },
+  "warnings": [],
+  "recommendation": "PASS"
+}

@@ -1,0 +1,21 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-17T09:31:46.556704+00:00",
+  "workflow": "scripts/run_colab_v14_1p5m_far_nn_workflow.sh",
+  "dataset_csv": "training_results/feature_regression_enhanced/enhanced_v14_1p5m_far_nn_20260617_051304_utc/training_features_enhanced.csv",
+  "benchmark_v2_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v14_1p5m_far_nn_d66_seed23_20260617_072619_utc",
+  "sampling_quality_dir": "training_results/model_selection_reports/sampling_quality_v14_1p5m_far_nn_d66",
+  "drive_backup_run_name": "v14_1p5m_far_nn_20260617_044344_utc",
+  "diagnostics": [
+    "sampling_quality_v14_1p5m_far_nn_d66",
+    "v14_1p5m_far_nn_d66_training",
+    "residual_vs_12d_nearest_neighbor_distance",
+    "vector_diagnostics",
+    "s3_magnitude_metric_audit",
+    "training_validation_loss_gap_audit",
+    "data_scale_learning_curve",
+    "drive_backup"
+  ],
+  "decision": "Compare v14 against v13 seed23. Expand beyond 1.5M only if residual-vs-NN remains coverage-limited after this targeted expansion."
+}

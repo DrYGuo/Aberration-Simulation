@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-06-17T09:31:28.736046+00:00",
+  "batches": [
+    {
+      "label": "v6_100k",
+      "path": "training_results/model_selection_batches/v6_benchmark_gap100k_smoothl1_20260612_051859_utc/batch_summary.csv",
+      "status": "complete",
+      "n_candidate_rows": 2,
+      "best_job_id": "v6_benchmark_gap100k_seed23",
+      "best_candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v6gap100k_seed23",
+      "weighted_score": 0.03689948415347876,
+      "true_hard_target_normalized_mae": 0.018496652878820897,
+      "validation_normalized_mae": 0.013937150128185749,
+      "blind_normalized_mae": 0.010852726176381111,
+      "stress_normalized_mae": 0.010182945057749748,
+      "S3_high_magnitude_mae": 6.273777484893799,
+      "S3_high_magnitude_bias": -4.646976947784424,
+      "S3_high_magnitude_slope": 0.7986199426235208,
+      "B2_magnitude_mae": 0.06011036038398743,
+      "A3_magnitude_mae": 1.4007463455200195
+    },
+    {
+      "label": "v9_250k",
+      "path": "training_results/model_selection_batches/v9_gap250k_d66_20260614_062446_utc/batch_summary.csv",
+      "status": "complete",
+      "n_candidate_rows": 2,
+      "best_job_id": "v9_gap250k_d66_seed23",
+      "best_candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v9gap250k_d66_seed23",
+      "weighted_score": 0.030511203085860382,
+      "true_hard_target_normalized_mae": 0.015365738421678543,
+      "validation_normalized_mae": 0.01186219323426485,
+      "blind_normalized_mae": 0.00968953687697649,
+      "stress_normalized_mae": 0.008716583251953125,
+      "S3_high_magnitude_mae": 4.728827476501465,
+      "S3_high_magnitude_bias": -3.1192691326141357,
+      "S3_high_magnitude_slope": 0.8654767417575472,
+      "B2_magnitude_mae": 0.055272553116083145,
+      "A3_magnitude_mae": 1.2077444791793823
+    },
+    {
+      "label": "v14_1p5m_far_nn",
+      "path": "training_results/model_selection_batches/v14_1p5m_far_nn_d66_20260617_072618_utc/batch_summary.csv",
+      "status": "complete",
+      "n_candidate_rows": 1,
+      "best_job_id": "v14_1p5m_far_nn_d66_seed23",
+      "best_candidate_id": "D66_grouped_width320_lr6e-4_dropout0.075_v14_1p5m_far_nn_d66_seed23",
+      "weighted_score": 0.012331293909935962,
+      "true_hard_target_normalized_mae": 0.006624051555991173,
+      "validation_normalized_mae": 0.005195433273911476,
+      "blind_normalized_mae": 0.005555886775255203,
+      "stress_normalized_mae": 0.005760458298027515,
+      "S3_high_magnitude_mae": 0.8386092782020569,
+      "S3_high_magnitude_bias": -0.40541818737983704,
+      "S3_high_magnitude_slope": 0.9718609310238278,
+      "B2_magnitude_mae": 0.021979456767439842,
+      "A3_magnitude_mae": 0.5924979448318481
+    }
+  ]
+}
