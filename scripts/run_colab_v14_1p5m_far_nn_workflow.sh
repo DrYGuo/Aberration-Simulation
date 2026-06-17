@@ -6,6 +6,7 @@ PENDING_MARKER="colab_worker_logs/v14_1p5m_far_nn_d66_pending.json"
 SAMPLING_QUALITY_DIR="training_results/model_selection_reports/sampling_quality_v14_1p5m_far_nn_d66"
 DRIVE_BACKUP_RUN_NAME_FILE="colab_worker_logs/v14_1p5m_far_nn_drive_backup_run_name.txt"
 DRIVE_BACKUP_ROOT="${ABERRATION_DRIVE_BACKUP_ROOT:-/content/drive/MyDrive/Aberration-Simulation-Colab-Backups}"
+DRIVE_RESTORE_RETRIES="${ABERRATION_DRIVE_RESTORE_RETRIES:-3}"
 
 if [ -f "$DONE_MARKER" ]; then
   echo "v14 1.5M far-NN d66 workflow already completed; marker exists at $DONE_MARKER"
@@ -28,26 +29,93 @@ restore_csv_folder_from_drive() {
   local dest_parent="$4"
   local found
   found=$(ls -td $local_glob 2>/dev/null | head -1 || true)
+  local drive_found
+  drive_found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
+  if [ -n "$found" ]; then
+    if [ -n "$drive_found" ]; then
+      local local_size
+      local drive_size
+      local_size=$(stat -c%s "$found" 2>/dev/null || echo 0)
+      drive_size=$(stat -c%s "$drive_found" 2>/dev/null || echo 0)
+      if [ "$local_size" -lt "$drive_size" ]; then
+        echo "Existing local $label CSV appears partial: local=$local_size bytes, drive=$drive_size bytes. Re-restoring." >&2
+        rm -f "$found"
+      else
+        printf '%s\n' "$found"
+        return 0
+      fi
+    else
+      echo "Using local $label CSV because no Drive source is currently visible: $found" >&2
+      printf '%s\n' "$found"
+      return 0
+    fi
+  fi
+  if [ -n "$found" ] && [ ! -f "$found" ]; then
+    found=""
+  fi
+  found=$(ls -td $local_glob 2>/dev/null | head -1 || true)
   if [ -n "$found" ]; then
     printf '%s\n' "$found"
     return 0
   fi
   echo "Missing cached $label CSV in the live runtime; trying Drive restore." >&2
-  found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
-  if [ -z "$found" ]; then
+  if [ -z "$drive_found" ]; then
     echo "Could not find $label CSV locally or in Drive backup root: $DRIVE_BACKUP_ROOT" >&2
     return 1
   fi
   mkdir -p "$dest_parent"
   local source_dir
-  source_dir=$(dirname "$found")
+  source_dir=$(dirname "$drive_found")
+  local dest_dir
+  dest_dir="$dest_parent/$(basename "$source_dir")"
+  mkdir -p "$dest_dir"
   echo "Restoring $label CSV folder from Drive: $source_dir" >&2
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a --info=progress2 "$source_dir" "$dest_parent"/ >&2
-  else
-    cp -a "$source_dir" "$dest_parent"/ >&2
+  local required_files=(
+    "training_features_enhanced.csv"
+    "feature_columns_enhanced.json"
+    "dataset_manifest.json"
+    "targeted25k_audit.json"
+    "label_summary.csv"
+    "new_targeted_label_summary.csv"
+  )
+  local name
+  for name in "${required_files[@]}"; do
+    if [ ! -f "$source_dir/$name" ]; then
+      continue
+    fi
+    local attempt
+    local copied="false"
+    for attempt in $(seq 1 "$DRIVE_RESTORE_RETRIES"); do
+      echo "Restoring $label file $name, attempt $attempt/$DRIVE_RESTORE_RETRIES" >&2
+      rm -f "$dest_dir/$name"
+      if command -v rsync >/dev/null 2>&1; then
+        rsync -a --inplace --info=progress2 "$source_dir/$name" "$dest_dir/$name" >&2 && copied="true" || copied="false"
+      else
+        cp "$source_dir/$name" "$dest_dir/$name" && copied="true" || copied="false"
+      fi
+      if [ "$copied" = "true" ]; then
+        local source_size
+        local dest_size
+        source_size=$(stat -c%s "$source_dir/$name" 2>/dev/null || echo 0)
+        dest_size=$(stat -c%s "$dest_dir/$name" 2>/dev/null || echo 0)
+        if [ "$source_size" -eq "$dest_size" ] && [ "$dest_size" -gt 0 ]; then
+          break
+        fi
+        echo "Restored $name size mismatch: source=$source_size bytes, dest=$dest_size bytes." >&2
+        copied="false"
+      fi
+      sleep 10
+    done
+    if [ "$copied" != "true" ]; then
+      echo "Failed to restore required $label file after retries: $source_dir/$name" >&2
+      return 1
+    fi
+  done
+  found=$(ls -td $local_glob 2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    return 1
   fi
-  ls -td $local_glob 2>/dev/null | head -1
+  printf '%s\n' "$found"
 }
 
 restore_file_from_drive() {
