@@ -1,6 +1,6 @@
 {
-  "description": "Preflight-only active 12D hole-search check. Inventory local Colab /content and mounted Drive for the v13 CSV, v13 model checkpoint, active probe features, and frozen benchmark split manifest. No training, simulation, or inference.",
-  "config_id": "active-12d-preflight-v1",
+  "description": "One-cycle v13 1M seed23 checkpoint rebuild. Restore/use the cached v13 1M D66 feature CSV, retrain the exact v13 seed23 champion configuration with --save-model, back up the resulting model_loop_candidate.pt to Google Drive, and push only compact manifests/metrics/plots to GitHub.",
+  "config_id": "v13-1m-seed23-checkpoint-rebuild",
   "cycles": 1,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_preflight_workflow.sh"
+    "scripts/run_colab_v13_seed23_checkpoint_rebuild_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -106,7 +106,7 @@
   "disconnect_runtime_after_success": true,
   "disconnect_runtime_after_failure": true,
   "disconnect_runtime_delay_seconds": 60,
-  "require_new_config_each_cycle": true,
+  "require_new_config_each_cycle": false,
   "wait_for_new_config_poll_seconds": 30,
   "wait_for_new_config_timeout_seconds": 18000
 }
