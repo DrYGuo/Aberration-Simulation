@@ -383,8 +383,8 @@ def wait_for_new_config(
         time.sleep(poll_seconds)
 
 
-def maybe_disconnect_colab_runtime(config: dict[str, Any]) -> None:
-    if not bool(config.get("disconnect_runtime_after_success", False)):
+def maybe_disconnect_colab_runtime(config: dict[str, Any], *, force: bool = False) -> None:
+    if not force and not bool(config.get("disconnect_runtime_after_success", False)):
         return
     delay_seconds = int(config.get("disconnect_runtime_delay_seconds", 30))
     if delay_seconds > 0:
@@ -554,6 +554,8 @@ def main() -> int:
             last_executed_fingerprint = active_fingerprint
 
             if returncode and config.get("stop_on_command_failure", True):
+                if bool(config.get("disconnect_runtime_after_failure", False)):
+                    maybe_disconnect_colab_runtime(config, force=True)
                 return returncode
 
         except Exception as exc:
@@ -576,6 +578,8 @@ def main() -> int:
             print(f"Cycle {cycle} failed: {exc}", file=sys.stderr)
             print(f"Wrote failure manifest: {cycle_manifest}")
             if config.get("stop_on_command_failure", True):
+                if bool(config.get("disconnect_runtime_after_failure", False)):
+                    maybe_disconnect_colab_runtime(config, force=True)
                 return 1
 
         sleep_seconds = int(config.get("sleep_seconds", 0))
