@@ -1,6 +1,6 @@
 {
-  "description": "Active 12D hole-search local checkpoint pickup. Use the live Colab /content training_results model_loop_candidate.pt if present, run active-probe inference, and back up the checkpoint/results to Drive. No training.",
-  "config_id": "active-12d-hole-search-v1-local-checkpoint-pickup",
+  "description": "Active 12D hole-search broad local checkpoint pickup. Search all live Colab /content training_results/model_selection_loop folders for model_loop_candidate.pt, prefer v13 seed23, run active-probe inference, and back up the checkpoint/results to Drive. No training.",
+  "config_id": "active-12d-hole-search-v1-broad-local-checkpoint-pickup",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",

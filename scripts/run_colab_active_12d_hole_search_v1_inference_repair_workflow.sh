@@ -104,6 +104,47 @@ restore_checkpoint_from_drive() {
   printf '%s\n' "$local_run_dir/model_loop_candidate.pt"
 }
 
+find_local_checkpoint() {
+  local found
+  found=$(ls -td \
+    training_results/model_selection_loop/*v13*seed23*/model_loop_candidate.pt \
+    training_results/model_selection_loop/*v13*/model_loop_candidate.pt \
+    training_results/model_selection_loop/*checkpoint_rebuild*/model_loop_candidate.pt \
+    training_results/model_selection_loop/*/model_loop_candidate.pt \
+    2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    return 1
+  fi
+  printf '%s\n' "$found"
+}
+
+list_local_checkpoint_context() {
+  python3 - <<'PY'
+from pathlib import Path
+import json
+
+root = Path("training_results/model_selection_loop")
+payload = {
+    "model_loop_candidate_pt": [],
+    "v13_seed23_dirs": [],
+    "v13_dirs": [],
+    "recent_dirs": [],
+}
+if root.exists():
+    for path in sorted(root.glob("*/model_loop_candidate.pt"), key=lambda p: p.stat().st_mtime, reverse=True)[:25]:
+        payload["model_loop_candidate_pt"].append(str(path))
+    for path in sorted(root.glob("*v13*seed23*"), key=lambda p: p.stat().st_mtime, reverse=True)[:25]:
+        if path.is_dir():
+            payload["v13_seed23_dirs"].append(str(path))
+    for path in sorted(root.glob("*v13*"), key=lambda p: p.stat().st_mtime, reverse=True)[:25]:
+        if path.is_dir():
+            payload["v13_dirs"].append(str(path))
+    for path in sorted((p for p in root.glob("*") if p.is_dir()), key=lambda p: p.stat().st_mtime, reverse=True)[:25]:
+        payload["recent_dirs"].append(str(path))
+print(json.dumps(payload, indent=2))
+PY
+}
+
 restore_manifest_from_drive() {
   local label="$1"
   local local_path="$2"
@@ -147,6 +188,11 @@ if [ -z "$V13_RUN_DIR" ]; then
 fi
 
 CHECKPOINT_RUN_DIR=$(ls -td training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_* 2>/dev/null | head -1 || true)
+LOCAL_CHECKPOINT=$(find_local_checkpoint || true)
+if [ -n "$LOCAL_CHECKPOINT" ]; then
+  CHECKPOINT_RUN_DIR=$(dirname "$LOCAL_CHECKPOINT")
+  echo "Using local model checkpoint from Colab content: $LOCAL_CHECKPOINT"
+fi
 if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candidate.pt" ]; then
   if restore_checkpoint_from_drive \
     "v13 seed23 champion" \
@@ -160,11 +206,17 @@ fi
 if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candidate.pt" ]; then
   if [ "$ALLOW_CHECKPOINT_REBUILD" != "1" ]; then
     echo "No v13 seed23 checkpoint was found locally or in Drive. Not rebuilding because ALLOW_CHECKPOINT_REBUILD is not 1."
-    python3 - "$PENDING_MARKER" "$V13_CSV" "$PROBE_CSV" "${CHECKPOINT_RUN_DIR:-}" "$DRIVE_BACKUP_RUN_NAME" "$DRIVE_BACKUP_ROOT" <<'PY'
+    LOCAL_CONTEXT=$(list_local_checkpoint_context)
+    python3 - "$PENDING_MARKER" "$V13_CSV" "$PROBE_CSV" "${CHECKPOINT_RUN_DIR:-}" "$DRIVE_BACKUP_RUN_NAME" "$DRIVE_BACKUP_ROOT" "$LOCAL_CONTEXT" <<'PY'
 import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    local_checkpoint_context = json.loads(sys.argv[7])
+except Exception:
+    local_checkpoint_context = {"parse_error": sys.argv[7]}
 
 Path(sys.argv[1]).write_text(json.dumps({
     "status": "pending",
@@ -176,7 +228,8 @@ Path(sys.argv[1]).write_text(json.dumps({
     "drive_backup_run_name": sys.argv[5],
     "drive_backup_root": sys.argv[6],
     "missing_artifact": "model_loop_candidate.pt",
-    "note": "The active hole-search inference repair requires the frozen v13 checkpoint. No matching checkpoint was found in the mounted Drive backups, and checkpoint rebuild is disabled unless ALLOW_CHECKPOINT_REBUILD=1.",
+    "local_checkpoint_context": local_checkpoint_context,
+    "note": "The active hole-search inference repair requires model_loop_candidate.pt. No matching local or Drive checkpoint was found, and checkpoint rebuild is disabled unless ALLOW_CHECKPOINT_REBUILD=1.",
 }, indent=2) + "\n")
 PY
     echo "Wrote pending marker: $PENDING_MARKER"
