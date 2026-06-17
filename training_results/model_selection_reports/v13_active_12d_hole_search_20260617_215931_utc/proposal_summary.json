@@ -1,0 +1,56 @@
+{
+  "seed": 1507,
+  "selected_probe_count": 3000,
+  "reference_train_rows": 992556,
+  "reference_matrix_rows": 300000,
+  "nearest_neighbor_method": "sklearn",
+  "residual_seed_rows": 1200,
+  "mode_summaries": {
+    "far_nn": {
+      "raw_candidates": 10800,
+      "selected": 900,
+      "nn_distance_median": 0.7367553114891052,
+      "score_median": 0.5528350174427032
+    },
+    "sobol_lhs": {
+      "raw_candidates": 9000,
+      "selected": 650,
+      "nn_distance_median": 0.7489132583141327,
+      "score_median": 0.5789717137813568
+    },
+    "genetic_algorithm": {
+      "raw_candidates": 1920,
+      "selected": 800,
+      "nn_distance_median": 1.2084516286849976,
+      "score_median": 0.6107628643512726
+    },
+    "residual_jitter": {
+      "raw_candidates": 1400,
+      "selected": 350,
+      "nn_distance_median": 0.801971048116684,
+      "score_median": 0.5674217045307159
+    },
+    "bridge_anchor": {
+      "raw_candidates": 9000,
+      "selected": 300,
+      "nn_distance_median": 0.2847375273704529,
+      "score_median": 0.06439803913235664
+    }
+  },
+  "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_20260617_215931_utc/selected_probe_design.csv",
+  "regime_counts": {
+    "coupled_sparse_random": 242,
+    "coupled_full_random": 2571,
+    "coupled_C3_A3_S3_random": 42,
+    "coupled_A1_B2_S3_random": 139,
+    "coupled_A3_S3_random": 2,
+    "coupled_B2_S3_random": 4
+  },
+  "proposal_mode_counts": {
+    "far_nn": 900,
+    "sobol_lhs": 650,
+    "genetic_algorithm": 800,
+    "bridge_anchor": 300,
+    "residual_jitter": 350
+  }
+}
