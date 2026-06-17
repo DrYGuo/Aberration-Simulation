@@ -81,6 +81,28 @@ restore_file_from_drive() {
   printf '%s\n' "$dest_file"
 }
 
+restore_checkpoint_from_drive() {
+  local label="$1"
+  local local_run_dir="$2"
+  local drive_glob="$3"
+  if [ -n "$local_run_dir" ] && [ -f "$local_run_dir/model_loop_candidate.pt" ]; then
+    printf '%s\n' "$local_run_dir/model_loop_candidate.pt"
+    return 0
+  fi
+  local found
+  found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    return 1
+  fi
+  if [ -z "$local_run_dir" ]; then
+    local_run_dir="training_results/model_selection_loop/$(basename "$(dirname "$found")")"
+  fi
+  mkdir -p "$local_run_dir"
+  echo "Restoring $label checkpoint from Drive: $found" >&2
+  cp "$found" "$local_run_dir/model_loop_candidate.pt"
+  printf '%s\n' "$local_run_dir/model_loop_candidate.pt"
+}
+
 restore_manifest_from_drive() {
   local label="$1"
   local local_path="$2"
@@ -124,6 +146,16 @@ if [ -z "$V13_RUN_DIR" ]; then
 fi
 
 CHECKPOINT_RUN_DIR=$(ls -td training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_* 2>/dev/null | head -1 || true)
+if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candidate.pt" ]; then
+  if restore_checkpoint_from_drive \
+    "v13 seed23 champion" \
+    "$V13_RUN_DIR" \
+    "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23*/model_loop_candidate.pt" >/dev/null; then
+    CHECKPOINT_RUN_DIR="$V13_RUN_DIR"
+    echo "Using restored v13 seed23 checkpoint from Drive: $CHECKPOINT_RUN_DIR/model_loop_candidate.pt"
+  fi
+fi
+
 if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candidate.pt" ]; then
   echo "Rebuilding v13 seed23 checkpoint with --save-model. This trains the same frozen configuration and saves a checkpoint for active-probe inference."
   python3 scripts/run_model_selection_candidate.py \
