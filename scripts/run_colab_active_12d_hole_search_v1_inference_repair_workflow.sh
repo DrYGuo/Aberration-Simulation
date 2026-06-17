@@ -6,6 +6,7 @@ PENDING_MARKER="colab_worker_logs/active_12d_hole_search_v1_inference_repair_pen
 CONFIG="configs/active_12d_hole_search_v1.json"
 DRIVE_BACKUP_RUN_NAME_FILE="colab_worker_logs/active_12d_hole_search_v1_drive_backup_run_name.txt"
 DRIVE_BACKUP_ROOT="${ABERRATION_DRIVE_BACKUP_ROOT:-/content/drive/MyDrive/Aberration-Simulation-Colab-Backups}"
+ALLOW_CHECKPOINT_REBUILD="${ALLOW_CHECKPOINT_REBUILD:-0}"
 
 if [ -f "$DONE_MARKER" ]; then
   echo "active 12D hole-search inference repair already completed; marker exists at $DONE_MARKER"
@@ -157,6 +158,30 @@ if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candid
 fi
 
 if [ -z "$CHECKPOINT_RUN_DIR" ] || [ ! -f "$CHECKPOINT_RUN_DIR/model_loop_candidate.pt" ]; then
+  if [ "$ALLOW_CHECKPOINT_REBUILD" != "1" ]; then
+    echo "No v13 seed23 checkpoint was found locally or in Drive. Not rebuilding because ALLOW_CHECKPOINT_REBUILD is not 1."
+    python3 - "$PENDING_MARKER" "$V13_CSV" "$PROBE_CSV" "${CHECKPOINT_RUN_DIR:-}" "$DRIVE_BACKUP_RUN_NAME" "$DRIVE_BACKUP_ROOT" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+Path(sys.argv[1]).write_text(json.dumps({
+    "status": "pending",
+    "created_utc": datetime.now(timezone.utc).isoformat(),
+    "workflow": "scripts/run_colab_active_12d_hole_search_v1_inference_repair_workflow.sh",
+    "v13_csv": sys.argv[2],
+    "probe_features_csv": sys.argv[3],
+    "checkpoint_run_dir": sys.argv[4],
+    "drive_backup_run_name": sys.argv[5],
+    "drive_backup_root": sys.argv[6],
+    "missing_artifact": "model_loop_candidate.pt",
+    "note": "The active hole-search inference repair requires the frozen v13 checkpoint. No matching checkpoint was found in the mounted Drive backups, and checkpoint rebuild is disabled unless ALLOW_CHECKPOINT_REBUILD=1.",
+}, indent=2) + "\n")
+PY
+    echo "Wrote pending marker: $PENDING_MARKER"
+    exit 0
+  fi
   echo "Rebuilding v13 seed23 checkpoint with --save-model. This trains the same frozen configuration and saves a checkpoint for active-probe inference."
   python3 scripts/run_model_selection_candidate.py \
     --family enhanced \
