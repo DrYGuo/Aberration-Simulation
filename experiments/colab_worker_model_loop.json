@@ -1,7 +1,7 @@
 {
-  "description": "Active 12D hole-search diagnostic workflow. Restore/reuse the cached v13 1M CSV and frozen v13 seed23 model, generate multi-mode diagnostic probes including GA proposals, simulate/extract features for selected probes, run frozen v13 inference, write compact hole/failure reports and a recommended future sampling plan, back up large artifacts to Drive, and disconnect after final push.",
-  "config_id": "active-12d-hole-search-v1",
-  "cycles": 8,
+  "description": "Preflight-only active 12D hole-search check. Inventory local Colab /content and mounted Drive for the v13 CSV, v13 model checkpoint, active probe features, and frozen benchmark split manifest. No training, simulation, or inference.",
+  "config_id": "active-12d-preflight-v1",
+  "cycles": 1,
   "sleep_seconds": 0,
   "branch": "main",
   "reload_config_each_cycle": true,
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
+    "scripts/run_colab_active_12d_preflight_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -57,6 +57,7 @@
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.json",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.csv",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/plots/*.png",
+    "colab_worker_logs/active_12d_preflight_*.json",
     "training_results/model_selection_loop/**/run_manifest*.json",
     "training_results/model_selection_loop/**/metrics*.json",
     "training_results/model_selection_loop/**/orthogonal_benchmark_metrics.json",
