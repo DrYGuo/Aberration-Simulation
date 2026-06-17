@@ -1094,6 +1094,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--v13-run-dir", type=Path, required=True)
     parser.add_argument("--benchmark-split-manifest", type=Path, default=Path("configs/benchmark_split_v12_v2_row_keys.json"))
     parser.add_argument("--output-root", type=Path, default=Path("training_results/model_selection_reports"))
+    parser.add_argument(
+        "--probe-features-csv",
+        type=Path,
+        help="Reuse an already simulated active_hole_search_probe_features.csv and run inference/evaluation only.",
+    )
     parser.add_argument("--proposal-only", action="store_true")
     return parser.parse_args()
 
@@ -1127,14 +1132,40 @@ def main() -> int:
     }
     state_path.write_text(json.dumps(state, indent=2) + "\n")
 
-    selected, proposal_summary = propose_candidates(v13_rows, split_indices, args.v13_run_dir, config, output_dir)
-    state["status"] = "proposals_complete"
-    state["proposal_summary"] = proposal_summary
-    state_path.write_text(json.dumps(state, indent=2) + "\n")
-
     simulation_manifest: dict[str, Any] = {"status": "skipped", "reason": "simulation disabled or proposal-only"}
     probe_rows: list[dict[str, Any]] = []
-    if config.get("simulation", {}).get("enabled", True) and not args.proposal_only:
+    if args.probe_features_csv:
+        probe_rows, _ = read_csv(args.probe_features_csv)
+        proposal_summary = {
+            "seed": config["proposal"].get("seed"),
+            "selected_probe_count": int(len(probe_rows)),
+            "reference_train_rows": int(len(split_indices["train"])),
+            "reference_matrix_rows": None,
+            "nearest_neighbor_method": "not_recomputed_for_reused_probe_features",
+            "residual_seed_rows": None,
+            "mode_summaries": {},
+            "selected_probe_design_csv": None,
+            "regime_counts": dict(Counter(str(row.get("sweep_label", "")) for row in probe_rows)),
+            "proposal_mode_counts": dict(Counter(str(row.get("proposal_mode", "")) for row in probe_rows)),
+            "reused_probe_features_csv": str(args.probe_features_csv),
+        }
+        simulation_manifest = {
+            "status": "reused",
+            "probe_rows": int(len(probe_rows)),
+            "probe_features_csv": str(args.probe_features_csv),
+            "large_artifact_policy": "Drive backup only; excluded from GitHub worker globs.",
+        }
+        state["status"] = "reused_probe_features"
+        state["proposal_summary"] = proposal_summary
+        state["simulation_manifest"] = simulation_manifest
+        state_path.write_text(json.dumps(state, indent=2) + "\n")
+    else:
+        selected, proposal_summary = propose_candidates(v13_rows, split_indices, args.v13_run_dir, config, output_dir)
+        state["status"] = "proposals_complete"
+        state["proposal_summary"] = proposal_summary
+        state_path.write_text(json.dumps(state, indent=2) + "\n")
+
+    if not args.probe_features_csv and config.get("simulation", {}).get("enabled", True) and not args.proposal_only:
         try:
             probe_rows = simulate_rows(selected, int(config.get("simulation", {}).get("batch_base_cases", 192)))
             for source, simulated in zip(selected, probe_rows):

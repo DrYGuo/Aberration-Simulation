@@ -1,6 +1,6 @@
 {
-  "description": "Active 12D hole-search diagnostic workflow. Restore/reuse the cached v13 1M CSV and frozen v13 seed23 model, generate multi-mode diagnostic probes including GA proposals, simulate/extract features for selected probes, run frozen v13 inference, write compact hole/failure reports and a recommended future sampling plan, back up large artifacts to Drive, and disconnect after final push.",
-  "config_id": "active-12d-hole-search-v1",
+  "description": "Active 12D hole-search inference-repair workflow. Reuse the cycle-1 simulated active probes, rebuild/save the v13 seed23 checkpoint if the original run folder lacks model_loop_candidate.pt, run frozen-config inference on the active probes, write compact failure/hole reports and a recommended future sampling plan, back up large artifacts to Drive, and wait for the next Codex steering config.",
+  "config_id": "active-12d-hole-search-v1-inference-repair",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
+    "scripts/run_colab_active_12d_hole_search_v1_inference_repair_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
