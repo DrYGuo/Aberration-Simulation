@@ -574,7 +574,7 @@ def propose_candidates(
             raw_rows = run_ga(config, rng, nn_model, reference_matrix, residual_centers, scales)
         elif mode == "residual_jitter":
             raw_rows = make_residual_jitter_candidates(seed_rows, config, rng, count)
-        elif mode == "high_amp_alignment":
+        elif mode in {"high_amp_alignment", "high_amp_bridge"}:
             raw_rows = make_high_amp_alignment_candidates(config, rng, count)
         elif mode in {"far_nn", "bridge_anchor", "sobol_lhs"}:
             pool_count = max(count * 12, int(proposal.get("candidate_pool_size", 45000)) // max(len(mode_counts), 1))
@@ -585,6 +585,9 @@ def propose_candidates(
         if mode == "bridge_anchor":
             target = float(np.quantile(distances, 0.55)) if len(distances) else 0.0
             scores = -np.abs(distances - target).astype(np.float32) + 0.15 * physical_relevance(raw_rows)
+        elif mode == "high_amp_bridge":
+            target = float(config["proposal"].get("high_amp_bridge_target_nn_distance", 0.78))
+            scores = -np.abs(distances - target).astype(np.float32) + 0.35 * physical_relevance(raw_rows)
         chosen = greedy_select(raw_rows, scores, distances, count, scales)
         for row in chosen:
             row["proposal_mode"] = mode
