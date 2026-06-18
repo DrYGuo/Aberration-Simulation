@@ -1,0 +1,59 @@
+{
+  "seed": 1517,
+  "selected_probe_count": 4600,
+  "reference_train_rows": 992556,
+  "reference_matrix_rows": 300000,
+  "nearest_neighbor_method": "sklearn",
+  "residual_seed_rows": 1200,
+  "mode_summaries": {
+    "high_amp_alignment": {
+      "raw_candidates": 4800,
+      "selected": 1600,
+      "nn_distance_median": 1.0317403078079224,
+      "score_median": 0.6080082058906555
+    },
+    "genetic_algorithm": {
+      "raw_candidates": 2400,
+      "selected": 1000,
+      "nn_distance_median": 1.2728731036186218,
+      "score_median": 0.6410776376724243
+    },
+    "far_nn": {
+      "raw_candidates": 10000,
+      "selected": 800,
+      "nn_distance_median": 0.7834610044956207,
+      "score_median": 0.5482123792171478
+    },
+    "residual_jitter": {
+      "raw_candidates": 2400,
+      "selected": 600,
+      "nn_distance_median": 0.8153824806213379,
+      "score_median": 0.5775635242462158
+    },
+    "sobol_lhs": {
+      "raw_candidates": 10000,
+      "selected": 400,
+      "nn_distance_median": 0.8282006680965424,
+      "score_median": 0.5903127193450928
+    },
+    "bridge_anchor": {
+      "raw_candidates": 10000,
+      "selected": 200,
+      "nn_distance_median": 0.5593081116676331,
+      "score_median": 0.11726569011807442
+    }
+  },
+  "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc/selected_probe_design.csv",
+  "regime_counts": {
+    "coupled_full_random": 4552,
+    "coupled_sparse_random": 48
+  },
+  "proposal_mode_counts": {
+    "genetic_algorithm": 1000,
+    "residual_jitter": 600,
+    "far_nn": 800,
+    "high_amp_alignment": 1600,
+    "sobol_lhs": 400,
+    "bridge_anchor": 200
+  }
+}
