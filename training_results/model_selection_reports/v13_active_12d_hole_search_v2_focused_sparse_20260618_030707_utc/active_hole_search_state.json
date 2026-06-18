@@ -1,0 +1,78 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-18T03:08:09.318509+00:00",
+  "git_commit": "1714919",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "config": "configs/active_12d_hole_search_v1.json",
+  "v13_csv": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "v13_csv_sha256": "08c72ebb7941244c8420ac4c88dd96676dac16288e3bf395e08e67529a9de2ad",
+  "v13_run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_20260618_000011_utc",
+  "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "output_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+  "split_counts": {
+    "train": 992556,
+    "validation": 26977,
+    "blind": 27370,
+    "stress": 28097
+  },
+  "proposal_summary": {
+    "seed": 1511,
+    "selected_probe_count": 3790,
+    "reference_train_rows": 992556,
+    "reference_matrix_rows": 300000,
+    "nearest_neighbor_method": "sklearn",
+    "residual_seed_rows": 1200,
+    "mode_summaries": {
+      "far_nn": {
+        "raw_candidates": 14400,
+        "selected": 1200,
+        "nn_distance_median": 0.7845993638038635,
+        "score_median": 0.583297997713089
+      },
+      "sobol_lhs": {
+        "raw_candidates": 12000,
+        "selected": 600,
+        "nn_distance_median": 0.8189472854137421,
+        "score_median": 0.5625343024730682
+      },
+      "genetic_algorithm": {
+        "raw_candidates": 2400,
+        "selected": 1190,
+        "nn_distance_median": 1.246765911579132,
+        "score_median": 0.6098838746547699
+      },
+      "residual_jitter": {
+        "raw_candidates": 2400,
+        "selected": 600,
+        "nn_distance_median": 0.8220810294151306,
+        "score_median": 0.5821039378643036
+      },
+      "bridge_anchor": {
+        "raw_candidates": 12000,
+        "selected": 200,
+        "nn_distance_median": 0.5596419274806976,
+        "score_median": 0.11828195676207542
+      }
+    },
+    "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc/selected_probe_design.csv",
+    "regime_counts": {
+      "coupled_full_random": 3711,
+      "coupled_sparse_random": 79
+    },
+    "proposal_mode_counts": {
+      "residual_jitter": 600,
+      "genetic_algorithm": 1190,
+      "bridge_anchor": 200,
+      "far_nn": 1200,
+      "sobol_lhs": 600
+    }
+  },
+  "simulation_manifest": {
+    "status": "complete",
+    "probe_rows": 3790,
+    "probe_features_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc/active_hole_search_probe_features.csv",
+    "large_artifact_policy": "Drive backup only; excluded from GitHub worker globs."
+  },
+  "finished_utc": "2026-06-18T03:12:30.492008+00:00"
+}

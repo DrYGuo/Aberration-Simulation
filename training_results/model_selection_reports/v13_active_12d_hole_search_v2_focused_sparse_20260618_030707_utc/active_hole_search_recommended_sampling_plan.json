@@ -1,0 +1,29 @@
+{
+  "plan_name": "active_hole_search_recommended_sampling_plan",
+  "created_utc": "2026-06-18T03:12:30.490933+00:00",
+  "based_on": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+  "current_champion_to_freeze": "v13 1M seed23 D66 grouped-head",
+  "primary_next_move": "targeted_data_expansion",
+  "do_not_train_from_this_workflow": true,
+  "recommended_future_dataset": "v15_active_hole_targeted",
+  "recommended_new_rows": {
+    "diagnostic_minimum": 100000,
+    "moderate_expansion": 250000,
+    "large_expansion_only_if_coverage_limited_persists": 500000
+  },
+  "candidate_selection_mix": {
+    "far_nn_from_active_failures": 0.45,
+    "failure_cluster_jitter": 0.2,
+    "bridge_anchor": 0.2,
+    "sobol_lhs_global_balance": 0.1,
+    "orthogonal_diagnostic_controls": 0.05
+  },
+  "regime_fraction_suggestion": {
+    "coupled_full_random": 1.0
+  },
+  "decision_rules": {
+    "expand_data": "Use if top failures are mostly coverage_limited_sparse_failure and error remains correlated with 12D NN distance.",
+    "feature_or_model_change": "Use if dense_model_feature_loss_failure dominates or specific A3/S3/B2 angle/amplitude failures persist at low NN distance.",
+    "measurement_geometry_change": "Consider if dense failures cluster around physically ambiguous C1/A3/S3 couplings under the current two-defocus geometry."
+  }
+}

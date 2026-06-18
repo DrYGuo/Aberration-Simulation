@@ -1,0 +1,52 @@
+{
+  "seed": 1511,
+  "selected_probe_count": 3790,
+  "reference_train_rows": 992556,
+  "reference_matrix_rows": 300000,
+  "nearest_neighbor_method": "sklearn",
+  "residual_seed_rows": 1200,
+  "mode_summaries": {
+    "far_nn": {
+      "raw_candidates": 14400,
+      "selected": 1200,
+      "nn_distance_median": 0.7845993638038635,
+      "score_median": 0.583297997713089
+    },
+    "sobol_lhs": {
+      "raw_candidates": 12000,
+      "selected": 600,
+      "nn_distance_median": 0.8189472854137421,
+      "score_median": 0.5625343024730682
+    },
+    "genetic_algorithm": {
+      "raw_candidates": 2400,
+      "selected": 1190,
+      "nn_distance_median": 1.246765911579132,
+      "score_median": 0.6098838746547699
+    },
+    "residual_jitter": {
+      "raw_candidates": 2400,
+      "selected": 600,
+      "nn_distance_median": 0.8220810294151306,
+      "score_median": 0.5821039378643036
+    },
+    "bridge_anchor": {
+      "raw_candidates": 12000,
+      "selected": 200,
+      "nn_distance_median": 0.5596419274806976,
+      "score_median": 0.11828195676207542
+    }
+  },
+  "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc/selected_probe_design.csv",
+  "regime_counts": {
+    "coupled_full_random": 3711,
+    "coupled_sparse_random": 79
+  },
+  "proposal_mode_counts": {
+    "residual_jitter": 600,
+    "genetic_algorithm": 1190,
+    "bridge_anchor": 200,
+    "far_nn": 1200,
+    "sobol_lhs": 600
+  }
+}
