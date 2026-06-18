@@ -1,6 +1,6 @@
 {
-  "description": "Agent-steered active 12D hole-search loop using the frozen v13 1M seed23 D66 checkpoint restored from Drive. Cycle 5 synthesizes cycles 1-4 into a v15 targeted sampling plan and separates coverage-limited versus dense high-amplitude failure evidence. No training or data expansion.",
-  "config_id": "active-12d-hole-search-v5-synthesis",
+  "description": "Finalize the active 12D hole-search handoff after cycles 1-5 completed diagnostics and synthesis. Remaining cycles run a lightweight no-op finalizer, push manifests, and disconnect. No simulation, inference, training, or data expansion.",
+  "config_id": "active-12d-hole-search-finalize",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_synthesis_workflow.sh"
+    "scripts/run_colab_active_12d_finalize_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -109,7 +109,7 @@
   "disconnect_runtime_after_success": true,
   "disconnect_runtime_after_failure": true,
   "disconnect_runtime_delay_seconds": 60,
-  "require_new_config_each_cycle": true,
+  "require_new_config_each_cycle": false,
   "wait_for_new_config_poll_seconds": 30,
   "wait_for_new_config_timeout_seconds": 18000
 }
