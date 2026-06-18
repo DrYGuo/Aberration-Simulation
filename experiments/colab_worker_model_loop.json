@@ -1,6 +1,6 @@
 {
-  "description": "10-cycle agent-guided active 12D hole search and final expanded v15 training handoff. Cycle 5 synthesizes collected hole-search outputs before v15 targeted training.",
-  "config_id": "active-12d-expanded-synthesis-cycle05",
+  "description": "10-cycle agent-guided active 12D hole search and final expanded v15 training handoff. Cycle 6 generates the expanded v15 active-hole 250k dataset and trains the fixed D66 grouped-head baseline.",
+  "config_id": "v15-active-hole-expanded-250k-training-cycle06",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_synthesis_workflow.sh"
+    "scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
