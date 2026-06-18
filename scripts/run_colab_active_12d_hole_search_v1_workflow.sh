@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DONE_MARKER="colab_worker_logs/active_12d_hole_search_v1_done.json"
-PENDING_MARKER="colab_worker_logs/active_12d_hole_search_v1_pending.json"
 CONFIG="configs/active_12d_hole_search_v1.json"
-DRIVE_BACKUP_RUN_NAME_FILE="colab_worker_logs/active_12d_hole_search_v1_drive_backup_run_name.txt"
+WORKFLOW_ID=$(python3 - "$CONFIG" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+config = json.loads(Path(sys.argv[1]).read_text())
+print(config.get("workflow_id", "active_12d_hole_search"))
+PY
+)
+DONE_MARKER="colab_worker_logs/${WORKFLOW_ID}_done.json"
+PENDING_MARKER="colab_worker_logs/${WORKFLOW_ID}_pending.json"
+DRIVE_BACKUP_RUN_NAME_FILE="colab_worker_logs/${WORKFLOW_ID}_drive_backup_run_name.txt"
 DRIVE_BACKUP_ROOT="${ABERRATION_DRIVE_BACKUP_ROOT:-/content/drive/MyDrive/Aberration-Simulation-Colab-Backups}"
 
 if [ -f "$DONE_MARKER" ]; then
