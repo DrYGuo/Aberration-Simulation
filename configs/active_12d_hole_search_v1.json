@@ -1,7 +1,7 @@
 {
-  "workflow_id": "active_12d_hole_search_v2_focused_sparse",
-  "run_prefix": "v13_active_12d_hole_search_v2_focused_sparse",
-  "description": "Diagnostic-only active 12D hole-search refinement using the frozen v13 1M seed23 D66 grouped-head model. Cycle 2 focuses on the coverage-limited sparse failures found in cycle 1; it does not train or expand the training set.",
+  "workflow_id": "active_12d_hole_search_v3_high_amp_alignment",
+  "run_prefix": "v13_active_12d_hole_search_v3_high_amp_alignment",
+  "description": "Diagnostic-only active 12D hole-search refinement using the frozen v13 1M seed23 D66 grouped-head model. Cycle 3 targets the high-amplitude A1/B2/S3/A3 alignment corner exposed by cycle 2; it does not train or expand the training set.",
   "champion": {
     "name": "v13 1M seed23 D66 grouped-head",
     "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*",
@@ -23,17 +23,18 @@
     "A3_y": 100.0
   },
   "proposal": {
-    "seed": 1511,
-    "selected_probe_count": 4000,
+    "seed": 1517,
+    "selected_probe_count": 4600,
     "candidate_pool_size": 60000,
     "reference_sample_size": 300000,
     "nearest_neighbor_chunk_size": 25000,
     "top_residual_seed_count": 1200,
     "mode_counts": {
-      "far_nn": 1200,
-      "sobol_lhs": 600,
-      "genetic_algorithm": 1400,
+      "high_amp_alignment": 1600,
+      "genetic_algorithm": 1000,
+      "far_nn": 800,
       "residual_jitter": 600,
+      "sobol_lhs": 400,
       "bridge_anchor": 200
     },
     "regime_weights": {

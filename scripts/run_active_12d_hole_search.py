@@ -405,6 +405,47 @@ def make_residual_jitter_candidates(
     return rows
 
 
+def make_high_amp_alignment_candidates(
+    config: dict[str, Any],
+    rng: np.random.Generator,
+    count: int,
+) -> list[dict[str, Any]]:
+    """Probe the high-amplitude A1/B2/S3/A3 alignment corner found in cycle 2."""
+    rows: list[dict[str, Any]] = []
+    a3_offsets = np.asarray([-12.0, -6.0, 0.0, 6.0, 12.0, 168.0, 180.0, 192.0])
+    b2_offsets = np.asarray([35.0, 55.0, 75.0, 105.0, 125.0, 145.0])
+    a1_offsets = np.asarray([35.0, 55.0, 75.0, 105.0, 125.0, 145.0])
+    for _ in range(max(count * 3, count)):
+        s3_angle = float(rng.uniform(0.0, 360.0))
+        a3_angle = s3_angle + float(rng.choice(a3_offsets)) + float(rng.normal(0.0, 3.0))
+        b2_angle = s3_angle + float(rng.choice(b2_offsets)) + float(rng.normal(0.0, 5.0))
+        a1_angle = s3_angle + float(rng.choice(a1_offsets)) + float(rng.normal(0.0, 5.0))
+        row: dict[str, Any] = {
+            "sweep_label": "coupled_full_random",
+            "sampling_method": "active_12d_high_amp_alignment",
+            "sampling_candidate_role": "high_amp_alignment",
+            "C1": float(rng.choice([-1.0, 1.0]) * rng.uniform(60.0, 100.0)) if rng.random() < 0.25 else float(-rng.uniform(60.0, 100.0)),
+            "C3": float(rng.uniform(0.05, 0.45) if rng.random() < 0.75 else rng.uniform(0.45, 1.2)),
+            "A1_amp": float(rng.uniform(42.0, 60.0)),
+            "A1_phase": phase_from_vector_angle("A1", a1_angle),
+            "A2_amp": float(rng.uniform(8.0, 16.0)),
+            "A2_phase": phase_from_vector_angle("A2", float(rng.uniform(0.0, 360.0))),
+            "B2_amp": float(rng.uniform(2.5, 3.0)),
+            "B2_phase": phase_from_vector_angle("B2", b2_angle),
+            "S3_amp": float(rng.uniform(90.0, 100.0)),
+            "S3_phase": phase_from_vector_angle("S3", s3_angle),
+            "A3_amp": float(rng.uniform(90.0, 100.0)),
+            "A3_phase": phase_from_vector_angle("A3", a3_angle),
+        }
+        set_angle_bin(row)
+        for field in COMBINATION_FIELDS:
+            row.setdefault(field, 0.0)
+        for field in SAMPLING_METADATA_FIELDS:
+            row.setdefault(field, "")
+        rows.append(row)
+    return rows
+
+
 def run_ga(
     config: dict[str, Any],
     rng: np.random.Generator,
@@ -533,6 +574,8 @@ def propose_candidates(
             raw_rows = run_ga(config, rng, nn_model, reference_matrix, residual_centers, scales)
         elif mode == "residual_jitter":
             raw_rows = make_residual_jitter_candidates(seed_rows, config, rng, count)
+        elif mode == "high_amp_alignment":
+            raw_rows = make_high_amp_alignment_candidates(config, rng, count)
         elif mode in {"far_nn", "bridge_anchor", "sobol_lhs"}:
             pool_count = max(count * 12, int(proposal.get("candidate_pool_size", 45000)) // max(len(mode_counts), 1))
             raw_rows = make_random_candidates(config, rng, pool_count, "sobol_lhs" if mode == "sobol_lhs" else mode)
