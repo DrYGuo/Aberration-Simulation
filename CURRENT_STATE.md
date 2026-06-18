@@ -1,11 +1,12 @@
 # Current Project State
 
-Last updated: 2026-06-15
+Last updated: 2026-06-18
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `47c91bf`
-- Documentation in this file reflects the evaluated Colab results through that commit.
+- Latest evaluated Colab result commit: `f95bb04`
+- Documentation in this file reflects evaluated Colab results through the completed
+  active 12D hole-search loop and the prepared v15 active-hole expansion.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
@@ -35,12 +36,22 @@ small plots, and concise reports.
 - Colab worker config: `experiments/colab_worker_model_loop.json`
 - Latest completed model-selection batch config: `configs/model_selection_batch_v13_1m_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
+- Prepared next Colab worker command:
+  - `scripts/run_colab_v15_active_hole_250k_workflow.sh`
+  - config id: `v15-active-hole-250k-d66`
 - Latest completed model-selection batch results:
   - `training_results/model_selection_batches/v13_1m_d66_20260615_042743_utc/batch_summary.csv`
 - Latest completed 1M expansion config:
   - `configs/targeted_expansion_v13_1m.json`
 - Latest sampling-quality report:
   - `training_results/model_selection_reports/sampling_quality_v13_1m_d66/sampling_quality_report.md`
+- Active 12D hole-search synthesis:
+  - `training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_033955_utc/active_12d_hole_search_synthesis_report.md`
+- Active failed-region error report:
+  - `training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc/active_failed_region_error_report.md`
+- Prepared v15 active-hole expansion config:
+  - `configs/targeted_expansion_v15_active_hole_250k.json`
+  - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
 - Presentation uncertainty table:
   - `docs/regression_uncertainty_by_training_size.md`
 - Previous model-selection batch config:
@@ -158,6 +169,27 @@ Current interpretation:
   inferred from differences between features measured under large imposed
   under/over defocus offsets, so its residual signal can be weaker than the
   defocused probe geometry itself.
+- Active 12D hole search with the frozen v13 seed23 checkpoint found that the
+  remaining large residuals are mostly coverage-limited sparse failures, but
+  dense/mixed high-amplitude failures are also present and must be tracked
+  separately.
+- Failed-region top rows are concentrated in `coupled_full_random`,
+  high-amplitude S3/A3/B2/A1 vector corners, with important A3-S3 and B2-S3
+  relative-angle structure.
+- The active failed-region local errors are much larger than ordinary
+  validation/blind/stress errors. For the 1,619 active top-failure rows:
+  - S3 vector MAE/RMSE/p95: `36.83 / 41.19 / 68.23 um`
+  - A3 vector MAE/RMSE/p95: `24.75 / 33.82 / 75.13 um`
+  - A1 vector MAE/RMSE/p95: `17.41 / 22.12 / 44.31 nm`
+  - weighted normalized MAE/p95: `0.142 / 0.342`
+- The prepared v15 expansion is a controlled data-only test:
+  - parent: v13 1M CSV
+  - new rows: `250,000` training-only rows
+  - `30%` active failed-subspace jitter around physical cluster centers
+  - remaining rows: high-amplitude coupled-full, A1/B2/S3, A3/S3, B2/S3,
+    C3/A3/S3, sparse controls, and S3/A1 controls
+  - fixed model: 66-feature grouped-head width `320`, seed `23`
+  - validation/blind/stress remain frozen benchmark-v2 rows.
 - The v10 structured-head architecture test is rejected:
   - weighted score worsened from v9 `0.03051` / `0.03069` to `0.03118` / `0.03155`
   - true hard-target normalized MAE worsened to `0.01584` / `0.01598`

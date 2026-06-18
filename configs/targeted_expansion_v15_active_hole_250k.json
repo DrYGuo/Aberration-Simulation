@@ -1,0 +1,129 @@
+{
+  "description": "v15 targeted expansion from v13 1M using active 12D hole-search failed subspaces. New rows are training-only and are generated from a mix of active failed-subspace jitter, high-amplitude S3/A3/B2/A1 couplings, far/bridge coupled-full coverage, sparse controls, and orthogonal-style controls.",
+  "dataset_version": "enhanced_v15_active_hole_250k",
+  "parent_dataset_version": "enhanced_v13_1m_spacefill",
+  "expected_parent_rows": 1075000,
+  "expected_new_training_only_rows": 250000,
+  "expected_total_rows": 1325000,
+  "case_counts": {
+    "active_failed_subspace_jitter": 75000,
+    "coupled_full_random": 50000,
+    "coupled_A1_B2_S3_random": 25000,
+    "coupled_A3_S3_random": 20000,
+    "coupled_B2_S3_random": 20000,
+    "coupled_C3_A3_S3_random": 15000,
+    "coupled_sparse_random": 25000,
+    "S3_high_random": 12500,
+    "coupled_A1_S3_random": 7500
+  },
+  "candidate_selection": {
+    "enabled": true,
+    "method": "parent_12d_nearest_neighbor_distance",
+    "oversample_multiplier": 2.0,
+    "far_fraction": 0.75,
+    "bridge_fraction": 0.25,
+    "bridge_quantile": 0.55,
+    "reference_sample_size": 250000,
+    "query_chunk_size": 25000,
+    "reference_split_hints": ["", "training_only"],
+    "note": "Generate twice the requested candidate count, compute normalized 12D nearest-neighbor distance to the v13 train-eligible parent dataset, then keep mostly far-NN candidates plus bridge/anchor cases. This prevents v15 from becoming only boundary extremes."
+  },
+  "sampling": {
+    "active_failed_subspace_jitter": {
+      "enabled": true,
+      "labels": ["active_failed_subspace_jitter"],
+      "spec_path": "training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc/v15_failed_subspace_sampling_spec.json",
+      "sweep_label": "active_failed_subspace_jitter",
+      "sampling_method": "active_failed_subspace_jitter",
+      "normalized_jitter_sigma": 0.075,
+      "normalized_jitter_min_sigma": 0.025,
+      "normalized_jitter_max_sigma": 0.14,
+      "note": "Jitter around physical 12D cluster centers found by active hole search. These are not literal active probe rows."
+    },
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_sparse_random",
+        "S3_high_random",
+        "coupled_A1_S3_random"
+      ],
+      "note": "Per-regime Latin-hypercube candidates before parent-NN far/bridge selection."
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]]
+      },
+      "note": "Angle balancing is explicit for the vector pairs that active search found problematic: A3-S3 and B2-S3, with A1-S3 retained."
+    },
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [
+        [0.0, 10.0],
+        [10.0, 40.0],
+        [40.0, 75.0],
+        [75.0, 100.0]
+      ],
+      "labels": [
+        "coupled_full_random",
+        "coupled_sparse_random"
+      ],
+      "note": "C1 is monitored but not made dominant because the present defocus geometry limits intrinsic C1 sensitivity."
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "coupled_full_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "S3_high_random",
+        "coupled_A1_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "coverage_metrics_to_track": {
+    "primary": [
+      "active_failed_subspace_cluster_coverage",
+      "candidate_selection_role_counts",
+      "candidate_selection_parent_nn_distance_distribution",
+      "marginal_empty_bins",
+      "pairwise_nonempty_fraction",
+      "nearest_neighbor_distance_p95",
+      "relative_angle_bin_balance",
+      "residual_vs_nn_distance_after_training"
+    ],
+    "decision_rule": "Promote v15 only if it reduces active sparse-tail failures and benchmark blind/stress errors without worsening dense A3/S3/A1 high-amplitude failures."
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+    "do_not_train_on_blind_or_stress": true
+  },
+  "decision_note": {
+    "purpose": "Test whether adding failed-region coverage around active 12D hole-search clusters reduces v13 coverage-limited errors.",
+    "current_baseline": "D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn",
+    "fixed_architecture_and_features": true,
+    "feature_set": "d66",
+    "split_seed": 7,
+    "resource_note": "Use mini-batch training and chunked evaluation/prediction. Back up the generated v15 CSV to Google Drive before training.",
+    "promotion_rule": "Promote only if v15 improves weighted score, blind/stress metrics, residual-vs-NN sparse tails, and S3/A3/A1 active-failure diagnostics without easy-target regression."
+  }
+}

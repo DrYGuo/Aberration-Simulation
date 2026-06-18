@@ -5,6 +5,86 @@ reason for each change, and the minimum information needed to reproduce a run.
 Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
 summarized in `model_registry*.csv`.
 
+## 2026-06-18 Active 12D Hole Search And v15 Preparation
+
+Current promoted baseline remains:
+
+- `D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_20260615_065556_utc`
+
+Active-search result:
+
+- Completed active 12D hole-search cycles:
+  - `v13_active_12d_hole_search_20260618_025610_utc`
+  - `v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc`
+  - `v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc`
+  - `v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc`
+- Synthesis:
+  - `training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_033955_utc/active_12d_hole_search_synthesis_report.md`
+- Failed-region error report:
+  - `training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc/active_failed_region_error_report.md`
+
+The active search probed the frozen v13 model in normalized 12D coefficient
+space using GA, far-NN, Sobol/LHS, high-amplitude alignment, bridge, and
+residual-jitter proposals. It found:
+
+| active-search aggregate | count |
+|---|---:|
+| coverage-limited sparse failures | `1206` |
+| mixed failures | `261` |
+| dense/model-feature-loss failures | `152` |
+
+The top failures are overwhelmingly in `coupled_full_random` and concentrate in
+high-amplitude S3/A3/B2/A1 vector corners. The failed-region local errors are:
+
+| target | MAE | RMSE | p95 |
+|---|---:|---:|---:|
+| C1 (nm) | `7.83` | `10.36` | `19.30` |
+| C3 (mm) | `0.0263` | `0.0344` | `0.0619` |
+| A1 vector (nm) | `17.41` | `22.12` | `44.31` |
+| B2 vector (um) | `0.558` | `0.730` | `1.571` |
+| A2 vector (um) | `0.554` | `0.662` | `1.228` |
+| S3 vector (um) | `36.83` | `41.19` | `68.23` |
+| A3 vector (um) | `24.75` | `33.82` | `75.13` |
+
+These active failed-region errors are far larger than the ordinary v13
+validation/blind/stress errors, so they represent real local holes rather than
+normal benchmark uncertainty.
+
+Prepared next test:
+
+- Dataset config:
+  - `configs/targeted_expansion_v15_active_hole_250k.json`
+- Batch config:
+  - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
+- Worker script:
+  - `scripts/run_colab_v15_active_hole_250k_workflow.sh`
+- Worker config:
+  - `experiments/colab_worker_model_loop.json`
+  - config id: `v15-active-hole-250k-d66`
+
+v15 is a controlled data-only test. It appends `250,000` training-only rows to
+the v13 1M parent dataset, using:
+
+- `30%` jitter around active failed-subspace cluster centers;
+- `25%` high-amplitude A1/B2/S3/A3 angle-structured cases;
+- `20%` far/bridge coupled-full random coverage;
+- `10%` coupled sparse controls;
+- `10%` global/bridge controls;
+- `5%` orthogonal-style diagnostic controls.
+
+The model architecture remains fixed: 66-feature grouped-head residual MLP,
+width `320`, dropout `0.075`, learning rate `6e-4`, seed `23`, SmoothL1,
+gradient clipping, plateau LR scheduler, and frozen benchmark-v2
+validation/blind/stress splits.
+
+Promotion rule:
+
+- promote v15 only if it reduces active sparse-tail failures and improves or
+  preserves weighted score, blind/stress metrics, S3/A3/A1 diagnostics, and
+  easy targets relative to v13 seed23;
+- do not promote v15 merely because training loss decreases;
+- keep dense high-amplitude failures as a separate diagnostic group after v15.
+
 ## 2026-06-15 Current Model-Loop Status
 
 Current baseline:

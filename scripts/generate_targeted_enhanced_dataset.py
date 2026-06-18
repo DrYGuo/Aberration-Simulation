@@ -629,6 +629,15 @@ def generate_target_cases(
         if not parsed_bins:
             raise ValueError("C1 balanced sampling requires at least one magnitude bin")
         c1_magnitude_bins = tuple(parsed_bins)
+    active_failed_subspace = sampling.get("active_failed_subspace_jitter", {}) if isinstance(sampling, dict) else {}
+    active_failed_subspace_enabled = (
+        bool(active_failed_subspace.get("enabled", False)) if isinstance(active_failed_subspace, dict) else False
+    )
+    active_failed_subspace_labels = (
+        set(active_failed_subspace.get("labels", ["active_failed_subspace_jitter"]))
+        if isinstance(active_failed_subspace, dict)
+        else {"active_failed_subspace_jitter"}
+    )
     field_sets = {
         "S3_high_random": ("S3",),
         "coupled_full_random": ALL_FIELDS,
@@ -656,6 +665,9 @@ def generate_target_cases(
     }
     cases: list[dict[str, Any]] = []
     for label, count in generation_case_counts.items():
+        if active_failed_subspace_enabled and label in active_failed_subspace_labels:
+            cases.extend(generate_active_failed_subspace_cases(count, rng, active_failed_subspace))
+            continue
         if label != "coupled_sparse_random" and label not in field_sets:
             raise KeyError(f"unknown targeted case label: {label}")
         use_space_filling = space_filling_enabled and label in space_filling_labels
@@ -831,6 +843,113 @@ def write_label_summary(path: Path, rows: list[dict[str, Any]]) -> None:
             writer.writerow({"sweep_label": label, "n_rows": count})
 
 
+TARGET_PHYSICAL_SCALES = {
+    "C1": 100.0,
+    "C3": 2.0,
+    "A1_x": 60.0,
+    "A1_y": 60.0,
+    "B2_x": 3.0,
+    "B2_y": 3.0,
+    "A2_x": 16.0,
+    "A2_y": 16.0,
+    "S3_x": 100.0,
+    "S3_y": 100.0,
+    "A3_x": 100.0,
+    "A3_y": 100.0,
+}
+
+
+def load_active_failed_subspace_centers(path: Path) -> list[dict[str, Any]]:
+    data = read_json(path)
+    centers = data.get("targeted_subspace_centers", [])
+    if not isinstance(centers, list) or not centers:
+        raise ValueError(f"active failed-subspace spec has no targeted_subspace_centers: {path}")
+    return [dict(center) for center in centers]
+
+
+def center_weight(center: dict[str, Any]) -> float:
+    n = float(center.get("n") or 1.0)
+    error = float(center.get("median_weighted_error") or 0.01)
+    nn_distance = float(center.get("median_nn_distance_12d") or 0.5)
+    class_bonus = 1.25 if center.get("dominant_failure_class") == "coverage_limited_sparse_failure" else 1.0
+    return max(1e-6, math.sqrt(max(n, 1.0)) * max(error, 1e-4) * max(nn_distance, 0.1) * class_bonus)
+
+
+def active_center_to_normalized_vector(center: dict[str, Any]) -> np.ndarray:
+    values = []
+    for name in TARGET_COLUMNS:
+        value = float(center.get(f"center_{name}") or 0.0)
+        values.append(value / TARGET_PHYSICAL_SCALES[name])
+    return np.asarray(values, dtype=float)
+
+
+def normalized_vector_to_case(
+    values: np.ndarray,
+    *,
+    sweep_label: str,
+    sampling_method: str,
+    source_center: dict[str, Any],
+    rng: np.random.Generator,
+) -> dict[str, Any]:
+    values = np.asarray(values, dtype=float)
+    values = np.clip(values, -1.0, 1.0)
+    row = dict(BASELINE_PARAMETERS)
+    row["sweep_label"] = sweep_label
+    row["sampling_method"] = sampling_method
+    row["sampling_candidate_role"] = "active_failed_subspace_jitter"
+    row["sampling_parent_nn_distance_12d"] = source_center.get("median_nn_distance_12d", "")
+    row["C1"] = float(np.clip(values[0] * TARGET_PHYSICAL_SCALES["C1"], -100.0, 100.0))
+    row["C3"] = float(np.clip(values[1] * TARGET_PHYSICAL_SCALES["C3"], 0.0, 2.0))
+    index_by_name = {name: index for index, name in enumerate(TARGET_COLUMNS)}
+    for group, max_amp in (("A1", 60.0), ("B2", 3.0), ("A2", 16.0), ("S3", 100.0), ("A3", 100.0)):
+        x = float(values[index_by_name[f"{group}_x"]] * TARGET_PHYSICAL_SCALES[f"{group}_x"])
+        y = float(values[index_by_name[f"{group}_y"]] * TARGET_PHYSICAL_SCALES[f"{group}_y"])
+        amp = min(max_amp, math.hypot(x, y))
+        if amp <= 1e-10:
+            angle = float(rng.uniform(0.0, 360.0))
+        else:
+            angle = math.degrees(math.atan2(y, x)) % 360.0
+        row[f"{group}_amp"] = float(amp)
+        row[f"{group}_phase"] = phase_from_vector_angle(group, angle)
+    set_relative_angle_bin(row)
+    return row
+
+
+def generate_active_failed_subspace_cases(
+    count: int,
+    rng: np.random.Generator,
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if count <= 0:
+        return []
+    spec_path = Path(config["spec_path"])
+    centers = load_active_failed_subspace_centers(spec_path)
+    weights = np.asarray([center_weight(center) for center in centers], dtype=float)
+    weights = weights / np.sum(weights)
+    sigma = float(config.get("normalized_jitter_sigma", 0.075))
+    min_sigma = float(config.get("normalized_jitter_min_sigma", 0.025))
+    max_sigma = float(config.get("normalized_jitter_max_sigma", 0.14))
+    sigma = float(np.clip(sigma, min_sigma, max_sigma))
+    sweep_label = str(config.get("sweep_label", "active_failed_subspace_jitter"))
+    sampling_method = str(config.get("sampling_method", "active_failed_subspace_jitter"))
+    rows = []
+    for _ in range(count):
+        center = centers[int(rng.choice(len(centers), p=weights))]
+        base = active_center_to_normalized_vector(center)
+        jittered = base + rng.normal(loc=0.0, scale=sigma, size=base.shape)
+        jittered[1] = np.clip(jittered[1], 0.0, 1.0)
+        rows.append(
+            normalized_vector_to_case(
+                jittered,
+                sweep_label=sweep_label,
+                sampling_method=sampling_method,
+                source_center=center,
+                rng=rng,
+            )
+        )
+    return rows
+
+
 def row_target_dict(row: dict[str, Any]) -> dict[str, float]:
     values = target_from_row(row)
     return {name: float(values[index]) for index, name in enumerate(TARGET_COLUMNS)}
@@ -941,6 +1060,14 @@ def angle_category(delta_deg: float) -> str:
     if 67.5 <= value <= 112.5:
         return "orthogonal"
     return "oblique"
+
+
+def set_relative_angle_bin(row: dict[str, Any]) -> None:
+    pairs = []
+    for left, right in (("A1", "S3"), ("B2", "S3"), ("A3", "S3")):
+        if float(row.get(f"{left}_amp") or 0.0) > COUPLING_EPSILON and float(row.get(f"{right}_amp") or 0.0) > COUPLING_EPSILON:
+            pairs.append(f"{left}_{right}:{angle_category(relative_angle_deg(row, left, right))}")
+    row["sampling_relative_angle_bin"] = ";".join(pairs)
 
 
 def sampled_nearest_neighbor_distances(
