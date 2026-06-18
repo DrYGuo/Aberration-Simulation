@@ -1,7 +1,7 @@
 {
-  "workflow_id": "active_12d_hole_search_expanded_cycle02",
-  "run_prefix": "v13_active_12d_hole_search_expanded_cycle02",
-  "description": "Expanded active 12D hole-search cycle 2. Coverage-focused GA/far-NN/high-amplitude pass after cycle 1 found sparse full-random failures.",
+  "workflow_id": "active_12d_hole_search_expanded_cycle03",
+  "run_prefix": "v13_active_12d_hole_search_expanded_cycle03",
+  "description": "Expanded active 12D hole-search cycle 3. Focus high-amplitude oblique/orthogonal A3-S3 and B2-S3 regions after cycle 2 confirmed sparse coverage failures.",
   "champion": {
     "name": "v13 1M seed23 D66 grouped-head",
     "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*",
@@ -23,7 +23,7 @@
     "A3_y": 100.0
   },
   "proposal": {
-    "seed": 2102,
+    "seed": 2103,
     "selected_probe_count": 6500,
     "candidate_pool_size": 110000,
     "reference_sample_size": 300000,
@@ -31,12 +31,12 @@
     "top_residual_seed_count": 1800,
     "high_amp_bridge_target_nn_distance": 0.9,
     "mode_counts": {
-      "genetic_algorithm": 2300,
-      "high_amp_alignment": 1300,
+      "genetic_algorithm": 2000,
+      "high_amp_oblique": 1700,
+      "high_amp_alignment": 900,
       "far_nn": 900,
-      "high_amp_bridge": 800,
-      "residual_jitter": 700,
-      "sobol_lhs": 400,
+      "residual_jitter": 600,
+      "sobol_lhs": 300,
       "bridge_anchor": 100
     },
     "regime_weights": {
