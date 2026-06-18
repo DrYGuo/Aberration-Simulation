@@ -37,8 +37,12 @@ small plots, and concise reports.
 - Latest completed model-selection batch config: `configs/model_selection_batch_v13_1m_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
 - Prepared next Colab worker command:
-  - `scripts/run_colab_v15_active_hole_250k_workflow.sh`
-  - config id: `v15-active-hole-250k-d66`
+  - `scripts/run_colab_active_12d_hole_search_v1_workflow.sh`
+  - config id: `active-12d-expanded-search-cycle01`
+  - cycles: `10`
+  - mode: first cycles collect expanded active failed-region holes; later cycles
+    can switch to `scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh`
+    to generate/train from the latest collected failed-region subspaces.
 - Latest completed model-selection batch results:
   - `training_results/model_selection_batches/v13_1m_d66_20260615_042743_utc/batch_summary.csv`
 - Latest completed 1M expansion config:
@@ -52,6 +56,9 @@ small plots, and concise reports.
 - Prepared v15 active-hole expansion config:
   - `configs/targeted_expansion_v15_active_hole_250k.json`
   - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
+- Prepared expanded active-hole expansion config:
+  - `configs/targeted_expansion_v15_active_hole_expanded_250k.json`
+  - `configs/model_selection_batch_v15_active_hole_expanded_250k_d66.json`
 - Presentation uncertainty table:
   - `docs/regression_uncertainty_by_training_size.md`
 - Previous model-selection batch config:
@@ -190,6 +197,17 @@ Current interpretation:
     C3/A3/S3, sparse controls, and S3/A1 controls
   - fixed model: 66-feature grouped-head width `320`, seed `23`
   - validation/blind/stress remain frozen benchmark-v2 rows.
+- The active-hole-expanded run is prepared for a 10-cycle Colab/Codex loop:
+  - cycle 1 starts with expanded active search using GA, far-NN,
+    high-amplitude bridge/alignment, residual jitter, Sobol/LHS, and bridge
+    anchors;
+  - `require_new_config_each_cycle=true`, so Colab waits for Codex to push the
+    next cycle config after each active-search result;
+  - final training should use
+    `scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh`, which
+    regenerates the failed-region report from all available active-search
+    cycles and writes the runtime training-data config from the latest
+    failed-subspace spec.
 - The v10 structured-head architecture test is rejected:
   - weighted score worsened from v9 `0.03051` / `0.03069` to `0.03118` / `0.03155`
   - true hard-target normalized MAE worsened to `0.01584` / `0.01598`

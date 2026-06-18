@@ -1,0 +1,107 @@
+{
+  "description": "v15 expanded active-hole targeted expansion. The Colab workflow rewrites the active_failed_subspace_jitter spec_path at runtime to the latest failed-region report generated after the expanded active-search cycles.",
+  "dataset_version": "enhanced_v15_active_hole_expanded_250k",
+  "parent_dataset_version": "enhanced_v13_1m_spacefill",
+  "expected_parent_rows": 1075000,
+  "expected_new_training_only_rows": 250000,
+  "expected_total_rows": 1325000,
+  "case_counts": {
+    "active_failed_subspace_jitter": 90000,
+    "coupled_full_random": 45000,
+    "coupled_A1_B2_S3_random": 25000,
+    "coupled_A3_S3_random": 22000,
+    "coupled_B2_S3_random": 22000,
+    "coupled_C3_A3_S3_random": 16000,
+    "coupled_sparse_random": 18000,
+    "S3_high_random": 8000,
+    "coupled_A1_S3_random": 4000
+  },
+  "candidate_selection": {
+    "enabled": true,
+    "method": "parent_12d_nearest_neighbor_distance",
+    "oversample_multiplier": 2.0,
+    "far_fraction": 0.75,
+    "bridge_fraction": 0.25,
+    "bridge_quantile": 0.55,
+    "reference_sample_size": 250000,
+    "query_chunk_size": 25000,
+    "reference_split_hints": ["", "training_only"],
+    "note": "Mostly far-NN candidates with bridge/anchor controls. Active failed-subspace jitter is generated from current failed-region cluster centers, then selected against the v13 train-eligible parent."
+  },
+  "sampling": {
+    "active_failed_subspace_jitter": {
+      "enabled": true,
+      "labels": ["active_failed_subspace_jitter"],
+      "spec_path": "training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc/v15_failed_subspace_sampling_spec.json",
+      "sweep_label": "active_failed_subspace_jitter",
+      "sampling_method": "active_failed_subspace_jitter",
+      "normalized_jitter_sigma": 0.075,
+      "normalized_jitter_min_sigma": 0.025,
+      "normalized_jitter_max_sigma": 0.14,
+      "note": "The workflow replaces spec_path with the latest expanded active-search failed-region report before generation."
+    },
+    "space_filling": {
+      "enabled": true,
+      "method": "latin_hypercube",
+      "labels": [
+        "coupled_full_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "coupled_sparse_random",
+        "S3_high_random",
+        "coupled_A1_S3_random"
+      ]
+    },
+    "relative_angles": {
+      "enabled": true,
+      "bins": ["aligned", "orthogonal", "anti_aligned", "random"],
+      "label_pairs": {
+        "coupled_A1_B2_S3_random": [["A1", "S3"], ["B2", "S3"]],
+        "coupled_A3_S3_random": [["A3", "S3"]],
+        "coupled_B2_S3_random": [["B2", "S3"]],
+        "coupled_C3_A3_S3_random": [["A3", "S3"]],
+        "coupled_A1_S3_random": [["A1", "S3"]]
+      }
+    },
+    "c1_balanced": {
+      "enabled": true,
+      "magnitude_bins": [[0.0, 10.0], [10.0, 40.0], [40.0, 75.0], [75.0, 100.0]],
+      "labels": ["coupled_full_random", "coupled_sparse_random"],
+      "note": "Monitor C1 without letting it dominate selection because current defocus geometry limits direct C1 sensitivity."
+    },
+    "s3_tail": {
+      "enabled": true,
+      "s3_amp_min": 63.5,
+      "s3_amp_max": 100.0,
+      "labels": [
+        "coupled_full_random",
+        "coupled_A1_B2_S3_random",
+        "coupled_A3_S3_random",
+        "coupled_B2_S3_random",
+        "coupled_C3_A3_S3_random",
+        "S3_high_random",
+        "coupled_A1_S3_random"
+      ],
+      "force_s3_in_sparse": false
+    }
+  },
+  "coverage_metrics_to_track": {
+    "primary": [
+      "active_failed_subspace_cluster_coverage",
+      "candidate_selection_parent_nn_distance_distribution",
+      "relative_angle_bin_balance",
+      "residual_vs_nn_distance_after_training",
+      "active_search_retest_after_training"
+    ],
+    "decision_rule": "Promote only if benchmark metrics and active failed-region retests improve without creating large dense A3/S3/A1 regressions."
+  },
+  "selection_policy": {
+    "training_only_append_rows": true,
+    "requires_fixed_benchmark_split": true,
+    "split_seed": 7,
+    "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+    "do_not_train_on_blind_or_stress": true
+  }
+}

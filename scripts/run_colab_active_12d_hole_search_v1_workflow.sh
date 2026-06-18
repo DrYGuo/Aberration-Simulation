@@ -26,9 +26,21 @@ mkdir -p colab_worker_logs training_results/model_selection_reports
 if [ -f "$DRIVE_BACKUP_RUN_NAME_FILE" ]; then
   DRIVE_BACKUP_RUN_NAME=$(cat "$DRIVE_BACKUP_RUN_NAME_FILE")
 else
-  DRIVE_BACKUP_RUN_NAME="active_12d_hole_search_v1_$(date -u +%Y%m%d_%H%M%S_utc)"
+  DRIVE_BACKUP_RUN_NAME="${ABERRATION_DRIVE_BACKUP_RUN_NAME:-active_12d_hole_search_latest}"
   printf '%s\n' "$DRIVE_BACKUP_RUN_NAME" > "$DRIVE_BACKUP_RUN_NAME_FILE"
 fi
+
+incremental_active_search_backup() {
+  local output_dir="$1"
+  echo "Incremental Drive backup for active 12D hole search: $output_dir"
+  python3 scripts/backup_colab_state_to_drive.py \
+    --run-name "$DRIVE_BACKUP_RUN_NAME" \
+    --no-default-includes \
+    --include "$output_dir" \
+    --include configs \
+    --include experiments \
+    --include colab_worker_logs
+}
 
 restore_csv_folder_from_drive() {
   local label="$1"
@@ -55,7 +67,7 @@ restore_csv_folder_from_drive() {
   mkdir -p "$dest_dir"
   echo "Restoring $label CSV folder from Drive: $source_dir" >&2
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --info=progress2 "$source_dir/" "$dest_dir/" >&2
+    rsync -a "$source_dir/" "$dest_dir/" >&2
   else
     cp -R "$source_dir/." "$dest_dir/"
   fi
@@ -94,7 +106,7 @@ restore_run_dir_from_drive() {
   mkdir -p "$dest_dir"
   echo "Restoring $label run folder from Drive: $drive_found" >&2
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --info=progress2 "$drive_found/" "$dest_dir/" >&2
+    rsync -a "$drive_found/" "$dest_dir/" >&2
   else
     cp -R "$drive_found/." "$dest_dir/"
   fi
@@ -181,7 +193,7 @@ PY
 fi
 
 echo "Backing up active 12D hole-search state to Drive."
-python3 scripts/backup_colab_state_to_drive.py --run-name "$DRIVE_BACKUP_RUN_NAME"
+incremental_active_search_backup "$OUTPUT_DIR"
 
 python3 - "$DONE_MARKER" "$V13_CSV" "$V13_RUN_DIR" "$OUTPUT_DIR" "$DRIVE_BACKUP_RUN_NAME" <<'PY'
 import json

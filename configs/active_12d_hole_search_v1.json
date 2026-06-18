@@ -1,7 +1,7 @@
 {
-  "workflow_id": "active_12d_hole_search_v4_dense_alignment_bridge",
-  "run_prefix": "v13_active_12d_hole_search_v4_dense_alignment_bridge",
-  "description": "Diagnostic-only active 12D hole-search refinement using the frozen v13 1M seed23 D66 grouped-head model. Cycle 4 tests whether high-amplitude A1/B2/S3/A3 alignment failures persist near existing training coverage; it does not train or expand the training set.",
+  "workflow_id": "active_12d_hole_search_expanded_cycle01",
+  "run_prefix": "v13_active_12d_hole_search_expanded_cycle01",
+  "description": "Expanded active 12D hole-search cycle 1. Broad GA/far-NN/high-amplitude search to collect more failed parameter subspaces before later v15 training.",
   "champion": {
     "name": "v13 1M seed23 D66 grouped-head",
     "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*",
@@ -23,42 +23,43 @@
     "A3_y": 100.0
   },
   "proposal": {
-    "seed": 1523,
-    "selected_probe_count": 4800,
-    "candidate_pool_size": 60000,
+    "seed": 2101,
+    "selected_probe_count": 5600,
+    "candidate_pool_size": 90000,
     "reference_sample_size": 300000,
     "nearest_neighbor_chunk_size": 25000,
-    "top_residual_seed_count": 1200,
-    "high_amp_bridge_target_nn_distance": 0.78,
+    "top_residual_seed_count": 1500,
+    "high_amp_bridge_target_nn_distance": 0.82,
     "mode_counts": {
-      "high_amp_bridge": 1800,
-      "high_amp_alignment": 700,
-      "residual_jitter": 800,
-      "genetic_algorithm": 700,
-      "sobol_lhs": 500,
-      "bridge_anchor": 300
+      "genetic_algorithm": 1600,
+      "high_amp_bridge": 1200,
+      "high_amp_alignment": 900,
+      "residual_jitter": 900,
+      "far_nn": 600,
+      "sobol_lhs": 300,
+      "bridge_anchor": 100
     },
     "regime_weights": {
-      "coupled_full_random": 0.70,
-      "coupled_sparse_random": 0.12,
-      "coupled_A1_B2_S3_random": 0.06,
+      "coupled_full_random": 0.72,
+      "coupled_sparse_random": 0.08,
+      "coupled_A1_B2_S3_random": 0.07,
       "coupled_C3_A3_S3_random": 0.04,
-      "coupled_A3_S3_random": 0.03,
-      "coupled_B2_S3_random": 0.03,
-      "coupled_A1_S3_random": 0.02
+      "coupled_A3_S3_random": 0.04,
+      "coupled_B2_S3_random": 0.04,
+      "coupled_A1_S3_random": 0.01
     },
     "genetic_algorithm": {
-      "population_size": 1024,
-      "generations": 30,
+      "population_size": 1280,
+      "generations": 36,
       "elite_fraction": 0.16,
-      "mutation_probability": 0.18,
-      "mutation_scale": 0.10,
-      "immigrant_fraction": 0.08,
+      "mutation_probability": 0.2,
+      "mutation_scale": 0.11,
+      "immigrant_fraction": 0.1,
       "fitness_weights": {
-        "nearest_neighbor_distance": 0.50,
-        "known_residual_similarity": 0.22,
-        "physical_relevance": 0.14,
-        "diversity_proxy": 0.08,
+        "nearest_neighbor_distance": 0.42,
+        "known_residual_similarity": 0.26,
+        "physical_relevance": 0.16,
+        "diversity_proxy": 0.1,
         "boundary_penalty": 0.06
       }
     }
@@ -72,14 +73,14 @@
     "predict_batch_size": 65536
   },
   "classification": {
-    "failure_top_fraction": 0.10,
-    "coverage_limited_nn_quantile": 0.75,
-    "dense_failure_nn_quantile": 0.50
+    "failure_top_fraction": 0.12,
+    "coverage_limited_nn_quantile": 0.72,
+    "dense_failure_nn_quantile": 0.48
   },
   "recommended_plan": {
-    "future_dataset_name": "v15_active_hole_targeted",
+    "future_dataset_name": "v15_active_hole_expanded_250k",
     "do_not_train_in_this_workflow": true,
-    "starting_policy": "Use the resulting failure clusters to allocate a future diagnostic-to-training expansion. Do not promote a data-expansion plan until this active search finishes."
+    "starting_policy": "Collect expanded failure clusters for the first active-search cycles. Later cycles synthesize the hole report and train from a balanced failed-subspace expansion."
   },
   "artifact_policy": {
     "github_lightweight_only": true,
