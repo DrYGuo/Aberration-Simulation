@@ -4,7 +4,7 @@
   "description": "Diagnostic-only active 12D hole search using the frozen v13 1M seed23 D66 grouped-head model. This does not train or expand the training set.",
   "champion": {
     "name": "v13 1M seed23 D66 grouped-head",
-    "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*",
+    "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*",
     "dataset_glob": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv",
     "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json"
   },

@@ -1,6 +1,6 @@
 {
-  "description": "One-cycle v13 1M seed23 checkpoint rebuild. Restore/use the cached v13 1M D66 feature CSV, retrain the exact v13 seed23 champion configuration with --save-model, back up the resulting model_loop_candidate.pt to Google Drive, and push only compact manifests/metrics/plots to GitHub.",
-  "config_id": "v13-1m-seed23-checkpoint-rebuild",
+  "description": "One-cycle active 12D hole-search diagnostic using the frozen v13 1M seed23 D66 checkpoint restored from Drive. Generate active probe candidates, simulate/extract probe features, run frozen-model inference, classify holes/failure regimes, and write the recommended next-sampling plan. No training or data expansion.",
+  "config_id": "active-12d-hole-search-v1",
   "cycles": 1,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v13_seed23_checkpoint_rebuild_workflow.sh"
+    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",

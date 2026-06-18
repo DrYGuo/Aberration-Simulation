@@ -124,10 +124,24 @@ V13_CSV=$(restore_csv_folder_from_drive \
   "training_results/feature_regression_enhanced")
 
 V13_RUN_DIR=$(restore_run_dir_from_drive \
-  "v13 1M seed23 champion" \
-  "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
-  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
-  "training_results/model_selection_loop")
+  "v13 1M seed23 checkpoint rebuild" \
+  "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*" \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*" \
+  "training_results/model_selection_loop" || true)
+
+if [ -z "$V13_RUN_DIR" ]; then
+  V13_RUN_DIR=$(restore_run_dir_from_drive \
+    "v13 1M seed23 residual-NN metrics fallback" \
+    "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
+    "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
+    "training_results/model_selection_loop")
+fi
+
+if [ ! -f "$V13_RUN_DIR/model_loop_candidate.pt" ]; then
+  echo "The active 12D workflow requires the saved v13 checkpoint. Missing: $V13_RUN_DIR/model_loop_candidate.pt" >&2
+  echo "Run scripts/run_colab_v13_seed23_checkpoint_rebuild_workflow.sh first, or mount the Drive backup containing v13_seed23_checkpoint_rebuild_*." >&2
+  exit 1
+fi
 
 python3 scripts/run_active_12d_hole_search.py \
   --config "$CONFIG" \
