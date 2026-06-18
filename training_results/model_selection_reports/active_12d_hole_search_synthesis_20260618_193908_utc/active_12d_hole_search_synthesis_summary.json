@@ -1,0 +1,526 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-18T19:39:08.625061+00:00",
+  "output_dir": "training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_193908_utc",
+  "n_cycles_summarized": 8,
+  "cycle_rows": [
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_20260618_025610_utc",
+      "run_name": "v13_active_12d_hole_search_20260618_025610_utc",
+      "workflow_id": "active_12d_hole_search_v1",
+      "n_probes": 3000,
+      "proposal_mode_counts": {
+        "far_nn": 900,
+        "sobol_lhs": 650,
+        "genetic_algorithm": 800,
+        "bridge_anchor": 300,
+        "residual_jitter": 350
+      },
+      "regime_counts": {
+        "coupled_sparse_random": 242,
+        "coupled_full_random": 2571,
+        "coupled_C3_A3_S3_random": 42,
+        "coupled_A1_B2_S3_random": 139,
+        "coupled_A3_S3_random": 2,
+        "coupled_B2_S3_random": 4
+      },
+      "weighted_error_median": 0.024750251322984695,
+      "weighted_error_p90": 0.0658528283238411,
+      "weighted_error_p95": 0.08157751709222794,
+      "weighted_error_max": 0.23996931314468384,
+      "nn_distance_median": 0.7541408538818359,
+      "nn_distance_p75": 0.9249417185783386,
+      "nn_distance_p95": 1.129651665687561,
+      "error_nn_corr": 0.6652966558520316,
+      "error_nn_spearman": 0.7268325283147252,
+      "not_top_failure": 2700,
+      "coverage_limited_sparse_failure": 238,
+      "mixed_failure": 46,
+      "dense_model_feature_loss_failure": 16,
+      "top_failure_median_nn_distance": 1.0649870038032532,
+      "all_probe_median_nn_distance": 0.7541408538818359,
+      "top_failure_count": 300,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 264,
+        "sobol_lhs": 7,
+        "residual_jitter": 20,
+        "far_nn": 9
+      },
+      "top_failure_by_A3_S3_angle": {
+        "aligned_or_anti_aligned": 44,
+        "anti_aligned": 51,
+        "oblique": 168,
+        "orthogonal": 37
+      },
+      "top_failure_by_B2_S3_angle": {
+        "orthogonal": 79,
+        "aligned_or_anti_aligned": 26,
+        "anti_aligned": 72,
+        "oblique": 123
+      },
+      "dense_failure_by_mode": {
+        "sobol_lhs": 3,
+        "residual_jitter": 2,
+        "genetic_algorithm": 3,
+        "far_nn": 8
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_expanded_cycle01_20260618_184220_utc",
+      "run_name": "v13_active_12d_hole_search_expanded_cycle01_20260618_184220_utc",
+      "workflow_id": "active_12d_hole_search_expanded_cycle01",
+      "n_probes": 5553,
+      "proposal_mode_counts": {
+        "high_amp_alignment": 900,
+        "far_nn": 600,
+        "high_amp_bridge": 1200,
+        "residual_jitter": 900,
+        "bridge_anchor": 100,
+        "sobol_lhs": 300,
+        "genetic_algorithm": 1553
+      },
+      "regime_counts": {
+        "coupled_full_random": 5520,
+        "coupled_sparse_random": 33
+      },
+      "weighted_error_median": 0.03532499074935913,
+      "weighted_error_p90": 0.11773549765348434,
+      "weighted_error_p95": 0.17003022134304047,
+      "weighted_error_max": 0.4167436361312866,
+      "nn_distance_median": 0.8985945582389832,
+      "nn_distance_p75": 0.9944126009941101,
+      "nn_distance_p95": 1.1008195877075195,
+      "error_nn_corr": 0.4499748530030446,
+      "error_nn_spearman": 0.5195697594750944,
+      "not_top_failure": 4886,
+      "coverage_limited_sparse_failure": 425,
+      "mixed_failure": 216,
+      "dense_model_feature_loss_failure": 26,
+      "top_failure_median_nn_distance": 1.0121276378631592,
+      "all_probe_median_nn_distance": 0.8985945582389832,
+      "top_failure_count": 555,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 525,
+        "high_amp_alignment": 18,
+        "high_amp_bridge": 8,
+        "sobol_lhs": 1,
+        "residual_jitter": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "orthogonal": 101,
+        "oblique": 408,
+        "anti_aligned": 21,
+        "aligned_or_anti_aligned": 25
+      },
+      "top_failure_by_B2_S3_angle": {
+        "orthogonal": 438,
+        "oblique": 102,
+        "aligned_or_anti_aligned": 12,
+        "anti_aligned": 3
+      },
+      "dense_failure_by_mode": {
+        "high_amp_bridge": 5,
+        "high_amp_alignment": 3,
+        "genetic_algorithm": 9,
+        "sobol_lhs": 1,
+        "residual_jitter": 1
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_expanded_cycle02_20260618_185259_utc",
+      "run_name": "v13_active_12d_hole_search_expanded_cycle02_20260618_185259_utc",
+      "workflow_id": "active_12d_hole_search_expanded_cycle02",
+      "n_probes": 5658,
+      "proposal_mode_counts": {
+        "high_amp_alignment": 1300,
+        "bridge_anchor": 100,
+        "genetic_algorithm": 1458,
+        "high_amp_bridge": 800,
+        "residual_jitter": 700,
+        "far_nn": 900,
+        "sobol_lhs": 400
+      },
+      "regime_counts": {
+        "coupled_full_random": 5640,
+        "coupled_sparse_random": 18
+      },
+      "weighted_error_median": 0.03397234529256821,
+      "weighted_error_p90": 0.07482987642288208,
+      "weighted_error_p95": 0.08431403338909149,
+      "weighted_error_max": 0.35496535897254944,
+      "nn_distance_median": 0.9140455722808838,
+      "nn_distance_p75": 1.0440399646759033,
+      "nn_distance_p95": 1.2083457708358765,
+      "error_nn_corr": 0.5298915082908092,
+      "error_nn_spearman": 0.5903710992816245,
+      "not_top_failure": 4866,
+      "coverage_limited_sparse_failure": 585,
+      "mixed_failure": 139,
+      "dense_model_feature_loss_failure": 68,
+      "top_failure_median_nn_distance": 1.11789071559906,
+      "all_probe_median_nn_distance": 0.9140455722808838,
+      "top_failure_count": 565,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 362,
+        "high_amp_alignment": 138,
+        "high_amp_bridge": 30,
+        "residual_jitter": 21,
+        "sobol_lhs": 6,
+        "far_nn": 8
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 236,
+        "orthogonal": 98,
+        "aligned_or_anti_aligned": 138,
+        "anti_aligned": 93
+      },
+      "top_failure_by_B2_S3_angle": {
+        "orthogonal": 105,
+        "aligned_or_anti_aligned": 34,
+        "oblique": 410,
+        "anti_aligned": 16
+      },
+      "dense_failure_by_mode": {
+        "residual_jitter": 16,
+        "far_nn": 6,
+        "genetic_algorithm": 14,
+        "high_amp_alignment": 8,
+        "high_amp_bridge": 5,
+        "sobol_lhs": 3
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_expanded_cycle03_20260618_190539_utc",
+      "run_name": "v13_active_12d_hole_search_expanded_cycle03_20260618_190539_utc",
+      "workflow_id": "active_12d_hole_search_expanded_cycle03",
+      "n_probes": 5995,
+      "proposal_mode_counts": {
+        "residual_jitter": 600,
+        "high_amp_oblique": 1700,
+        "far_nn": 900,
+        "genetic_algorithm": 1495,
+        "high_amp_alignment": 900,
+        "sobol_lhs": 300,
+        "bridge_anchor": 100
+      },
+      "regime_counts": {
+        "coupled_full_random": 5981,
+        "coupled_sparse_random": 14
+      },
+      "weighted_error_median": 0.03452911972999573,
+      "weighted_error_p90": 0.06686117500066757,
+      "weighted_error_p95": 0.08175557851791382,
+      "weighted_error_max": 0.3942805826663971,
+      "nn_distance_median": 0.9092305898666382,
+      "nn_distance_p75": 0.9951880574226379,
+      "nn_distance_p95": 1.1144638061523438,
+      "error_nn_corr": 0.42015151592504657,
+      "error_nn_spearman": 0.48197394410394173,
+      "not_top_failure": 5155,
+      "coverage_limited_sparse_failure": 488,
+      "mixed_failure": 187,
+      "dense_model_feature_loss_failure": 165,
+      "top_failure_median_nn_distance": 1.0053882598876953,
+      "all_probe_median_nn_distance": 0.9092305898666382,
+      "top_failure_count": 599,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 264,
+        "high_amp_oblique": 137,
+        "high_amp_alignment": 146,
+        "residual_jitter": 29,
+        "sobol_lhs": 8,
+        "far_nn": 14,
+        "bridge_anchor": 1
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 234,
+        "orthogonal": 138,
+        "aligned_or_anti_aligned": 170,
+        "anti_aligned": 57
+      },
+      "top_failure_by_B2_S3_angle": {
+        "oblique": 347,
+        "orthogonal": 173,
+        "aligned_or_anti_aligned": 38,
+        "anti_aligned": 41
+      },
+      "dense_failure_by_mode": {
+        "high_amp_oblique": 44,
+        "high_amp_alignment": 10,
+        "genetic_algorithm": 17,
+        "residual_jitter": 22,
+        "sobol_lhs": 4,
+        "far_nn": 11,
+        "bridge_anchor": 1
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_expanded_cycle04_20260618_191721_utc",
+      "run_name": "v13_active_12d_hole_search_expanded_cycle04_20260618_191721_utc",
+      "workflow_id": "active_12d_hole_search_expanded_cycle04",
+      "n_probes": 6500,
+      "proposal_mode_counts": {
+        "bridge_anchor": 600,
+        "residual_jitter": 900,
+        "high_amp_oblique": 2200,
+        "genetic_algorithm": 900,
+        "high_amp_bridge": 1600,
+        "sobol_lhs": 300
+      },
+      "regime_counts": {
+        "coupled_full_random": 6477,
+        "coupled_sparse_random": 23
+      },
+      "weighted_error_median": 0.03029719740152359,
+      "weighted_error_p90": 0.058099258691072464,
+      "weighted_error_p95": 0.07102079689502716,
+      "weighted_error_max": 0.3704718351364136,
+      "nn_distance_median": 0.8772144317626953,
+      "nn_distance_p75": 0.9754327535629272,
+      "nn_distance_p95": 1.0638371706008911,
+      "error_nn_corr": 0.39358166245293297,
+      "error_nn_spearman": 0.45215658485498467,
+      "not_top_failure": 5525,
+      "coverage_limited_sparse_failure": 514,
+      "mixed_failure": 177,
+      "dense_model_feature_loss_failure": 284,
+      "top_failure_median_nn_distance": 0.9769743084907532,
+      "all_probe_median_nn_distance": 0.8772144317626953,
+      "top_failure_count": 650,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 166,
+        "high_amp_oblique": 269,
+        "high_amp_bridge": 126,
+        "residual_jitter": 71,
+        "sobol_lhs": 15,
+        "bridge_anchor": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 214,
+        "orthogonal": 141,
+        "anti_aligned": 218,
+        "aligned_or_anti_aligned": 77
+      },
+      "top_failure_by_B2_S3_angle": {
+        "oblique": 419,
+        "orthogonal": 201,
+        "aligned_or_anti_aligned": 15,
+        "anti_aligned": 15
+      },
+      "dense_failure_by_mode": {
+        "high_amp_bridge": 51,
+        "high_amp_oblique": 72,
+        "residual_jitter": 57,
+        "sobol_lhs": 13,
+        "bridge_anchor": 3
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+      "run_name": "v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+      "workflow_id": "active_12d_hole_search_v2_focused_sparse",
+      "n_probes": 3790,
+      "proposal_mode_counts": {
+        "residual_jitter": 600,
+        "genetic_algorithm": 1190,
+        "bridge_anchor": 200,
+        "far_nn": 1200,
+        "sobol_lhs": 600
+      },
+      "regime_counts": {
+        "coupled_full_random": 3711,
+        "coupled_sparse_random": 79
+      },
+      "weighted_error_median": 0.029183480888605118,
+      "weighted_error_p90": 0.15643738210201263,
+      "weighted_error_p95": 0.31026995182037354,
+      "weighted_error_max": 0.41623207926750183,
+      "nn_distance_median": 0.8035714626312256,
+      "nn_distance_p75": 0.9487998485565186,
+      "nn_distance_p95": 1.130496621131897,
+      "error_nn_corr": 0.630273650858079,
+      "error_nn_spearman": 0.663024367989307,
+      "not_top_failure": 3411,
+      "coverage_limited_sparse_failure": 374,
+      "mixed_failure": 4,
+      "dense_model_feature_loss_failure": 1,
+      "top_failure_median_nn_distance": 1.0987353324890137,
+      "all_probe_median_nn_distance": 0.8035714626312256,
+      "top_failure_count": 379,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 377,
+        "residual_jitter": 2
+      },
+      "top_failure_by_A3_S3_angle": {
+        "aligned_or_anti_aligned": 363,
+        "oblique": 12,
+        "orthogonal": 3,
+        "anti_aligned": 1
+      },
+      "top_failure_by_B2_S3_angle": {
+        "oblique": 348,
+        "orthogonal": 19,
+        "aligned_or_anti_aligned": 9,
+        "anti_aligned": 3
+      },
+      "dense_failure_by_mode": {
+        "genetic_algorithm": 1
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc",
+      "run_name": "v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc",
+      "workflow_id": "active_12d_hole_search_v3_high_amp_alignment",
+      "n_probes": 4600,
+      "proposal_mode_counts": {
+        "genetic_algorithm": 1000,
+        "residual_jitter": 600,
+        "far_nn": 800,
+        "high_amp_alignment": 1600,
+        "sobol_lhs": 400,
+        "bridge_anchor": 200
+      },
+      "regime_counts": {
+        "coupled_full_random": 4552,
+        "coupled_sparse_random": 48
+      },
+      "weighted_error_median": 0.03292689472436905,
+      "weighted_error_p90": 0.0705316886305809,
+      "weighted_error_p95": 0.08708783984184265,
+      "weighted_error_max": 0.4263642430305481,
+      "nn_distance_median": 0.9154312014579773,
+      "nn_distance_p75": 1.0455683469772339,
+      "nn_distance_p95": 1.145148754119873,
+      "error_nn_corr": 0.44583980507085713,
+      "error_nn_spearman": 0.5574908538821746,
+      "not_top_failure": 4140,
+      "coverage_limited_sparse_failure": 247,
+      "mixed_failure": 128,
+      "dense_model_feature_loss_failure": 85,
+      "top_failure_median_nn_distance": 1.0564919710159302,
+      "all_probe_median_nn_distance": 0.9154312014579773,
+      "top_failure_count": 460,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 232,
+        "high_amp_alignment": 181,
+        "residual_jitter": 37,
+        "sobol_lhs": 7,
+        "far_nn": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 105,
+        "anti_aligned": 79,
+        "aligned_or_anti_aligned": 146,
+        "orthogonal": 130
+      },
+      "top_failure_by_B2_S3_angle": {
+        "aligned_or_anti_aligned": 33,
+        "orthogonal": 88,
+        "oblique": 230,
+        "anti_aligned": 109
+      },
+      "dense_failure_by_mode": {
+        "high_amp_alignment": 36,
+        "genetic_algorithm": 9,
+        "residual_jitter": 31,
+        "sobol_lhs": 6,
+        "far_nn": 3
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+      "run_name": "v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+      "workflow_id": "active_12d_hole_search_v4_dense_alignment_bridge",
+      "n_probes": 4800,
+      "proposal_mode_counts": {
+        "high_amp_alignment": 700,
+        "genetic_algorithm": 700,
+        "high_amp_bridge": 1800,
+        "sobol_lhs": 500,
+        "residual_jitter": 800,
+        "bridge_anchor": 300
+      },
+      "regime_counts": {
+        "coupled_full_random": 4765,
+        "coupled_sparse_random": 35
+      },
+      "weighted_error_median": 0.032639533281326294,
+      "weighted_error_p90": 0.07812179625034332,
+      "weighted_error_p95": 0.08609282225370407,
+      "weighted_error_max": 0.35760223865509033,
+      "nn_distance_median": 0.880341649055481,
+      "nn_distance_p75": 0.9949463605880737,
+      "nn_distance_p95": 1.108024001121521,
+      "error_nn_corr": 0.5013705273650058,
+      "error_nn_spearman": 0.5331108249107648,
+      "not_top_failure": 4320,
+      "coverage_limited_sparse_failure": 347,
+      "mixed_failure": 83,
+      "dense_model_feature_loss_failure": 50,
+      "top_failure_median_nn_distance": 1.0525929927825928,
+      "all_probe_median_nn_distance": 0.880341649055481,
+      "top_failure_count": 480,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 320,
+        "high_amp_bridge": 60,
+        "high_amp_alignment": 73,
+        "residual_jitter": 21,
+        "sobol_lhs": 3,
+        "bridge_anchor": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 106,
+        "aligned_or_anti_aligned": 97,
+        "orthogonal": 211,
+        "anti_aligned": 66
+      },
+      "top_failure_by_B2_S3_angle": {
+        "aligned_or_anti_aligned": 29,
+        "oblique": 347,
+        "anti_aligned": 37,
+        "orthogonal": 67
+      },
+      "dense_failure_by_mode": {
+        "genetic_algorithm": 11,
+        "high_amp_bridge": 19,
+        "residual_jitter": 11,
+        "sobol_lhs": 3,
+        "bridge_anchor": 3,
+        "high_amp_alignment": 3
+      }
+    }
+  ],
+  "aggregate_failure_counts": {
+    "coverage_limited_sparse_failure": 3218,
+    "mixed_failure": 980,
+    "dense_model_feature_loss_failure": 695
+  },
+  "top_failure_modes_all_cycles": {
+    "genetic_algorithm": 2510,
+    "sobol_lhs": 47,
+    "residual_jitter": 204,
+    "far_nn": 34,
+    "high_amp_alignment": 556,
+    "high_amp_bridge": 224,
+    "high_amp_oblique": 406,
+    "bridge_anchor": 7
+  },
+  "dense_failure_modes_all_cycles": {
+    "sobol_lhs": 33,
+    "residual_jitter": 140,
+    "genetic_algorithm": 64,
+    "far_nn": 28,
+    "high_amp_bridge": 80,
+    "high_amp_alignment": 60,
+    "high_amp_oblique": 116,
+    "bridge_anchor": 7
+  },
+  "interpretation": {
+    "coverage_limited": true,
+    "dense_failures_present": true,
+    "latest_cycle": "v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+    "latest_cycle_dense_failures": 50,
+    "latest_cycle_coverage_failures": 347
+  },
+  "sampling_plan_path": "training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_193908_utc/v15_active_hole_targeted_sampling_plan.json"
+}
