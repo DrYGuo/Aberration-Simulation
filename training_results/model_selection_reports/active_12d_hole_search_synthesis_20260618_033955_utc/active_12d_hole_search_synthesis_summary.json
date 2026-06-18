@@ -1,0 +1,274 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-18T03:39:55.611975+00:00",
+  "output_dir": "training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_033955_utc",
+  "n_cycles_summarized": 4,
+  "cycle_rows": [
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_20260618_025610_utc",
+      "run_name": "v13_active_12d_hole_search_20260618_025610_utc",
+      "workflow_id": "active_12d_hole_search_v1",
+      "n_probes": 3000,
+      "proposal_mode_counts": {
+        "far_nn": 900,
+        "sobol_lhs": 650,
+        "genetic_algorithm": 800,
+        "bridge_anchor": 300,
+        "residual_jitter": 350
+      },
+      "regime_counts": {
+        "coupled_sparse_random": 242,
+        "coupled_full_random": 2571,
+        "coupled_C3_A3_S3_random": 42,
+        "coupled_A1_B2_S3_random": 139,
+        "coupled_A3_S3_random": 2,
+        "coupled_B2_S3_random": 4
+      },
+      "weighted_error_median": 0.024750251322984695,
+      "weighted_error_p90": 0.0658528283238411,
+      "weighted_error_p95": 0.08157751709222794,
+      "weighted_error_max": 0.23996931314468384,
+      "nn_distance_median": 0.7541408538818359,
+      "nn_distance_p75": 0.9249417185783386,
+      "nn_distance_p95": 1.129651665687561,
+      "error_nn_corr": 0.6652966558520316,
+      "error_nn_spearman": 0.7268325283147252,
+      "not_top_failure": 2700,
+      "coverage_limited_sparse_failure": 238,
+      "mixed_failure": 46,
+      "dense_model_feature_loss_failure": 16,
+      "top_failure_median_nn_distance": 1.0649870038032532,
+      "all_probe_median_nn_distance": 0.7541408538818359,
+      "top_failure_count": 300,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 264,
+        "sobol_lhs": 7,
+        "residual_jitter": 20,
+        "far_nn": 9
+      },
+      "top_failure_by_A3_S3_angle": {
+        "aligned_or_anti_aligned": 44,
+        "anti_aligned": 51,
+        "oblique": 168,
+        "orthogonal": 37
+      },
+      "top_failure_by_B2_S3_angle": {
+        "orthogonal": 79,
+        "aligned_or_anti_aligned": 26,
+        "anti_aligned": 72,
+        "oblique": 123
+      },
+      "dense_failure_by_mode": {
+        "sobol_lhs": 3,
+        "residual_jitter": 2,
+        "genetic_algorithm": 3,
+        "far_nn": 8
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+      "run_name": "v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+      "workflow_id": "active_12d_hole_search_v2_focused_sparse",
+      "n_probes": 3790,
+      "proposal_mode_counts": {
+        "residual_jitter": 600,
+        "genetic_algorithm": 1190,
+        "bridge_anchor": 200,
+        "far_nn": 1200,
+        "sobol_lhs": 600
+      },
+      "regime_counts": {
+        "coupled_full_random": 3711,
+        "coupled_sparse_random": 79
+      },
+      "weighted_error_median": 0.029183480888605118,
+      "weighted_error_p90": 0.15643738210201263,
+      "weighted_error_p95": 0.31026995182037354,
+      "weighted_error_max": 0.41623207926750183,
+      "nn_distance_median": 0.8035714626312256,
+      "nn_distance_p75": 0.9487998485565186,
+      "nn_distance_p95": 1.130496621131897,
+      "error_nn_corr": 0.630273650858079,
+      "error_nn_spearman": 0.663024367989307,
+      "not_top_failure": 3411,
+      "coverage_limited_sparse_failure": 374,
+      "mixed_failure": 4,
+      "dense_model_feature_loss_failure": 1,
+      "top_failure_median_nn_distance": 1.0987353324890137,
+      "all_probe_median_nn_distance": 0.8035714626312256,
+      "top_failure_count": 379,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 377,
+        "residual_jitter": 2
+      },
+      "top_failure_by_A3_S3_angle": {
+        "aligned_or_anti_aligned": 363,
+        "oblique": 12,
+        "orthogonal": 3,
+        "anti_aligned": 1
+      },
+      "top_failure_by_B2_S3_angle": {
+        "oblique": 348,
+        "orthogonal": 19,
+        "aligned_or_anti_aligned": 9,
+        "anti_aligned": 3
+      },
+      "dense_failure_by_mode": {
+        "genetic_algorithm": 1
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc",
+      "run_name": "v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc",
+      "workflow_id": "active_12d_hole_search_v3_high_amp_alignment",
+      "n_probes": 4600,
+      "proposal_mode_counts": {
+        "genetic_algorithm": 1000,
+        "residual_jitter": 600,
+        "far_nn": 800,
+        "high_amp_alignment": 1600,
+        "sobol_lhs": 400,
+        "bridge_anchor": 200
+      },
+      "regime_counts": {
+        "coupled_full_random": 4552,
+        "coupled_sparse_random": 48
+      },
+      "weighted_error_median": 0.03292689472436905,
+      "weighted_error_p90": 0.0705316886305809,
+      "weighted_error_p95": 0.08708783984184265,
+      "weighted_error_max": 0.4263642430305481,
+      "nn_distance_median": 0.9154312014579773,
+      "nn_distance_p75": 1.0455683469772339,
+      "nn_distance_p95": 1.145148754119873,
+      "error_nn_corr": 0.44583980507085713,
+      "error_nn_spearman": 0.5574908538821746,
+      "not_top_failure": 4140,
+      "coverage_limited_sparse_failure": 247,
+      "mixed_failure": 128,
+      "dense_model_feature_loss_failure": 85,
+      "top_failure_median_nn_distance": 1.0564919710159302,
+      "all_probe_median_nn_distance": 0.9154312014579773,
+      "top_failure_count": 460,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 232,
+        "high_amp_alignment": 181,
+        "residual_jitter": 37,
+        "sobol_lhs": 7,
+        "far_nn": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 105,
+        "anti_aligned": 79,
+        "aligned_or_anti_aligned": 146,
+        "orthogonal": 130
+      },
+      "top_failure_by_B2_S3_angle": {
+        "aligned_or_anti_aligned": 33,
+        "orthogonal": 88,
+        "oblique": 230,
+        "anti_aligned": 109
+      },
+      "dense_failure_by_mode": {
+        "high_amp_alignment": 36,
+        "genetic_algorithm": 9,
+        "residual_jitter": 31,
+        "sobol_lhs": 6,
+        "far_nn": 3
+      }
+    },
+    {
+      "run_dir": "training_results/model_selection_reports/v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+      "run_name": "v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+      "workflow_id": "active_12d_hole_search_v4_dense_alignment_bridge",
+      "n_probes": 4800,
+      "proposal_mode_counts": {
+        "high_amp_alignment": 700,
+        "genetic_algorithm": 700,
+        "high_amp_bridge": 1800,
+        "sobol_lhs": 500,
+        "residual_jitter": 800,
+        "bridge_anchor": 300
+      },
+      "regime_counts": {
+        "coupled_full_random": 4765,
+        "coupled_sparse_random": 35
+      },
+      "weighted_error_median": 0.032639533281326294,
+      "weighted_error_p90": 0.07812179625034332,
+      "weighted_error_p95": 0.08609282225370407,
+      "weighted_error_max": 0.35760223865509033,
+      "nn_distance_median": 0.880341649055481,
+      "nn_distance_p75": 0.9949463605880737,
+      "nn_distance_p95": 1.108024001121521,
+      "error_nn_corr": 0.5013705273650058,
+      "error_nn_spearman": 0.5331108249107648,
+      "not_top_failure": 4320,
+      "coverage_limited_sparse_failure": 347,
+      "mixed_failure": 83,
+      "dense_model_feature_loss_failure": 50,
+      "top_failure_median_nn_distance": 1.0525929927825928,
+      "all_probe_median_nn_distance": 0.880341649055481,
+      "top_failure_count": 480,
+      "top_failure_by_mode": {
+        "genetic_algorithm": 320,
+        "high_amp_bridge": 60,
+        "high_amp_alignment": 73,
+        "residual_jitter": 21,
+        "sobol_lhs": 3,
+        "bridge_anchor": 3
+      },
+      "top_failure_by_A3_S3_angle": {
+        "oblique": 106,
+        "aligned_or_anti_aligned": 97,
+        "orthogonal": 211,
+        "anti_aligned": 66
+      },
+      "top_failure_by_B2_S3_angle": {
+        "aligned_or_anti_aligned": 29,
+        "oblique": 347,
+        "anti_aligned": 37,
+        "orthogonal": 67
+      },
+      "dense_failure_by_mode": {
+        "genetic_algorithm": 11,
+        "high_amp_bridge": 19,
+        "residual_jitter": 11,
+        "sobol_lhs": 3,
+        "bridge_anchor": 3,
+        "high_amp_alignment": 3
+      }
+    }
+  ],
+  "aggregate_failure_counts": {
+    "coverage_limited_sparse_failure": 1206,
+    "mixed_failure": 261,
+    "dense_model_feature_loss_failure": 152
+  },
+  "top_failure_modes_all_cycles": {
+    "genetic_algorithm": 1193,
+    "sobol_lhs": 17,
+    "residual_jitter": 80,
+    "far_nn": 12,
+    "high_amp_alignment": 254,
+    "high_amp_bridge": 60,
+    "bridge_anchor": 3
+  },
+  "dense_failure_modes_all_cycles": {
+    "sobol_lhs": 12,
+    "residual_jitter": 44,
+    "genetic_algorithm": 24,
+    "far_nn": 11,
+    "high_amp_alignment": 39,
+    "high_amp_bridge": 19,
+    "bridge_anchor": 3
+  },
+  "interpretation": {
+    "coverage_limited": true,
+    "dense_failures_present": true,
+    "latest_cycle": "v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc",
+    "latest_cycle_dense_failures": 50,
+    "latest_cycle_coverage_failures": 347
+  },
+  "sampling_plan_path": "training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_033955_utc/v15_active_hole_targeted_sampling_plan.json"
+}

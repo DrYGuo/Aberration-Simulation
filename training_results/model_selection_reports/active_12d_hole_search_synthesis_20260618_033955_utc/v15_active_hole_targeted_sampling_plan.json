@@ -1,0 +1,43 @@
+{
+  "plan_name": "v15_active_hole_targeted_sampling_plan",
+  "created_utc": "2026-06-18T03:39:55.611963+00:00",
+  "basis": [
+    "v13_active_12d_hole_search_20260618_025610_utc",
+    "v13_active_12d_hole_search_v2_focused_sparse_20260618_030707_utc",
+    "v13_active_12d_hole_search_v3_high_amp_alignment_20260618_031730_utc",
+    "v13_active_12d_hole_search_v4_dense_alignment_bridge_20260618_032829_utc"
+  ],
+  "current_champion_to_freeze": "v13 1M seed23 D66 grouped-head checkpoint rebuild",
+  "primary_recommendation": "targeted_data_expansion_plus_parallel_feature_model_audit",
+  "recommended_new_rows": 250000,
+  "escalate_to_500k_only_if": [
+    "v15 250k targeted expansion reduces sparse-tail failures but residual-vs-NN correlation remains above 0.45",
+    "high-amplitude coupled-full failures remain concentrated at NN distance above the v13 active-search median"
+  ],
+  "sampling_mix": {
+    "high_amp_A1_B2_S3_A3_alignment_bridge": 0.3,
+    "coverage_limited_sparse_cluster_jitter": 0.25,
+    "far_nn_coupled_full_random": 0.2,
+    "coupled_sparse_random_controls": 0.1,
+    "sobol_lhs_global_balance": 0.1,
+    "orthogonal_diagnostic_controls": 0.05
+  },
+  "regime_mix": {
+    "coupled_full_random": 0.78,
+    "coupled_sparse_random": 0.1,
+    "coupled_A1_B2_S3_random": 0.04,
+    "coupled_C3_A3_S3_random": 0.03,
+    "coupled_A3_S3_random": 0.025,
+    "coupled_B2_S3_random": 0.025
+  },
+  "parallel_non_data_work": [
+    "Audit high-amplitude A1/B2/S3/A3 feature sensitivity and target scaling.",
+    "Check whether A3/S3 high-amplitude vector errors are dominated by magnitude compression or direction.",
+    "Test loss/architecture changes only after v15 targeted data establishes whether sparse failures shrink."
+  ],
+  "do_not_do_next": [
+    "Do not jump directly to another broad 1M expansion.",
+    "Do not train on active diagnostic rows directly without converting them into a balanced planned dataset.",
+    "Do not optimize against final blind test repeatedly."
+  ]
+}
