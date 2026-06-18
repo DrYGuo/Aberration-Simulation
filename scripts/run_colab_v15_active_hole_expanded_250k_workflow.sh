@@ -144,6 +144,8 @@ if [ -z "$V13_CSV" ]; then
   exit 1
 fi
 
+python3 scripts/restore_active_hole_results_from_drive.py || true
+
 REPORT_JSON=$(python3 scripts/report_active_failed_region_errors.py)
 FAILED_REPORT_DIR=$(python3 - "$REPORT_JSON" <<'PY'
 import json

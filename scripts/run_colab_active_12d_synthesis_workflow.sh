@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DONE_MARKER="colab_worker_logs/active_12d_hole_search_synthesis_done.json"
+DONE_MARKER="colab_worker_logs/active_12d_hole_search_expanded_synthesis_done.json"
 
 mkdir -p colab_worker_logs training_results/model_selection_reports
 
@@ -9,6 +9,8 @@ if [ -f "$DONE_MARKER" ]; then
   echo "active 12D hole-search synthesis already completed; marker exists at $DONE_MARKER"
   exit 0
 fi
+
+python3 scripts/restore_active_hole_results_from_drive.py || true
 
 python3 scripts/summarize_active_12d_hole_search_cycles.py \
   --search-root training_results/model_selection_reports \

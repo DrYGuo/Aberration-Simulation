@@ -1,6 +1,6 @@
 {
-  "description": "10-cycle agent-guided active 12D hole search and final expanded v15 training handoff. Early cycles collect failed parameter subspaces; later cycles can synthesize latest holes and train from the expanded failed-region sampling spec.",
-  "config_id": "active-12d-expanded-search-cycle04",
+  "description": "10-cycle agent-guided active 12D hole search and final expanded v15 training handoff. Cycle 5 synthesizes collected hole-search outputs before v15 targeted training.",
+  "config_id": "active-12d-expanded-synthesis-cycle05",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
+    "scripts/run_colab_active_12d_synthesis_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
