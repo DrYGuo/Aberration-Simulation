@@ -1,7 +1,7 @@
 {
-  "workflow_id": "active_12d_hole_search_expanded_cycle03",
-  "run_prefix": "v13_active_12d_hole_search_expanded_cycle03",
-  "description": "Expanded active 12D hole-search cycle 3. Focus high-amplitude oblique/orthogonal A3-S3 and B2-S3 regions after cycle 2 confirmed sparse coverage failures.",
+  "workflow_id": "active_12d_hole_search_expanded_cycle04",
+  "run_prefix": "v13_active_12d_hole_search_expanded_cycle04",
+  "description": "Expanded active 12D hole-search cycle 4. Dense/bridge failure pass after cycle 3 exposed model-feature-loss failures in high-amplitude oblique regions.",
   "champion": {
     "name": "v13 1M seed23 D66 grouped-head",
     "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*",
@@ -23,29 +23,29 @@
     "A3_y": 100.0
   },
   "proposal": {
-    "seed": 2103,
+    "seed": 2104,
     "selected_probe_count": 6500,
-    "candidate_pool_size": 110000,
+    "candidate_pool_size": 100000,
     "reference_sample_size": 300000,
     "nearest_neighbor_chunk_size": 25000,
     "top_residual_seed_count": 1800,
-    "high_amp_bridge_target_nn_distance": 0.9,
+    "high_amp_bridge_target_nn_distance": 0.72,
     "mode_counts": {
-      "genetic_algorithm": 2000,
-      "high_amp_oblique": 1700,
-      "high_amp_alignment": 900,
-      "far_nn": 900,
-      "residual_jitter": 600,
-      "sobol_lhs": 300,
-      "bridge_anchor": 100
+      "high_amp_oblique": 2200,
+      "high_amp_bridge": 1600,
+      "residual_jitter": 900,
+      "genetic_algorithm": 900,
+      "bridge_anchor": 600,
+      "sobol_lhs": 300
     },
     "regime_weights": {
-      "coupled_full_random": 0.86,
+      "coupled_full_random": 0.78,
       "coupled_sparse_random": 0.04,
-      "coupled_A3_S3_random": 0.04,
-      "coupled_B2_S3_random": 0.03,
-      "coupled_C3_A3_S3_random": 0.02,
-      "coupled_A1_B2_S3_random": 0.01
+      "coupled_A3_S3_random": 0.07,
+      "coupled_B2_S3_random": 0.05,
+      "coupled_C3_A3_S3_random": 0.03,
+      "coupled_A1_B2_S3_random": 0.02,
+      "coupled_A1_S3_random": 0.01
     },
     "genetic_algorithm": {
       "population_size": 1536,
@@ -55,10 +55,10 @@
       "mutation_scale": 0.12,
       "immigrant_fraction": 0.12,
       "fitness_weights": {
-        "nearest_neighbor_distance": 0.48,
-        "known_residual_similarity": 0.22,
-        "physical_relevance": 0.14,
-        "diversity_proxy": 0.1,
+        "nearest_neighbor_distance": 0.32,
+        "known_residual_similarity": 0.34,
+        "physical_relevance": 0.16,
+        "diversity_proxy": 0.12,
         "boundary_penalty": 0.06
       }
     }
@@ -72,9 +72,9 @@
     "predict_batch_size": 65536
   },
   "classification": {
-    "failure_top_fraction": 0.14,
-    "coverage_limited_nn_quantile": 0.7,
-    "dense_failure_nn_quantile": 0.45
+    "failure_top_fraction": 0.15,
+    "coverage_limited_nn_quantile": 0.72,
+    "dense_failure_nn_quantile": 0.52
   },
   "recommended_plan": {
     "future_dataset_name": "v15_active_hole_expanded_250k",
