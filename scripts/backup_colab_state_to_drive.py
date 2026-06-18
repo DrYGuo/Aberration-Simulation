@@ -27,6 +27,17 @@ DEFAULT_INCLUDE_PATHS = [
     "CURRENT_STATE.md",
     "STABLE_CHECKPOINT.txt",
 ]
+DEFAULT_EXCLUDE_PATTERNS = [
+    "__pycache__",
+    ".ipynb_checkpoints",
+    "*.pt",
+    "*.pth",
+    "*.ckpt",
+    "*.zip",
+    "*.npy",
+    "*.npz",
+    "*.h5",
+]
 
 
 def utc_stamp() -> str:
@@ -86,17 +97,10 @@ def copy_with_rsync(source: Path, dest: Path) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
     source_arg = f"{source}/" if source.is_dir() else str(source)
     dest_arg = f"{dest}/" if source.is_dir() else str(dest)
-    command = [
-        "rsync",
-        "-a",
-        "--info=progress2",
-        "--exclude",
-        "__pycache__",
-        "--exclude",
-        ".ipynb_checkpoints",
-        source_arg,
-        dest_arg,
-    ]
+    command = ["rsync", "-a"]
+    for pattern in DEFAULT_EXCLUDE_PATTERNS:
+        command.extend(["--exclude", pattern])
+    command.extend([source_arg, dest_arg])
     print("$", " ".join(command), flush=True)
     result = subprocess.run(command)
     return result.returncode == 0
@@ -115,7 +119,7 @@ def copy_path(source: Path, dest: Path) -> None:
         shutil.copytree(
             source,
             dest,
-            ignore=shutil.ignore_patterns("__pycache__", ".ipynb_checkpoints"),
+            ignore=shutil.ignore_patterns(*DEFAULT_EXCLUDE_PATTERNS),
         )
     else:
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -133,6 +137,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--run-name", default="")
     parser.add_argument("--include", action="append", default=[], help="Additional path to include.")
+    parser.add_argument(
+        "--no-default-includes",
+        action="store_true",
+        help=(
+            "Do not copy the default broad backup set. Use this for incremental "
+            "workflow backups that should update only explicitly listed folders."
+        ),
+    )
     parser.add_argument("--no-mount", action="store_true")
     return parser.parse_args()
 
@@ -155,7 +167,9 @@ def main() -> int:
     backup_dir = drive_root / run_name
     backup_dir.mkdir(parents=True, exist_ok=True)
 
-    include_paths = [*DEFAULT_INCLUDE_PATHS, *args.include]
+    include_paths = [*([] if args.no_default_includes else DEFAULT_INCLUDE_PATHS), *args.include]
+    if not include_paths:
+        raise RuntimeError("No backup paths requested. Provide --include or omit --no-default-includes.")
     copied: list[dict[str, Any]] = []
     for rel_text in include_paths:
         source = repo_root / rel_text
@@ -177,6 +191,8 @@ def main() -> int:
         "repo_root": str(repo_root),
         "git_commit": current_commit(repo_root),
         "backup_dir": str(backup_dir),
+        "default_includes_used": not args.no_default_includes,
+        "exclude_patterns": DEFAULT_EXCLUDE_PATTERNS,
         "copied": copied,
         "note": "Large Colab training CSVs and result folders are backed up here, not pushed to GitHub.",
     }

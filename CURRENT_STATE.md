@@ -222,6 +222,11 @@ Resource notes:
 - Current disk usage around `49.56/235.68 GB` is not an immediate blocker for
   1M. For future expansions, keep large CSV/checkpoint/result folders in Google
   Drive backups and continue pushing only compact artifacts to GitHub.
+- Google Drive cleanup and backup policy:
+  - `docs/google_drive_backup_policy.md`
+  - The v15 workflow now writes to stable folder `v15_active_hole_250k_latest`
+    and uses explicit incremental includes instead of copying the full
+    `training_results` history.
 
 Benchmark note:
 

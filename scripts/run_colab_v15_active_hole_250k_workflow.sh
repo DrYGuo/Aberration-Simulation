@@ -17,9 +17,24 @@ mkdir -p colab_worker_logs
 if [ -f "$DRIVE_BACKUP_RUN_NAME_FILE" ]; then
   DRIVE_BACKUP_RUN_NAME=$(cat "$DRIVE_BACKUP_RUN_NAME_FILE")
 else
-  DRIVE_BACKUP_RUN_NAME="v15_active_hole_250k_$(date -u +%Y%m%d_%H%M%S_utc)"
+  DRIVE_BACKUP_RUN_NAME="${ABERRATION_DRIVE_BACKUP_RUN_NAME:-v15_active_hole_250k_latest}"
   printf '%s\n' "$DRIVE_BACKUP_RUN_NAME" > "$DRIVE_BACKUP_RUN_NAME_FILE"
 fi
+
+incremental_v15_drive_backup() {
+  local stage="$1"
+  shift || true
+  echo "Incremental Drive backup for v15 stage: $stage"
+  python3 scripts/backup_colab_state_to_drive.py \
+    --run-name "$DRIVE_BACKUP_RUN_NAME" \
+    --no-default-includes \
+    --include "$V15_DIR" \
+    --include configs \
+    --include experiments \
+    --include colab_worker_logs \
+    --include training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc \
+    "$@"
+}
 
 restore_csv_folder_from_drive() {
   local label="$1"
@@ -164,13 +179,15 @@ python3 scripts/write_dataset_recovery_manifest.py \
   --expected-new-rows 250000
 
 echo "Backing up v15 generated dataset and current Colab state to Drive before training."
-python3 scripts/backup_colab_state_to_drive.py --run-name "$DRIVE_BACKUP_RUN_NAME"
+incremental_v15_drive_backup "before_training"
 
 python3 scripts/report_sampling_quality.py \
   --csv-path "$V15_CSV" \
   --config configs/targeted_expansion_v15_active_hole_250k.json \
   --benchmark-split-manifest "$V2_SPLIT_MANIFEST" \
   --output-dir "$SAMPLING_QUALITY_DIR"
+
+incremental_v15_drive_backup "after_sampling_quality" --include "$SAMPLING_QUALITY_DIR"
 
 BASE_CONFIG="configs/model_selection_batch_v15_active_hole_250k_d66.json"
 RUNTIME_CONFIG="colab_worker_logs/model_selection_batch_v15_active_hole_250k_d66_runtime.json"
@@ -206,7 +223,16 @@ python3 scripts/run_model_selection_batch.py \
   --summary-root training_results/model_selection_batches \
   --max-runtime-minutes 420
 
-python3 scripts/backup_colab_state_to_drive.py --run-name "$DRIVE_BACKUP_RUN_NAME"
+V15_RUN_DIR=$(ls -td training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_250k_d66_seed23_* 2>/dev/null | head -1 || true)
+V15_BATCH_DIR=$(ls -td training_results/model_selection_batches/v15_active_hole_250k_d66_* 2>/dev/null | head -1 || true)
+EXTRA_BACKUP_INCLUDES=(--include "$SAMPLING_QUALITY_DIR")
+if [ -n "$V15_RUN_DIR" ]; then
+  EXTRA_BACKUP_INCLUDES+=(--include "$V15_RUN_DIR")
+fi
+if [ -n "$V15_BATCH_DIR" ]; then
+  EXTRA_BACKUP_INCLUDES+=(--include "$V15_BATCH_DIR")
+fi
+incremental_v15_drive_backup "after_training" "${EXTRA_BACKUP_INCLUDES[@]}"
 
 python3 - "$DONE_MARKER" "$V15_CSV" "$DRIVE_BACKUP_RUN_NAME" <<'PY'
 import json
