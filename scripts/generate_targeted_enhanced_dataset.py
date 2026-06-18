@@ -399,6 +399,11 @@ def load_generation_config(path: Path | None) -> dict[str, Any]:
     return config
 
 
+def read_json(path: Path) -> dict[str, Any]:
+    with path.open() as handle:
+        return json.load(handle)
+
+
 def parent_reference_rows_for_candidate_selection(
     parent_rows: list[dict[str, Any]],
     config: dict[str, Any],

@@ -19,14 +19,14 @@
   "candidate_selection": {
     "enabled": true,
     "method": "parent_12d_nearest_neighbor_distance",
-    "oversample_multiplier": 2.0,
+    "oversample_multiplier": 1.25,
     "far_fraction": 0.75,
     "bridge_fraction": 0.25,
     "bridge_quantile": 0.55,
-    "reference_sample_size": 250000,
-    "query_chunk_size": 25000,
+    "reference_sample_size": 100000,
+    "query_chunk_size": 10000,
     "reference_split_hints": ["", "training_only"],
-    "note": "Mostly far-NN candidates with bridge/anchor controls. Active failed-subspace jitter is generated from current failed-region cluster centers, then selected against the v13 train-eligible parent."
+    "note": "Mostly far-NN candidates with bridge/anchor controls. Oversampling is intentionally modest so Colab writes recoverable v15 artifacts instead of failing during pre-output NN selection."
   },
   "sampling": {
     "active_failed_subspace_jitter": {
