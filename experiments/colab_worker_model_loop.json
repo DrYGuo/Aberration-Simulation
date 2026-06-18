@@ -1,6 +1,6 @@
 {
-  "description": "Agent-steered active 12D hole-search loop using the frozen v13 1M seed23 D66 checkpoint restored from Drive. Cycle 4 tests high-amplitude A1/B2/S3/A3 alignment failures near existing training coverage, then waits for Codex to inspect pushed artifacts and push the next config/code step. No training or data expansion unless a later agent-reviewed config explicitly changes that.",
-  "config_id": "active-12d-hole-search-v4-dense-alignment-bridge",
+  "description": "Agent-steered active 12D hole-search loop using the frozen v13 1M seed23 D66 checkpoint restored from Drive. Cycle 5 synthesizes cycles 1-4 into a v15 targeted sampling plan and separates coverage-limited versus dense high-amplitude failure evidence. No training or data expansion.",
+  "config_id": "active-12d-hole-search-v5-synthesis",
   "cycles": 8,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_active_12d_hole_search_v1_workflow.sh"
+    "scripts/run_colab_active_12d_synthesis_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -53,6 +53,9 @@
     "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_regime_summary.csv",
     "training_results/model_selection_reports/v13_active_12d_hole_search_*/active_hole_relative_angle_summary.csv",
     "training_results/model_selection_reports/v13_active_12d_hole_search_*/plots/*.png",
+    "training_results/model_selection_reports/active_12d_hole_search_synthesis_*/*.md",
+    "training_results/model_selection_reports/active_12d_hole_search_synthesis_*/*.json",
+    "training_results/model_selection_reports/active_12d_hole_search_synthesis_*/*.csv",
     "training_results/model_selection_reports/c1_feature_sensitivity_*.md",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.json",
     "training_results/model_selection_reports/c1_feature_sensitivity_*/*.csv",
