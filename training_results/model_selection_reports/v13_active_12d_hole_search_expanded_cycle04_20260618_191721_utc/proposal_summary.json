@@ -1,0 +1,59 @@
+{
+  "seed": 2104,
+  "selected_probe_count": 6500,
+  "reference_train_rows": 992556,
+  "reference_matrix_rows": 300000,
+  "nearest_neighbor_method": "sklearn",
+  "residual_seed_rows": 1800,
+  "mode_summaries": {
+    "high_amp_oblique": {
+      "raw_candidates": 6600,
+      "selected": 2200,
+      "nn_distance_median": 0.9550653696060181,
+      "score_median": 0.5242628157138824
+    },
+    "high_amp_bridge": {
+      "raw_candidates": 4800,
+      "selected": 1600,
+      "nn_distance_median": 0.8288266956806183,
+      "score_median": 0.22948278486728668
+    },
+    "residual_jitter": {
+      "raw_candidates": 3600,
+      "selected": 900,
+      "nn_distance_median": 0.7540934383869171,
+      "score_median": 0.4937986135482788
+    },
+    "genetic_algorithm": {
+      "raw_candidates": 3360,
+      "selected": 900,
+      "nn_distance_median": 1.0711472034454346,
+      "score_median": 0.5141227841377258
+    },
+    "bridge_anchor": {
+      "raw_candidates": 16666,
+      "selected": 600,
+      "nn_distance_median": 0.5736766457557678,
+      "score_median": 0.11584041267633438
+    },
+    "sobol_lhs": {
+      "raw_candidates": 16666,
+      "selected": 300,
+      "nn_distance_median": 0.8224335312843323,
+      "score_median": 0.5155429840087891
+    }
+  },
+  "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_hole_search_expanded_cycle04_20260618_191721_utc/selected_probe_design.csv",
+  "regime_counts": {
+    "coupled_full_random": 6477,
+    "coupled_sparse_random": 23
+  },
+  "proposal_mode_counts": {
+    "bridge_anchor": 600,
+    "residual_jitter": 900,
+    "high_amp_oblique": 2200,
+    "genetic_algorithm": 900,
+    "high_amp_bridge": 1600,
+    "sobol_lhs": 300
+  }
+}
