@@ -205,6 +205,12 @@ print("runtime data config:", out_path)
 PY
 write_stage_marker "runtime_data_config_ready"
 
+write_stage_marker "preflight_active_failed_subspace_sampler"
+python3 scripts/preflight_active_failed_subspace_sampler.py \
+  --config "$RUNTIME_DATA_CONFIG" \
+  --count 8 \
+  --seed 157
+
 V15_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
 if [ -z "$V15_CSV" ]; then
   V15_CSV=$(restore_csv_folder_from_drive \
