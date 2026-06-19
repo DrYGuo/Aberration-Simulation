@@ -1,6 +1,6 @@
 {
-  "description": "10-cycle agent-guided active 12D hole search and final expanded v15 training handoff. Retry v15 active-hole 250k generation/training with active-subspace sampler preflight and clearer first-run cache handling.",
-  "config_id": "v15-active-hole-expanded-250k-training-retry10",
+  "description": "Finish the 10-cycle v15 active-hole run by writing a v15-vs-v13 decision report; remaining cycles are idempotent no-op exits after the report marker exists.",
+  "config_id": "v15-active-hole-decision-report",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh"
+    "scripts/run_colab_v15_active_hole_decision_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -87,6 +87,8 @@
     "training_results/model_selection_reports/active_failed_region_error_report_*/*.md",
     "training_results/model_selection_reports/active_failed_region_error_report_*/*.json",
     "training_results/model_selection_reports/active_failed_region_error_report_*/*.csv",
+    "training_results/model_selection_reports/v15_active_hole_decision_*/*.md",
+    "training_results/model_selection_reports/v15_active_hole_decision_*/*.json",
     "configs/targeted_expansion_v15_active_hole_250k.json",
     "configs/model_selection_batch_v15_active_hole_250k_d66.json",
     "configs/targeted_expansion_v15_active_hole_expanded_250k.json",
@@ -116,7 +118,7 @@
   "disconnect_runtime_after_success": true,
   "disconnect_runtime_after_failure": true,
   "disconnect_runtime_delay_seconds": 60,
-  "require_new_config_each_cycle": true,
+  "require_new_config_each_cycle": false,
   "wait_for_new_config_poll_seconds": 30,
   "wait_for_new_config_timeout_seconds": 18000
 }
