@@ -1,0 +1,337 @@
+{
+  "run_name": "enhanced_v15_active_hole_expanded_250k_20260619_050058_utc",
+  "dataset_version": "enhanced_v15_active_hole_expanded_250k",
+  "created_utc": "2026-06-19T05:58:43.641241+00:00",
+  "git_commit": "d716ccb",
+  "generation_script": "scripts/generate_targeted_enhanced_dataset.py",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "parent_dataset_path": "/content/Aberration-Simulation/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "parent_dataset_sha256": "08c72ebb7941244c8420ac4c88dd96676dac16288e3bf395e08e67529a9de2ad",
+  "output_csv": "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_20260619_050058_utc/training_features_enhanced.csv",
+  "output_csv_sha256": "6fb5e171d383469f8ee4c9bb35c5dcf0ccea6d41094395a3be6d8118ee4e4f36",
+  "row_count_before_expansion": 1075000,
+  "appended_training_only_row_count": 250000,
+  "appended_non_training_benchmark_row_count": 0,
+  "total_rows": 1325000,
+  "random_seed": 157,
+  "targeted_case_counts": {
+    "active_failed_subspace_jitter": 90000,
+    "coupled_full_random": 45000,
+    "coupled_A1_B2_S3_random": 25000,
+    "coupled_A3_S3_random": 22000,
+    "coupled_B2_S3_random": 22000,
+    "coupled_C3_A3_S3_random": 16000,
+    "coupled_sparse_random": 18000,
+    "S3_high_random": 8000,
+    "coupled_A1_S3_random": 4000
+  },
+  "generation_config": {
+    "description": "v15 expanded active-hole targeted expansion. The Colab workflow rewrites the active_failed_subspace_jitter spec_path at runtime to the latest failed-region report generated after the expanded active-search cycles.",
+    "dataset_version": "enhanced_v15_active_hole_expanded_250k",
+    "parent_dataset_version": "enhanced_v13_1m_spacefill",
+    "expected_parent_rows": 1075000,
+    "expected_new_training_only_rows": 250000,
+    "expected_total_rows": 1325000,
+    "case_counts": {
+      "active_failed_subspace_jitter": 90000,
+      "coupled_full_random": 45000,
+      "coupled_A1_B2_S3_random": 25000,
+      "coupled_A3_S3_random": 22000,
+      "coupled_B2_S3_random": 22000,
+      "coupled_C3_A3_S3_random": 16000,
+      "coupled_sparse_random": 18000,
+      "S3_high_random": 8000,
+      "coupled_A1_S3_random": 4000
+    },
+    "candidate_selection": {
+      "enabled": true,
+      "method": "parent_12d_nearest_neighbor_distance",
+      "oversample_multiplier": 1.25,
+      "far_fraction": 0.75,
+      "bridge_fraction": 0.25,
+      "bridge_quantile": 0.55,
+      "reference_sample_size": 100000,
+      "query_chunk_size": 10000,
+      "reference_split_hints": [
+        "",
+        "training_only"
+      ],
+      "note": "Mostly far-NN candidates with bridge/anchor controls. Oversampling is intentionally modest so Colab writes recoverable v15 artifacts instead of failing during pre-output NN selection."
+    },
+    "sampling": {
+      "active_failed_subspace_jitter": {
+        "enabled": true,
+        "labels": [
+          "active_failed_subspace_jitter"
+        ],
+        "spec_path": "training_results/model_selection_reports/active_failed_region_error_report_20260619_045645_utc/v15_failed_subspace_sampling_spec.json",
+        "sweep_label": "active_failed_subspace_jitter",
+        "sampling_method": "active_failed_subspace_jitter",
+        "normalized_jitter_sigma": 0.075,
+        "normalized_jitter_min_sigma": 0.025,
+        "normalized_jitter_max_sigma": 0.14,
+        "note": "The workflow replaces spec_path with the latest expanded active-search failed-region report before generation."
+      },
+      "space_filling": {
+        "enabled": true,
+        "method": "latin_hypercube",
+        "labels": [
+          "coupled_full_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "coupled_sparse_random",
+          "S3_high_random",
+          "coupled_A1_S3_random"
+        ]
+      },
+      "relative_angles": {
+        "enabled": true,
+        "bins": [
+          "aligned",
+          "orthogonal",
+          "anti_aligned",
+          "random"
+        ],
+        "label_pairs": {
+          "coupled_A1_B2_S3_random": [
+            [
+              "A1",
+              "S3"
+            ],
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_B2_S3_random": [
+            [
+              "B2",
+              "S3"
+            ]
+          ],
+          "coupled_C3_A3_S3_random": [
+            [
+              "A3",
+              "S3"
+            ]
+          ],
+          "coupled_A1_S3_random": [
+            [
+              "A1",
+              "S3"
+            ]
+          ]
+        }
+      },
+      "c1_balanced": {
+        "enabled": true,
+        "magnitude_bins": [
+          [
+            0.0,
+            10.0
+          ],
+          [
+            10.0,
+            40.0
+          ],
+          [
+            40.0,
+            75.0
+          ],
+          [
+            75.0,
+            100.0
+          ]
+        ],
+        "labels": [
+          "coupled_full_random",
+          "coupled_sparse_random"
+        ],
+        "note": "Monitor C1 without letting it dominate selection because current defocus geometry limits direct C1 sensitivity."
+      },
+      "s3_tail": {
+        "enabled": true,
+        "s3_amp_min": 63.5,
+        "s3_amp_max": 100.0,
+        "labels": [
+          "coupled_full_random",
+          "coupled_A1_B2_S3_random",
+          "coupled_A3_S3_random",
+          "coupled_B2_S3_random",
+          "coupled_C3_A3_S3_random",
+          "S3_high_random",
+          "coupled_A1_S3_random"
+        ],
+        "force_s3_in_sparse": false
+      }
+    },
+    "coverage_metrics_to_track": {
+      "primary": [
+        "active_failed_subspace_cluster_coverage",
+        "candidate_selection_parent_nn_distance_distribution",
+        "relative_angle_bin_balance",
+        "residual_vs_nn_distance_after_training",
+        "active_search_retest_after_training"
+      ],
+      "decision_rule": "Promote only if benchmark metrics and active failed-region retests improve without creating large dense A3/S3/A1 regressions."
+    },
+    "selection_policy": {
+      "training_only_append_rows": true,
+      "requires_fixed_benchmark_split": true,
+      "split_seed": 7,
+      "validation_blind_stress_source": "frozen_v12_benchmark_v2_manifest",
+      "do_not_train_on_blind_or_stress": true
+    },
+    "runtime_failed_subspace_spec_path": "training_results/model_selection_reports/active_failed_region_error_report_20260619_045645_utc/v15_failed_subspace_sampling_spec.json",
+    "runtime_note": "Generated by expanded active-hole workflow from latest failed-region report."
+  },
+  "target_columns": [
+    "C1",
+    "C3",
+    "A1_x",
+    "A1_y",
+    "B2_x",
+    "B2_y",
+    "A2_x",
+    "A2_y",
+    "S3_x",
+    "S3_y",
+    "A3_x",
+    "A3_y"
+  ],
+  "feature_columns": [
+    "C1_value_real",
+    "C3_value_real",
+    "A1_value_real",
+    "A1_value_imag",
+    "B2_value_real",
+    "B2_value_imag",
+    "A2_value_real",
+    "A2_value_imag",
+    "S3_value_real",
+    "S3_value_imag",
+    "A3_value_real",
+    "A3_value_imag",
+    "under_Xigma_mean",
+    "under_Xigma_h1_real",
+    "under_Xigma_h1_imag",
+    "under_Xigma_h2_real",
+    "under_Xigma_h2_imag",
+    "under_Xigma_h3_real",
+    "under_Xigma_h3_imag",
+    "under_Xigma_h4_real",
+    "under_Xigma_h4_imag",
+    "under_Mu_mean",
+    "under_Mu_h1_real",
+    "under_Mu_h1_imag",
+    "under_Mu_h2_real",
+    "under_Mu_h2_imag",
+    "under_Mu_h3_real",
+    "under_Mu_h3_imag",
+    "under_Mu_h4_real",
+    "under_Mu_h4_imag",
+    "under_Rho_mean",
+    "under_Rho_h1_real",
+    "under_Rho_h1_imag",
+    "under_Rho_h2_real",
+    "under_Rho_h2_imag",
+    "under_Rho_h3_real",
+    "under_Rho_h3_imag",
+    "under_Rho_h4_real",
+    "under_Rho_h4_imag",
+    "over_Xigma_mean",
+    "over_Xigma_h1_real",
+    "over_Xigma_h1_imag",
+    "over_Xigma_h2_real",
+    "over_Xigma_h2_imag",
+    "over_Xigma_h3_real",
+    "over_Xigma_h3_imag",
+    "over_Xigma_h4_real",
+    "over_Xigma_h4_imag",
+    "over_Mu_mean",
+    "over_Mu_h1_real",
+    "over_Mu_h1_imag",
+    "over_Mu_h2_real",
+    "over_Mu_h2_imag",
+    "over_Mu_h3_real",
+    "over_Mu_h3_imag",
+    "over_Mu_h4_real",
+    "over_Mu_h4_imag",
+    "over_Rho_mean",
+    "over_Rho_h1_real",
+    "over_Rho_h1_imag",
+    "over_Rho_h2_real",
+    "over_Rho_h2_imag",
+    "over_Rho_h3_real",
+    "over_Rho_h3_imag",
+    "over_Rho_h4_real",
+    "over_Rho_h4_imag"
+  ],
+  "feature_count": 66,
+  "regime_counts_after_merge": {
+    "C1": 6,
+    "C3": 6,
+    "A1": 32,
+    "B2/C21": 32,
+    "A2": 20,
+    "A3": 20,
+    "S3/C32": 36,
+    "A3_wide": 45,
+    "S3_C32_wide": 45,
+    "C1_A1_C3_grid": 108,
+    "A1_B2_S3_grid": 96,
+    "coupled_full_random": 295554,
+    "coupled_C1_C3_A2_random": 26000,
+    "coupled_C1_A1_C3_A2_random": 15500,
+    "coupled_A1_A2_B2_random": 1500,
+    "coupled_A1_B2_S3_random": 106500,
+    "coupled_A3_S3_random": 104000,
+    "coupled_sparse_random": 177500,
+    "coupled_A2_B2_random": 20500,
+    "coupled_A1_S3_random": 57500,
+    "coupled_C3_A3_S3_random": 88500,
+    "coupled_C1_C3_random": 33000,
+    "coupled_A1_B2_random": 14000,
+    "coupled_C3_B2_random": 14000,
+    "coupled_C1_C3_S3_random": 28000,
+    "S3_high_random": 83500,
+    "coupled_B2_S3_random": 88500,
+    "coupled_C1_S3_random": 23500,
+    "coupled_C1_A1_random": 6000,
+    "coupled_C1_A1_S3_random": 20000,
+    "coupled_C1_A2_random": 5000,
+    "coupled_C1_A1_C3_random": 5500,
+    "coupled_C1_A3_random": 4000,
+    "coupled_C1_B2_random": 2500,
+    "coupled_C1_A3_S3_random": 14000,
+    "active_failed_subspace_jitter": 90000
+  },
+  "new_rows_per_regime": {
+    "active_failed_subspace_jitter": 90000,
+    "coupled_A1_S3_random": 4000,
+    "coupled_B2_S3_random": 22000,
+    "coupled_full_random": 45000,
+    "coupled_A3_S3_random": 22000,
+    "coupled_C3_A3_S3_random": 16000,
+    "coupled_A1_B2_S3_random": 25000,
+    "S3_high_random": 8000,
+    "coupled_sparse_random": 18000
+  },
+  "split_policy": "New rows are training-only unless a later, explicit versioned split experiment changes validation/blind/stress benchmark definitions.",
+  "dataset_split_hint_field": "dataset_split_hint",
+  "new_row_split_hint": "training_only",
+  "feature_columns_path": "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_20260619_050058_utc/feature_columns_enhanced.json",
+  "label_summary_path": "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_20260619_050058_utc/label_summary.csv",
+  "new_targeted_label_summary_path": "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_20260619_050058_utc/new_targeted_label_summary.csv",
+  "targeted25k_audit_path": "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_20260619_050058_utc/targeted25k_audit.json",
+  "large_artifact_policy": "training_features_enhanced.csv is intentionally not pushed to GitHub"
+}
