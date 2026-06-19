@@ -213,11 +213,17 @@ python3 scripts/preflight_active_failed_subspace_sampler.py \
 
 V15_CSV=$(ls -td training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
 if [ -z "$V15_CSV" ]; then
-  V15_CSV=$(restore_csv_folder_from_drive \
-    "v15 expanded active-hole 250k" \
-    "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
-    "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
-    "training_results/feature_regression_enhanced" || true)
+  echo "No local completed v15 active-hole 250k CSV found; checking Drive only for a resumable completed v15 dataset."
+  V15_DRIVE_CSV=$(ls -td "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv 2>/dev/null | head -1 || true)
+  if [ -n "$V15_DRIVE_CSV" ]; then
+    V15_CSV=$(restore_csv_folder_from_drive \
+      "v15 expanded active-hole 250k" \
+      "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
+      "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
+      "training_results/feature_regression_enhanced" || true)
+  else
+    echo "No completed v15 active-hole 250k CSV found on Drive. This is expected before the first successful v15 generation; generating v15 dataset next."
+  fi
 fi
 if [ -z "$V15_CSV" ]; then
   write_stage_marker "generating_v15_dataset"
