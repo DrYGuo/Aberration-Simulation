@@ -1,6 +1,6 @@
 {
-  "description": "Finish the 10-cycle v15 active-hole run by writing a v15-vs-v13 decision report; remaining cycles are idempotent no-op exits after the report marker exists.",
-  "config_id": "v15-active-hole-decision-report",
+  "description": "Retest restored active-hole probe feature sets with the v15 active-hole expanded checkpoint. Rebuild the exact v15 checkpoint only if Drive/local checkpoint is absent; remaining cycles are idempotent no-op exits after the marker exists.",
+  "config_id": "v15-active-hole-retest",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v15_active_hole_decision_workflow.sh"
+    "scripts/run_colab_v15_active_hole_retest_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -89,6 +89,11 @@
     "training_results/model_selection_reports/active_failed_region_error_report_*/*.csv",
     "training_results/model_selection_reports/v15_active_hole_decision_*/*.md",
     "training_results/model_selection_reports/v15_active_hole_decision_*/*.json",
+    "training_results/model_selection_reports/v15_active_hole_retest_*/*.md",
+    "training_results/model_selection_reports/v15_active_hole_retest_*/*.json",
+    "training_results/model_selection_reports/v15_active_hole_retest_*/*summary.csv",
+    "training_results/model_selection_reports/v15_active_hole_retest_*/active_hole_retest_top1000_probe_comparison.csv",
+    "training_results/model_selection_reports/v15_active_hole_retest_*/*/active_hole_retest_summary.json",
     "configs/targeted_expansion_v15_active_hole_250k.json",
     "configs/model_selection_batch_v15_active_hole_250k_d66.json",
     "configs/targeted_expansion_v15_active_hole_expanded_250k.json",
