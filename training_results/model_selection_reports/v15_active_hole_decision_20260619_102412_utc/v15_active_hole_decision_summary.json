@@ -1,0 +1,116 @@
+{
+  "created_utc": "2026-06-19T10:24:12.007093+00:00",
+  "v13_run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_20260615_065556_utc",
+  "v15_run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_20260619_075900_utc",
+  "recommendation": "do_not_promote_v15; keep v13 seed23 as champion and use v15 as coverage-diagnostic evidence",
+  "v15_better_metric_count": 0,
+  "n_compared_metrics": 11,
+  "comparison": [
+    {
+      "metric": "weighted_score",
+      "v13": 0.012279222159309057,
+      "v15": 0.013165120231670824,
+      "delta_v15_minus_v13": 0.0008858980723617672,
+      "relative_change": 0.07214610672143879,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "true_hard_target_normalized_mae",
+      "v13": 0.006564072240144015,
+      "v15": 0.0071319350972771645,
+      "delta_v15_minus_v13": 0.0005678628571331498,
+      "relative_change": 0.08651075679214203,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "overall_normalized_mae",
+      "v13": 0.005976789630949497,
+      "v15": 0.0068692900240421295,
+      "delta_v15_minus_v13": 0.0008925003930926323,
+      "relative_change": 0.14932772411312828,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "overall_normalized_p95",
+      "v13": null,
+      "v15": 0.02279699221253395,
+      "delta_v15_minus_v13": null,
+      "relative_change": null,
+      "lower_is_better": true,
+      "v15_improved": null
+    },
+    {
+      "metric": "blind_normalized_mae",
+      "v13": 0.005512593314051628,
+      "v15": 0.005967774894088507,
+      "delta_v15_minus_v13": 0.0004551815800368786,
+      "relative_change": 0.08257122448641703,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "stress_normalized_mae",
+      "v13": 0.005654443055391312,
+      "v15": 0.006147522013634443,
+      "delta_v15_minus_v13": 0.0004930789582431316,
+      "relative_change": 0.08720203801026845,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "S3_high_magnitude_mae",
+      "v13": 0.8476534485816956,
+      "v15": 0.9030768275260925,
+      "delta_v15_minus_v13": 0.05542337894439697,
+      "relative_change": 0.06538447880691345,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "S3_high_magnitude_bias",
+      "v13": -0.5059384703636169,
+      "v15": -0.4866616129875183,
+      "delta_v15_minus_v13": 0.019276857376098633,
+      "relative_change": 0.038101189186591,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "S3_high_magnitude_slope",
+      "v13": 0.9721779204327441,
+      "v15": 0.9664945270450565,
+      "delta_v15_minus_v13": -0.005683393387687641,
+      "relative_change": -0.005846042445767335,
+      "lower_is_better": false,
+      "v15_improved": false
+    },
+    {
+      "metric": "B2_magnitude_mae",
+      "v13": 0.02138221636414528,
+      "v15": 0.023369701579213142,
+      "delta_v15_minus_v13": 0.0019874852150678635,
+      "relative_change": 0.09295038368429259,
+      "lower_is_better": true,
+      "v15_improved": false
+    },
+    {
+      "metric": "A3_magnitude_mae",
+      "v13": 0.5508114099502563,
+      "v15": 0.5959453582763672,
+      "delta_v15_minus_v13": 0.04513394832611084,
+      "relative_change": 0.08194083766381469,
+      "lower_is_better": true,
+      "v15_improved": false
+    }
+  ],
+  "residual_vs_nn_distance": {
+    "decision_interpretation": "coverage_limited",
+    "correlation_weighted_abs_error_vs_nn_distance": 0.7363559893790158,
+    "spearman_weighted_abs_error_vs_nn_distance": 0.775234809377701,
+    "top_5_to_all_median_nn_distance_ratio": 7.2089940987229
+  },
+  "next_step": "Do not add another blind expansion immediately. Review v15 active-hole residual clusters; if the same sparse subspaces remain, design a more selective v16 hole-fill or revise features/loss for dense failures."
+}
