@@ -140,13 +140,6 @@ restore_active_probe_features_from_drive() {
   test "$restored" -gt 0
 }
 
-if [ ! -f "$V2_SPLIT_MANIFEST" ]; then
-  restore_file_from_drive \
-    "benchmark-v2 split manifest" \
-    "$V2_SPLIT_MANIFEST" \
-    "$DRIVE_BACKUP_ROOT"/*/configs/benchmark_split_v12_v2_row_keys.json
-fi
-
 write_stage "restore_v15_csv"
 V15_CSV=$(restore_csv_folder_from_drive \
   "v15 active-hole expanded 250k" \
@@ -156,6 +149,54 @@ V15_CSV=$(restore_csv_folder_from_drive \
 if [ -z "$V15_CSV" ]; then
   echo "Missing v15 active-hole expanded CSV. Keep Drive mounted and ensure v15_active_hole_expanded_250k_latest exists." >&2
   exit 1
+fi
+
+write_stage "restore_or_recreate_benchmark_v2_manifest"
+if [ ! -f "$V2_SPLIT_MANIFEST" ]; then
+  if ! restore_file_from_drive \
+    "benchmark-v2 split manifest" \
+    "$V2_SPLIT_MANIFEST" \
+    "$DRIVE_BACKUP_ROOT"/*/configs/benchmark_split_v12_v2_row_keys.json; then
+    echo "Missing frozen benchmark-v2 split manifest; recreating it from cached benchmark CSVs."
+    V1_SPLIT_MANIFEST="configs/benchmark_split_v6_frozen_row_keys.json"
+    if [ ! -f "$V1_SPLIT_MANIFEST" ]; then
+      if ! restore_file_from_drive \
+        "benchmark-v1 split manifest" \
+        "$V1_SPLIT_MANIFEST" \
+        "$DRIVE_BACKUP_ROOT"/*/configs/benchmark_split_v6_frozen_row_keys.json; then
+        V6_CSV=$(restore_csv_folder_from_drive \
+          "v6 benchmark-gap" \
+          "training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv" \
+          "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v6_benchmark_gap100k_*/training_features_enhanced.csv \
+          "training_results/feature_regression_enhanced")
+        if [ -z "$V6_CSV" ]; then
+          echo "Missing v6 cached CSV required to recreate benchmark-v1 split manifest." >&2
+          exit 1
+        fi
+        python3 scripts/write_benchmark_split_manifest.py \
+          --csv-path "$V6_CSV" \
+          --output "$V1_SPLIT_MANIFEST" \
+          --dataset-version enhanced_v6_benchmark_gap100k \
+          --overwrite
+      fi
+    fi
+    V12_CSV=$(restore_csv_folder_from_drive \
+      "v12 benchmark-v2" \
+      "training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_*/training_features_enhanced.csv" \
+      "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v12_benchmark_v2_*/training_features_enhanced.csv \
+      "training_results/feature_regression_enhanced" || true)
+    if [ -z "$V12_CSV" ]; then
+      echo "No separate v12 CSV found; using the restored v15 CSV to recreate the v12-v2 manifest from embedded v12 rows."
+      V12_CSV="$V15_CSV"
+    fi
+    python3 scripts/write_benchmark_v2_split_manifest.py \
+      --csv-path "$V12_CSV" \
+      --base-manifest "$V1_SPLIT_MANIFEST" \
+      --output "$V2_SPLIT_MANIFEST" \
+      --new-dataset-version enhanced_v12_benchmark_v2 \
+      --dataset-version enhanced_v12_benchmark_v2 \
+      --overwrite
+  fi
 fi
 
 write_stage "restore_active_probe_features"
