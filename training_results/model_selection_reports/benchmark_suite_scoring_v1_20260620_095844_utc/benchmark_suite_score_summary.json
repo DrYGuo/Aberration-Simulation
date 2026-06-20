@@ -1,0 +1,167 @@
+{
+  "created_utc": "2026-06-20T09:58:44.160532+00:00",
+  "suite_id": "benchmark_suite_scoring_v1",
+  "weights": {
+    "broad_blind_stress_score": 0.35,
+    "active_hole_score": 0.25,
+    "new_hole_challenge_score": 0.15,
+    "hard_vector_score": 0.15,
+    "anchor_regression_penalty": 0.1
+  },
+  "gates": {
+    "broad_blind_stress_max_regression_fraction": 0.05,
+    "anchor_max_regression_fraction": 0.1,
+    "active_hole_must_improve": true,
+    "new_hole_challenge_required_for_final_promotion": true
+  },
+  "available_score_note": "new_hole_challenge_score is unavailable and excluded from available_suite_score normalization.",
+  "winner_by_available_score": "v15",
+  "winner_by_promotion_gates": "v13",
+  "model_rows": [
+    {
+      "model": "v13",
+      "available_suite_score": 0.03580822013121358,
+      "promotable_now": true,
+      "gate_failures": "",
+      "broad_regression_vs_v13": 0.0,
+      "anchor_regression_vs_v13": 0.0,
+      "active_hole_change_vs_v13": 0.0,
+      "broad_blind_stress_score": 0.010663484983767074,
+      "active_hole_score": 0.10022784974511374,
+      "new_hole_challenge_score": null,
+      "hard_vector_score": 0.008337511704642434,
+      "anchor_regression_penalty": 0.003971781752382716
+    },
+    {
+      "model": "v15",
+      "available_suite_score": 0.024439110976850743,
+      "promotable_now": false,
+      "gate_failures": "broad_blind_stress_regression;new_hole_challenge_missing_for_final_promotion",
+      "broad_regression_vs_v13": 0.06884830714710943,
+      "anchor_regression_vs_v13": 0.08336386749213717,
+      "active_hole_change_vs_v13": -0.39906888704530913,
+      "broad_blind_stress_score": 0.011397647873188059,
+      "active_hole_score": 0.06023003329638673,
+      "new_hole_challenge_score": null,
+      "hard_vector_score": 0.008641805110673485,
+      "anchor_regression_penalty": 0.004302884840096037
+    }
+  ],
+  "component_rows": [
+    {
+      "model": "v13",
+      "component": "broad_blind_stress_score",
+      "value": 0.010663484983767074,
+      "weight": 0.35,
+      "available": true
+    },
+    {
+      "model": "v13",
+      "component": "active_hole_score",
+      "value": 0.10022784974511374,
+      "weight": 0.25,
+      "available": true
+    },
+    {
+      "model": "v13",
+      "component": "new_hole_challenge_score",
+      "value": null,
+      "weight": 0.15,
+      "available": false
+    },
+    {
+      "model": "v13",
+      "component": "hard_vector_score",
+      "value": 0.008337511704642434,
+      "weight": 0.15,
+      "available": true
+    },
+    {
+      "model": "v13",
+      "component": "anchor_regression_penalty",
+      "value": 0.003971781752382716,
+      "weight": 0.1,
+      "available": true
+    },
+    {
+      "model": "v15",
+      "component": "broad_blind_stress_score",
+      "value": 0.011397647873188059,
+      "weight": 0.35,
+      "available": true
+    },
+    {
+      "model": "v15",
+      "component": "active_hole_score",
+      "value": 0.06023003329638673,
+      "weight": 0.25,
+      "available": true
+    },
+    {
+      "model": "v15",
+      "component": "new_hole_challenge_score",
+      "value": null,
+      "weight": 0.15,
+      "available": false
+    },
+    {
+      "model": "v15",
+      "component": "hard_vector_score",
+      "value": 0.008641805110673485,
+      "weight": 0.15,
+      "available": true
+    },
+    {
+      "model": "v15",
+      "component": "anchor_regression_penalty",
+      "value": 0.004302884840096037,
+      "weight": 0.1,
+      "available": true
+    }
+  ],
+  "active_hole_sources": {
+    "v13": {
+      "active_hole_score": 0.10022784974511374,
+      "active_hole_source": "full_matched_active_hole_probe_set+v13_top_active_failures",
+      "active_hole_n": "39896+3988",
+      "active_hole_component_scores": [
+        0.05790723743632659,
+        0.1425484620539009
+      ]
+    },
+    "v15": {
+      "active_hole_score": 0.06023003329638673,
+      "active_hole_source": "full_matched_active_hole_probe_set+v13_top_active_failures",
+      "active_hole_n": "39896+3988",
+      "active_hole_component_scores": [
+        0.04407194585963116,
+        0.0763881207331423
+      ]
+    },
+    "full_active_hole": {
+      "v13": {
+        "active_hole_score": 0.05790723743632659,
+        "active_hole_source": "full_matched_active_hole_probe_set",
+        "active_hole_n": 39896
+      },
+      "v15": {
+        "active_hole_score": 0.04407194585963116,
+        "active_hole_source": "full_matched_active_hole_probe_set",
+        "active_hole_n": 39896
+      }
+    },
+    "top_failure_active_hole": {
+      "v13": {
+        "active_hole_score": 0.1425484620539009,
+        "active_hole_source": "v13_top_active_failures",
+        "active_hole_n": 3988
+      },
+      "v15": {
+        "active_hole_score": 0.0763881207331423,
+        "active_hole_source": "v13_top_active_failures",
+        "active_hole_n": 3988
+      }
+    }
+  },
+  "output_dir": "training_results/model_selection_reports/benchmark_suite_scoring_v1_20260620_095844_utc"
+}
