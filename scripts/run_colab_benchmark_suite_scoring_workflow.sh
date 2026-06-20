@@ -49,7 +49,7 @@ restore_dir_from_drive() {
   fi
   mkdir -p "$dest_parent"
   local dest="$dest_parent/$(basename "$drive_found")"
-  echo "Restoring $label from Drive: $drive_found"
+  echo "Restoring $label from Drive: $drive_found" >&2
   if command -v rsync >/dev/null 2>&1; then
     rsync -a "$drive_found/" "$dest/"
   else
@@ -90,6 +90,7 @@ RETEST_DIR=$(restore_dir_from_drive \
   "training_results/model_selection_reports/v15_active_hole_retest_*" \
   "$DRIVE_BACKUP_ROOT"/v15_active_hole_retest_latest/training_results/model_selection_reports/v15_active_hole_retest_* \
   "training_results/model_selection_reports")
+echo "retest dir: $RETEST_DIR"
 if ! find "$RETEST_DIR" -path "*/active_hole_retest_probe_comparison.csv" -type f 2>/dev/null | grep -q .; then
   echo "Local retest folder is compact-only; restoring full per-run comparison CSVs from Drive."
   RETEST_DIR=$(restore_dir_from_drive \
@@ -97,6 +98,14 @@ if ! find "$RETEST_DIR" -path "*/active_hole_retest_probe_comparison.csv" -type 
     "training_results/model_selection_reports/__force_drive_restore_no_local_match__" \
     "$DRIVE_BACKUP_ROOT"/v15_active_hole_retest_latest/training_results/model_selection_reports/v15_active_hole_retest_* \
     "training_results/model_selection_reports")
+  echo "retest dir after force restore: $RETEST_DIR"
+fi
+if ! find "$RETEST_DIR" -path "*/active_hole_retest_probe_comparison.csv" -type f 2>/dev/null | grep -q .; then
+  echo "No full retest comparison CSVs found under $RETEST_DIR." >&2
+  echo "First files found in restored retest directory:" >&2
+  find "$RETEST_DIR" -maxdepth 3 -type f 2>/dev/null | head -50 >&2 || true
+  echo "The Drive folder v15_active_hole_retest_latest may be compact-only; rerun the v15 retest workflow if full per-probe CSVs are missing there." >&2
+  exit 1
 fi
 
 write_stage "top_failure_retest_report"
