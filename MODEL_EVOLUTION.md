@@ -5,6 +5,109 @@ reason for each change, and the minimum information needed to reproduce a run.
 Per-run numeric details are saved by the notebooks in `run_manifest*.json` and
 summarized in `model_registry*.csv`.
 
+## 2026-06-20 v15 Active-Hole Retest And v16 Metric Direction
+
+Current promoted baseline remains:
+
+- `D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_20260615_065556_utc`
+
+Completed diagnostic workflow:
+
+- Worker config id: `v15-active-hole-retest`
+- Worker script: `scripts/run_colab_v15_active_hole_retest_workflow.sh`
+- Retest report:
+  - `training_results/model_selection_reports/v15_active_hole_retest_20260620_082522_utc/active_hole_retest_report.md`
+- Drive backup:
+  - `/content/drive/MyDrive/Aberration-Simulation-Colab-Backups/v15_active_hole_retest_latest`
+- Rebuilt v15 checkpoint:
+  - `training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_20260620_060115_utc`
+
+The v15 active-hole-expanded model is not promoted as the general baseline
+because the old fixed validation/blind/stress benchmark regressed versus v13.
+However, the retest confirms that v15 repaired the searched active-hole
+regions.
+
+Matched active-hole retest (`n=39,896`):
+
+| active-hole metric | v13 RMSE | v15 RMSE | interpretation |
+|---|---:|---:|---|
+| weighted normalized abs error | `0.05791` | `0.04434` | v15 better |
+| overall mixed-unit abs error | `3.725` | `2.839` | v15 better |
+| S3 vector error | `15.84 um` | `13.49 um` | v15 better |
+| A3 vector error | `11.42 um` | `7.27 um` | v15 much better |
+| B2 vector error | `0.312 um` | `0.250 um` | v15 better |
+
+Earlier v13 top active-hole failures (`n=3,988`) are a harder selected
+subpopulation:
+
+| metric | v13 top-failure RMSE |
+|---|---:|
+| weighted normalized abs | `0.14255` |
+| overall mixed-unit abs | `9.30051` |
+| C1 | `10.93 nm` |
+| C3 | `0.0366 mm` |
+| A1 vector | `17.61 nm` |
+| B2 vector | `0.669 um` |
+| A2 vector | `0.653 um` |
+| S3 vector | `35.68 um` |
+| A3 vector | `30.73 um` |
+
+The exact v15 result on that same top-3,988 subset still needs a compact
+derived report from the full Drive retest artifacts. GitHub has only compact
+top-1000 comparison rows and per-run summaries, by artifact policy.
+
+Scientific conclusion:
+
+- The old fixed stress/hard benchmarks are not representative enough for the
+  full 12D coefficient space.
+- Active 12D hole search found subspaces not adequately covered by the previous
+  benchmark suite.
+- Pure active-hole training can repair holes but degrade old benchmark balance.
+- The next model-selection step should use a benchmark suite, not a single
+  fixed validation/stress split.
+
+Proposed v16 model-selection suite:
+
+| suite component | role |
+|---|---|
+| broad representative benchmark | estimates generalization over the expected 12D use domain |
+| frozen active-hole benchmark | tracks repair of known sparse/dense failure regions |
+| held-out new-hole challenge benchmark | prevents overfitting to the old active-hole set |
+| anchor/easy benchmark | prevents regression on one-coefficient and Uno-success regimes |
+
+Proposed suite score:
+
+```text
+score =
+  0.35 * broad_blind_stress_score
+  0.25 * active_hole_score
+  0.15 * new_hole_challenge_score
+  0.15 * hard_vector_score
+  0.10 * anchor_regression_penalty
+```
+
+Suggested v16 balanced expansion:
+
+| component | fraction |
+|---|---:|
+| known active-hole repair rows | `35%` |
+| newly searched hole candidates | `20%` |
+| broad coupled-full/coupled-sparse Sobol/LHS rows | `25%` |
+| benchmark-preserving anchors | `15%` |
+| one-coefficient/Uno-success sweeps | `5%` |
+
+Promotion rule for v16:
+
+- Improve active-hole metrics over v13.
+- Do not regress broad blind/stress by more than about `5%`.
+- Do not regress anchor/easy targets by more than `5-10%`.
+- Require gains to survive a held-out new-hole challenge set.
+
+See also:
+
+- `docs/next_model_selection_strategy_20260620.md`
+- `docs/session_handoff_20260620.md`
+
 ## 2026-06-18 Active 12D Hole Search And v15 Preparation
 
 Current promoted baseline remains:

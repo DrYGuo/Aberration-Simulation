@@ -1,12 +1,12 @@
 # Current Project State
 
-Last updated: 2026-06-18
+Last updated: 2026-06-20
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `f95bb04`
+- Latest evaluated Colab result commit: `007d60f`
 - Documentation in this file reflects evaluated Colab results through the completed
-  active 12D hole-search loop and the prepared v15 active-hole expansion.
+  v15 active-hole retest.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
@@ -36,13 +36,12 @@ small plots, and concise reports.
 - Colab worker config: `experiments/colab_worker_model_loop.json`
 - Latest completed model-selection batch config: `configs/model_selection_batch_v13_1m_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
-- Prepared next Colab worker command:
-  - `scripts/run_colab_active_12d_hole_search_v1_workflow.sh`
-  - config id: `active-12d-expanded-search-cycle01`
+- Latest completed Colab worker command:
+  - `scripts/run_colab_v15_active_hole_retest_workflow.sh`
+  - config id: `v15-active-hole-retest`
   - cycles: `10`
-  - mode: first cycles collect expanded active failed-region holes; later cycles
-    can switch to `scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh`
-    to generate/train from the latest collected failed-region subspaces.
+  - mode: restored v15 active-hole-expanded data, rebuilt/saved the v15 seed23
+    checkpoint if needed, and retested restored active-hole probe features.
 - Latest completed model-selection batch results:
   - `training_results/model_selection_batches/v13_1m_d66_20260615_042743_utc/batch_summary.csv`
 - Latest completed 1M expansion config:
@@ -53,6 +52,11 @@ small plots, and concise reports.
   - `training_results/model_selection_reports/active_12d_hole_search_synthesis_20260618_033955_utc/active_12d_hole_search_synthesis_report.md`
 - Active failed-region error report:
   - `training_results/model_selection_reports/active_failed_region_error_report_20260618_043212_utc/active_failed_region_error_report.md`
+- Latest v15 active-hole retest:
+  - `training_results/model_selection_reports/v15_active_hole_retest_20260620_082522_utc/active_hole_retest_report.md`
+  - matched active-hole probes: `39,896`
+  - Drive backup: `/content/drive/MyDrive/Aberration-Simulation-Colab-Backups/v15_active_hole_retest_latest`
+  - rebuilt checkpoint: `training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_20260620_060115_utc`
 - Prepared v15 active-hole expansion config:
   - `configs/targeted_expansion_v15_active_hole_250k.json`
   - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
@@ -189,25 +193,36 @@ Current interpretation:
   - A3 vector MAE/RMSE/p95: `24.75 / 33.82 / 75.13 um`
   - A1 vector MAE/RMSE/p95: `17.41 / 22.12 / 44.31 nm`
   - weighted normalized MAE/p95: `0.142 / 0.342`
-- The prepared v15 expansion is a controlled data-only test:
+- The completed v15 expansion was a controlled data-only test:
   - parent: v13 1M CSV
-  - new rows: `250,000` training-only rows
-  - `30%` active failed-subspace jitter around physical cluster centers
-  - remaining rows: high-amplitude coupled-full, A1/B2/S3, A3/S3, B2/S3,
-    C3/A3/S3, sparse controls, and S3/A1 controls
+  - new rows: `250,000` training-only active-hole-targeted rows
   - fixed model: 66-feature grouped-head width `320`, seed `23`
-  - validation/blind/stress remain frozen benchmark-v2 rows.
-- The active-hole-expanded run is prepared for a 10-cycle Colab/Codex loop:
-  - cycle 1 starts with expanded active search using GA, far-NN,
-    high-amplitude bridge/alignment, residual jitter, Sobol/LHS, and bridge
-    anchors;
-  - `require_new_config_each_cycle=true`, so Colab waits for Codex to push the
-    next cycle config after each active-search result;
-  - final training should use
-    `scripts/run_colab_v15_active_hole_expanded_250k_workflow.sh`, which
-    regenerates the failed-region report from all available active-search
-    cycles and writes the runtime training-data config from the latest
-    failed-subspace spec.
+  - validation/blind/stress remained frozen benchmark-v2 rows.
+- v15 is **not promoted** as the general baseline because the fixed benchmark
+  validation/blind/stress metrics regressed relative to v13.
+- However, the v15 active-hole retest shows that the active-hole data did repair
+  the searched sparse/failure regions:
+  - matched active-hole probes: `39,896`
+  - weighted normalized active-hole RMSE: `0.05791 -> 0.04434`
+  - overall mixed-unit active-hole RMSE: `3.725 -> 2.839`
+  - S3 vector RMSE: `15.84 -> 13.49 um`
+  - A3 vector RMSE: `11.42 -> 7.27 um`
+  - B2 vector RMSE: `0.312 -> 0.250 um`
+- The earlier v13 top-failure table (`n=3,988`) is a different, harder
+  population than the full matched active-hole retest set:
+  - weighted normalized RMSE: `0.14255`
+  - overall mixed-unit RMSE: `9.30051`
+  - S3 vector RMSE: `35.68 um`
+  - A3 vector RMSE: `30.73 um`.
+  The exact v15-on-the-same-3,988-row top-failure subset requires a compact
+  derived report from the full Drive retest artifacts.
+- Current scientific conclusion:
+  - v15 repaired searched holes but damaged old fixed-benchmark balance.
+  - The old fixed stress/hard tests are not sufficiently representative of the
+    full 12D space.
+  - The next model-selection metric must combine a representative broad
+    benchmark with active-hole/hard-probe benchmarks and benchmark-preserving
+    anchor constraints.
 - The v10 structured-head architecture test is rejected:
   - weighted score worsened from v9 `0.03051` / `0.03069` to `0.03118` / `0.03155`
   - true hard-target normalized MAE worsened to `0.01584` / `0.01598`
