@@ -1,6 +1,6 @@
 {
-  "description": "Retest restored active-hole probe feature sets with the v15 active-hole expanded checkpoint. Rebuild the exact v15 checkpoint only if Drive/local checkpoint is absent; remaining cycles are idempotent no-op exits after the marker exists.",
-  "config_id": "v15-active-hole-retest",
+  "description": "Run report-only benchmark-suite scoring and exact v15-on-v13-top-failure diagnostics. No v16 training or data generation is launched; remaining cycles are idempotent no-op exits after the marker exists.",
+  "config_id": "benchmark-suite-scoring-v1",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_v15_active_hole_retest_workflow.sh"
+    "scripts/run_colab_benchmark_suite_scoring_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -94,6 +94,13 @@
     "training_results/model_selection_reports/v15_active_hole_retest_*/*summary.csv",
     "training_results/model_selection_reports/v15_active_hole_retest_*/active_hole_retest_top1000_probe_comparison.csv",
     "training_results/model_selection_reports/v15_active_hole_retest_*/*/active_hole_retest_summary.json",
+    "training_results/model_selection_reports/v15_top_failed_region_retest_*/*.md",
+    "training_results/model_selection_reports/v15_top_failed_region_retest_*/*.json",
+    "training_results/model_selection_reports/v15_top_failed_region_retest_*/*.csv",
+    "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.md",
+    "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.json",
+    "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.csv",
+    "configs/benchmark_suite_scoring_v1.json",
     "configs/targeted_expansion_v15_active_hole_250k.json",
     "configs/model_selection_batch_v15_active_hole_250k_d66.json",
     "configs/targeted_expansion_v15_active_hole_expanded_250k.json",

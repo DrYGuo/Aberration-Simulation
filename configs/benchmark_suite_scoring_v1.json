@@ -1,0 +1,31 @@
+{
+  "suite_id": "benchmark_suite_scoring_v1",
+  "description": "Model-selection suite combining broad fixed benchmarks, active-hole repair, future new-hole challenge, hard vector diagnostics, and anchor regression guards.",
+  "lower_is_better": true,
+  "weights": {
+    "broad_blind_stress_score": 0.35,
+    "active_hole_score": 0.25,
+    "new_hole_challenge_score": 0.15,
+    "hard_vector_score": 0.15,
+    "anchor_regression_penalty": 0.10
+  },
+  "score_definitions": {
+    "broad_blind_stress_score": "Mean over validation/blind/stress of 0.70 * overall_normalized_mae + 0.30 * overall_normalized_p95_abs_error.",
+    "active_hole_score": "Weighted normalized RMSE on frozen active-hole probes from active_hole_retest_summary.json.",
+    "new_hole_challenge_score": "Held-out newly searched holes; unavailable until frozen.",
+    "hard_vector_score": "Validation vector magnitude MAE normalized by vector scale for B2/S3/A3.",
+    "anchor_regression_penalty": "Mean relative regression versus baseline on C3, B2, A2, and easy/anchor-like benchmark behavior."
+  },
+  "gates": {
+    "broad_blind_stress_max_regression_fraction": 0.05,
+    "anchor_max_regression_fraction": 0.10,
+    "active_hole_must_improve": true,
+    "new_hole_challenge_required_for_final_promotion": true
+  },
+  "baseline_model": "v13",
+  "notes": [
+    "This suite is diagnostic until new_hole_challenge_score is frozen.",
+    "A model can win active-hole repair and still fail promotion if broad blind/stress or anchors regress.",
+    "Do not use this config to launch training; it is scoring/reporting only."
+  ]
+}
