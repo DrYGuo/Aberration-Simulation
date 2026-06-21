@@ -119,12 +119,12 @@ V2_SPLIT_MANIFEST="configs/benchmark_split_v12_v2_row_keys.json"
 V13_CSV=$(restore_csv_folder_from_drive \
   "v13 1M" \
   "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
   "training_results/feature_regression_enhanced")
 V13_RUN_DIR=$(restore_dir_from_drive \
   "v13 1M seed23 residual-NN metrics" \
   "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_* \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
   "training_results/model_selection_loop")
 SCORE_SUMMARY=$(ls -td training_results/model_selection_reports/benchmark_suite_scoring_v1_*/benchmark_suite_score_summary.json 2>/dev/null | head -1 || true)
 TOP_SUMMARY=$(ls -td training_results/model_selection_reports/v15_top_failed_region_retest_*/v15_top_failed_region_retest_summary.json 2>/dev/null | head -1 || true)
