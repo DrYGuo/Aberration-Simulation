@@ -1205,10 +1205,14 @@ Next benchmark direction:
 - Include:
   - broad fixed validation/blind/stress behavior,
   - previous active-hole repair,
-  - a held-out new-hole challenge not used for v15 training,
+  - a held-out `5,000`-probe new-hole challenge not used for v15 training,
+  - a broad `100,000`-probe fresh 12D representative validation design,
+  - frozen anchor/easy validation rows,
   - A1/B2/S3/A3 vector magnitude/orientation diagnostics,
   - anchor/easy-regime regression guards.
-- Do not train on the exact held-out new-hole probes.
+- Do not train on any benchmark rows.
+- Use v15 250K active-hole data only as training/diagnostic history, not as
+  validation.
 - Use new-hole benchmark results to decide whether v16 should prioritize
   balanced sampling, feature/model/loss changes, or measurement-geometry
   changes.
@@ -1217,6 +1221,7 @@ Prepared configs/scripts:
 
 - `configs/generalization_benchmark_v1.json`
 - `configs/active_12d_generalization_benchmark_v1.json`
+- `scripts/generate_generalization_benchmark_designs.py`
 - `scripts/prepare_generalization_benchmark_v1.py`
 - `scripts/run_colab_generalization_benchmark_v1_workflow.sh`
 
@@ -1224,6 +1229,7 @@ Queued Colab worker mode:
 
 - config id: `generalization-benchmark-v1-freeze`
 - command: `bash scripts/run_colab_generalization_benchmark_v1_workflow.sh`
-- action: proposal-only new-hole design plus benchmark manifest/report
+- action: proposal-only new-hole design, 100K broad representative validation
+  design, anchor/easy validation design, plus benchmark manifest/report
 - explicitly no v16 training, no simulation, and no model inference in this
   step

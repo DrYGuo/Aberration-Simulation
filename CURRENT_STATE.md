@@ -82,9 +82,15 @@ small plots, and concise reports.
 - Queued generalization benchmark v1 configs:
   - `configs/generalization_benchmark_v1.json`
   - `configs/active_12d_generalization_benchmark_v1.json`
+  - `scripts/generate_generalization_benchmark_designs.py`
   - goal: freeze held-out new-hole probes before v16 training so model
     selection prioritizes 12D generalization rather than only the old fixed
     validation/blind/stress split.
+  - held-out new-hole challenge: `5,000` probes
+  - broad representative validation: `100,000` fresh 12D probes
+  - anchor/easy validation: `5,000` rows
+  - v15 250K active-hole data remains training/diagnostic history only, not a
+    validation set.
 - Prepared v15 active-hole expansion config:
   - `configs/targeted_expansion_v15_active_hole_250k.json`
   - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
@@ -248,9 +254,10 @@ Current interpretation:
   - v15 repaired searched holes but damaged old fixed-benchmark balance.
   - Therefore v13 remains the promoted baseline.
   - The next step is not v16 training yet; it is freezing a broader
-    generalization benchmark with a held-out new-hole challenge that v15 did
-    not train on. After v13/v15 are evaluated on that benchmark, v16 sampling
-    should be designed from the benchmark failure pattern.
+    generalization benchmark with a held-out new-hole challenge, a 100K broad
+    12D representative validation design, and anchor/easy validation rows.
+    After v13/v15 are evaluated on that benchmark, v16 sampling should be
+    designed from the benchmark failure pattern.
   - The old fixed stress/hard tests are not sufficiently representative of the
     full 12D space.
   - The next model-selection metric must combine a representative broad

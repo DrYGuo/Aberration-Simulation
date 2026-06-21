@@ -12,21 +12,27 @@
   ],
   "components": {
     "broad_fixed_validation_blind_stress": {
-      "weight": 0.30,
+      "weight": 0.20,
       "role": "preserve broad fixed split generalization",
       "source": "metrics_model_loop.json validation/blind/stress",
       "train_on_this": false
     },
     "active_hole_repair": {
-      "weight": 0.20,
+      "weight": 0.15,
       "role": "ensure previously discovered v13 holes are repaired",
       "source": "v15_active_hole_retest plus v13 top active-failure retest",
       "train_on_this": false
     },
     "new_hole_challenge": {
-      "weight": 0.25,
+      "weight": 0.20,
       "role": "held-out new holes not used by v15 training",
       "source": "active_12d_generalization_benchmark_v1_new_holes selected_probe_design.csv",
+      "train_on_this": false
+    },
+    "broad_12d_representative_validation": {
+      "weight": 0.20,
+      "role": "large fresh representative validation design for the 12D coupled space",
+      "source": "broad_12d_representative_validation_v1 design CSV",
       "train_on_this": false
     },
     "hard_vector_diagnostics": {
@@ -64,8 +70,33 @@
     "do_not_use_for_training": true,
     "simulate_and_evaluate_later": true
   },
+  "broad_12d_representative_validation_policy": {
+    "probe_count": 100000,
+    "include_modes": [
+      "latin_hypercube_space_filling",
+      "coupled_full_random",
+      "coupled_sparse_random",
+      "moderate_bridge",
+      "high_vector_couplings",
+      "relative_angle_cases",
+      "anchor_easy_regimes"
+    ],
+    "do_not_use_for_training": true,
+    "simulate_and_evaluate_later": true
+  },
+  "anchor_easy_validation_policy": {
+    "probe_count": 5000,
+    "include_modes": [
+      "zero",
+      "one_coefficient_sweeps",
+      "weak_full_coupled"
+    ],
+    "do_not_use_for_training": true,
+    "simulate_and_evaluate_later": true
+  },
   "v16_training_policy_after_benchmark": {
     "start_only_after_new_hole_scores": true,
+    "v15_active_hole_250k_policy": "Use v15 250K only as training/diagnostic history, not as validation.",
     "recommended_mix_if_v15_overfits": {
       "broad_space_filling_12d": 0.55,
       "active_hole_repair_rows": 0.15,

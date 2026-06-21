@@ -144,8 +144,34 @@ if [ -z "$NEW_HOLE_DIR" ]; then
   exit 1
 fi
 
+write_stage "broad_and_anchor_designs"
+DESIGN_JSON=$(python3 scripts/generate_generalization_benchmark_designs.py \
+  --config "$BENCHMARK_CONFIG" \
+  --output-root training_results/model_selection_reports \
+  --broad-rows 100000 \
+  --anchor-rows 5000)
+echo "$DESIGN_JSON"
+BROAD_DIR=$(python3 - "$DESIGN_JSON" <<'PY'
+import json
+import sys
+print(json.loads(sys.argv[1])["broad_design_dir"])
+PY
+)
+ANCHOR_DIR=$(python3 - "$DESIGN_JSON" <<'PY'
+import json
+import sys
+print(json.loads(sys.argv[1])["anchor_design_dir"])
+PY
+)
+
 write_stage "freeze_benchmark"
-ARGS=(--config "$BENCHMARK_CONFIG" --new-hole-dir "$NEW_HOLE_DIR" --output-root training_results/model_selection_reports)
+ARGS=(
+  --config "$BENCHMARK_CONFIG"
+  --new-hole-dir "$NEW_HOLE_DIR"
+  --broad-dir "$BROAD_DIR"
+  --anchor-dir "$ANCHOR_DIR"
+  --output-root training_results/model_selection_reports
+)
 if [ -n "$SCORE_SUMMARY" ]; then
   ARGS+=(--benchmark-suite-summary "$SCORE_SUMMARY")
 fi
@@ -163,10 +189,12 @@ PY
 
 write_stage "drive_sync"
 sync_dir_to_drive "$NEW_HOLE_DIR"
+sync_dir_to_drive "$BROAD_DIR"
+sync_dir_to_drive "$ANCHOR_DIR"
 sync_dir_to_drive "$BENCHMARK_DIR"
 sync_dir_to_drive "colab_worker_logs"
 
-python3 - "$DONE_MARKER" "$NEW_HOLE_DIR" "$BENCHMARK_DIR" "$V13_CSV" "$V13_RUN_DIR" <<'PY'
+python3 - "$DONE_MARKER" "$NEW_HOLE_DIR" "$BROAD_DIR" "$ANCHOR_DIR" "$BENCHMARK_DIR" "$V13_CSV" "$V13_RUN_DIR" <<'PY'
 import json
 import sys
 from datetime import datetime, timezone
@@ -177,12 +205,14 @@ Path(sys.argv[1]).write_text(json.dumps({
     "created_utc": datetime.now(timezone.utc).isoformat(),
     "workflow": "scripts/run_colab_generalization_benchmark_v1_workflow.sh",
     "new_hole_design_dir": sys.argv[2],
-    "generalization_benchmark_dir": sys.argv[3],
-    "v13_csv": sys.argv[4],
-    "v13_run_dir": sys.argv[5],
+    "broad_representative_design_dir": sys.argv[3],
+    "anchor_easy_design_dir": sys.argv[4],
+    "generalization_benchmark_dir": sys.argv[5],
+    "v13_csv": sys.argv[6],
+    "v13_run_dir": sys.argv[7],
     "training_launched": False,
     "simulation_launched": False,
-    "next_step": "Simulate/evaluate the frozen new-hole design for v13 and v15, then populate new_hole_challenge_score before v16 training.",
+    "next_step": "Simulate/evaluate the frozen new-hole, broad representative, and anchor/easy designs for v13 and v15, then populate generalization benchmark scores before v16 training.",
 }, indent=2) + "\n")
 print("done marker:", sys.argv[1])
 PY
