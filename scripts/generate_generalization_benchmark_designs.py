@@ -62,6 +62,18 @@ def normalize_counts(counts: dict[str, int], total: int) -> dict[str, int]:
     return counts
 
 
+def counts_from_fractions(fractions: dict[str, float], total: int) -> dict[str, int]:
+    if total <= 0:
+        raise ValueError(f"row count must be positive, got {total}")
+    raw = {label: float(value) * total for label, value in fractions.items()}
+    counts = {label: int(np.floor(value)) for label, value in raw.items()}
+    remainder = total - sum(counts.values())
+    order = sorted(fractions, key=lambda label: raw[label] - counts[label], reverse=True)
+    for label in order[:remainder]:
+        counts[label] += 1
+    return normalize_counts(counts, total)
+
+
 def add_benchmark_metadata(rows: list[dict[str, Any]], *, version: str, source: str, role: str) -> None:
     for index, row in enumerate(rows):
         row["benchmark_probe_id"] = f"{version}_{index:06d}"
@@ -185,18 +197,18 @@ def write_summary_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def broad_generation_config(total_rows: int) -> dict[str, Any]:
-    counts = normalize_counts(
+    counts = counts_from_fractions(
         {
-            "coupled_full_random": 42000,
-            "coupled_sparse_random": 14000,
-            "coupled_A3_S3_random": 9000,
-            "coupled_B2_S3_random": 8000,
-            "coupled_A1_B2_S3_random": 7000,
-            "coupled_A1_S3_random": 6000,
-            "coupled_C3_A3_S3_random": 6000,
-            "coupled_A1_A2_B2_random": 3000,
-            "coupled_C1_C3_random": 2500,
-            "S3_high_random": 2500,
+            "coupled_full_random": 0.420,
+            "coupled_sparse_random": 0.140,
+            "coupled_A3_S3_random": 0.090,
+            "coupled_B2_S3_random": 0.080,
+            "coupled_A1_B2_S3_random": 0.070,
+            "coupled_A1_S3_random": 0.060,
+            "coupled_C3_A3_S3_random": 0.060,
+            "coupled_A1_A2_B2_random": 0.030,
+            "coupled_C1_C3_random": 0.025,
+            "S3_high_random": 0.025,
         },
         total_rows,
     )
@@ -254,17 +266,17 @@ def set_vector(row: dict[str, Any], group: str, amp: float, vector_angle: float)
 def anchor_easy_rows(seed: int, total_rows: int) -> list[dict[str, Any]]:
     rng = np.random.default_rng(seed)
     rows: list[dict[str, Any]] = []
-    counts = normalize_counts(
+    counts = counts_from_fractions(
         {
-            "anchor_zero": 200,
-            "anchor_C1_sweep": 600,
-            "anchor_C3_sweep": 400,
-            "anchor_A1_sweep": 600,
-            "anchor_B2_sweep": 600,
-            "anchor_A2_sweep": 500,
-            "anchor_S3_sweep": 800,
-            "anchor_A3_sweep": 800,
-            "anchor_weak_full_coupled": 500,
+            "anchor_zero": 0.04,
+            "anchor_C1_sweep": 0.12,
+            "anchor_C3_sweep": 0.08,
+            "anchor_A1_sweep": 0.12,
+            "anchor_B2_sweep": 0.12,
+            "anchor_A2_sweep": 0.10,
+            "anchor_S3_sweep": 0.16,
+            "anchor_A3_sweep": 0.16,
+            "anchor_weak_full_coupled": 0.10,
         },
         total_rows,
     )

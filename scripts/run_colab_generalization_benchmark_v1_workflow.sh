@@ -132,6 +132,80 @@ sync_dir_to_drive() {
   fi
 }
 
+preflight_inputs() {
+  python3 - "$ACTIVE_CONFIG" "$BENCHMARK_CONFIG" "$V2_SPLIT_MANIFEST" "$V13_CSV" "$V13_RUN_DIR" <<'PY'
+import csv
+import json
+import sys
+from pathlib import Path
+
+active_config = Path(sys.argv[1])
+benchmark_config = Path(sys.argv[2])
+split_manifest = Path(sys.argv[3])
+v13_csv = Path(sys.argv[4])
+v13_run_dir = Path(sys.argv[5])
+
+required_paths = {
+    "active search config": active_config,
+    "generalization benchmark config": benchmark_config,
+    "benchmark-v2 split manifest": split_manifest,
+    "v13 training feature CSV": v13_csv,
+    "v13 residual-NN run directory": v13_run_dir,
+    "active search script": Path("scripts/run_active_12d_hole_search.py"),
+    "benchmark design script": Path("scripts/generate_generalization_benchmark_designs.py"),
+    "benchmark freeze script": Path("scripts/prepare_generalization_benchmark_v1.py"),
+}
+missing = [f"{label}: {path}" for label, path in required_paths.items() if not path.exists()]
+if missing:
+    raise SystemExit("Missing required generalization-benchmark input(s):\n- " + "\n- ".join(missing))
+
+for label, path in (
+    ("active search config", active_config),
+    ("generalization benchmark config", benchmark_config),
+    ("benchmark-v2 split manifest", split_manifest),
+):
+    try:
+        with path.open() as handle:
+            json.load(handle)
+    except Exception as exc:
+        raise SystemExit(f"Could not parse {label} as JSON: {path}: {exc}") from exc
+
+with v13_csv.open(newline="") as handle:
+    reader = csv.reader(handle)
+    header = next(reader, None)
+if not header:
+    raise SystemExit(f"v13 training feature CSV has no header: {v13_csv}")
+required_columns = {
+    "sweep_label",
+    "C1",
+    "C3",
+    "A1_amp",
+    "A1_phase",
+    "B2_amp",
+    "B2_phase",
+    "A2_amp",
+    "A2_phase",
+    "S3_amp",
+    "S3_phase",
+    "A3_amp",
+    "A3_phase",
+}
+missing_columns = sorted(required_columns.difference(header))
+if missing_columns:
+    raise SystemExit(
+        f"v13 training feature CSV is missing required coefficient columns: {missing_columns}; "
+        f"path={v13_csv}"
+    )
+
+print("preflight ok:")
+print(f"  active_config={active_config}")
+print(f"  benchmark_config={benchmark_config}")
+print(f"  split_manifest={split_manifest}")
+print(f"  v13_csv={v13_csv}")
+print(f"  v13_run_dir={v13_run_dir}")
+PY
+}
+
 write_stage "restore_inputs"
 V2_SPLIT_MANIFEST="configs/benchmark_split_v12_v2_row_keys.json"
 restore_file_from_drive \
@@ -148,6 +222,7 @@ V13_RUN_DIR=$(restore_dir_from_drive \
   "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
   "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*" \
   "training_results/model_selection_loop")
+preflight_inputs
 SCORE_SUMMARY=$(ls -td training_results/model_selection_reports/benchmark_suite_scoring_v1_*/benchmark_suite_score_summary.json 2>/dev/null | head -1 || true)
 TOP_SUMMARY=$(ls -td training_results/model_selection_reports/v15_top_failed_region_retest_*/v15_top_failed_region_retest_summary.json 2>/dev/null | head -1 || true)
 
