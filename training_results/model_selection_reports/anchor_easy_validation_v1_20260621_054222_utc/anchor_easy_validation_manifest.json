@@ -1,0 +1,25 @@
+{
+  "status": "complete",
+  "created_utc": "2026-06-21T05:42:28.698204+00:00",
+  "design_name": "Anchor/Easy Validation v1",
+  "seed": 4118,
+  "row_count": 5000,
+  "train_on_this": false,
+  "selection_primary_metric": true,
+  "git_commit": "bd1c655",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "full_design_csv": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_design.csv",
+  "github_compact_head_csv": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_head1000.csv",
+  "github_compact_head_rows": 1000,
+  "summary_json": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_summary.json",
+  "summary_csv": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_label_summary.csv",
+  "large_artifact_policy": "Full design CSV is Drive-backed. GitHub should receive manifest, summary, report, and head sample only.",
+  "notes": [
+    "Frozen anchor/easy validation design to guard against over-specialized active-hole repair.",
+    "Includes zero, one-coefficient sweeps, and weak fully coupled cases.",
+    "Do not train on these exact rows."
+  ],
+  "manifest": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_manifest.json",
+  "report": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_report.md"
+}

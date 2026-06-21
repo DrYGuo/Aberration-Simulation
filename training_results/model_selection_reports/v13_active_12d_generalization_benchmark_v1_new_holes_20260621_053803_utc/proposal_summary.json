@@ -1,0 +1,66 @@
+{
+  "seed": 3101,
+  "selected_probe_count": 5000,
+  "reference_train_rows": 992556,
+  "reference_matrix_rows": 300000,
+  "nearest_neighbor_method": "sklearn",
+  "residual_seed_rows": 2000,
+  "mode_summaries": {
+    "genetic_algorithm": {
+      "raw_candidates": 3520,
+      "selected": 1200,
+      "nn_distance_median": 1.1524163484573364,
+      "score_median": 0.5445254445075989
+    },
+    "far_nn": {
+      "raw_candidates": 12857,
+      "selected": 950,
+      "nn_distance_median": 0.7812080085277557,
+      "score_median": 0.5186393558979034
+    },
+    "residual_jitter": {
+      "raw_candidates": 3400,
+      "selected": 850,
+      "nn_distance_median": 0.7682390809059143,
+      "score_median": 0.5073426961898804
+    },
+    "high_amp_oblique": {
+      "raw_candidates": 2250,
+      "selected": 750,
+      "nn_distance_median": 0.9609382152557373,
+      "score_median": 0.5407376289367676
+    },
+    "high_amp_bridge": {
+      "raw_candidates": 1500,
+      "selected": 500,
+      "nn_distance_median": 0.8413056135177612,
+      "score_median": 0.2003193497657776
+    },
+    "bridge_anchor": {
+      "raw_candidates": 12857,
+      "selected": 500,
+      "nn_distance_median": 0.5330030620098114,
+      "score_median": 0.1101941205561161
+    },
+    "sobol_lhs": {
+      "raw_candidates": 12857,
+      "selected": 250,
+      "nn_distance_median": 0.8464331030845642,
+      "score_median": 0.5479386150836945
+    }
+  },
+  "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc/selected_probe_design.csv",
+  "regime_counts": {
+    "coupled_full_random": 4953,
+    "coupled_sparse_random": 47
+  },
+  "proposal_mode_counts": {
+    "high_amp_bridge": 500,
+    "bridge_anchor": 500,
+    "genetic_algorithm": 1200,
+    "residual_jitter": 850,
+    "far_nn": 950,
+    "high_amp_oblique": 750,
+    "sobol_lhs": 250
+  }
+}

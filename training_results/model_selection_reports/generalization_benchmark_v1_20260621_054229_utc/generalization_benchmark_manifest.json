@@ -1,0 +1,121 @@
+{
+  "created_utc": "2026-06-21T05:42:30.112729+00:00",
+  "benchmark_id": "generalization_benchmark_v1",
+  "description": "Frozen model-selection benchmark for 12D aberration-regression generalization. This is diagnostic/test data only and must not be used as training data.",
+  "output_dir": "training_results/model_selection_reports/generalization_benchmark_v1_20260621_054229_utc",
+  "config": "configs/generalization_benchmark_v1.json",
+  "train_on_this": false,
+  "selection_primary_metric": true,
+  "diagnostic_only_until_new_hole_scores_exist": true,
+  "baseline_model": "v13_1m_seed23_d66_grouped_head",
+  "new_hole_design_dir": "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc",
+  "new_hole_probe_count": 5000,
+  "broad_representative_design_dir": "training_results/model_selection_reports/broad_12d_representative_validation_v1_20260621_054222_utc",
+  "broad_representative_probe_count": 100000,
+  "anchor_easy_design_dir": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc",
+  "anchor_easy_probe_count": 5000,
+  "components": [
+    {
+      "component": "broad_fixed_validation_blind_stress",
+      "weight": 0.2,
+      "role": "preserve broad fixed split generalization",
+      "source": "metrics_model_loop.json validation/blind/stress",
+      "n_rows": "",
+      "status": "scored_for_v13_v15",
+      "train_on_this": false
+    },
+    {
+      "component": "active_hole_repair",
+      "weight": 0.15,
+      "role": "ensure previously discovered v13 holes are repaired",
+      "source": "v15_active_hole_retest plus v13 top active-failure retest",
+      "n_rows": 3988,
+      "status": "scored_for_v13_v15",
+      "train_on_this": false
+    },
+    {
+      "component": "new_hole_challenge",
+      "weight": 0.2,
+      "role": "held-out new holes not used by v15 training",
+      "source": "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc/selected_probe_design.csv",
+      "n_rows": 5000,
+      "status": "frozen_design_pending_simulation",
+      "train_on_this": false
+    },
+    {
+      "component": "broad_12d_representative_validation",
+      "weight": 0.2,
+      "role": "large fresh representative validation design for the 12D coupled space",
+      "source": "training_results/model_selection_reports/broad_12d_representative_validation_v1_20260621_054222_utc/broad_12d_representative_validation_design.csv",
+      "n_rows": 100000,
+      "status": "frozen_design_pending_simulation",
+      "train_on_this": false
+    },
+    {
+      "component": "hard_vector_diagnostics",
+      "weight": 0.15,
+      "role": "guard A3/S3/B2/A1 vector magnitude and angle failures",
+      "source": "vector_diagnostics.json and future new-hole vector diagnostics",
+      "n_rows": "",
+      "status": "partially_scored_for_fixed_splits",
+      "train_on_this": false
+    },
+    {
+      "component": "anchor_regression_guard",
+      "weight": 0.1,
+      "role": "prevent over-specialized active-hole repair from damaging easy/anchor regimes",
+      "source": "training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_design.csv",
+      "n_rows": 5000,
+      "status": "frozen_design_pending_simulation",
+      "train_on_this": false
+    },
+    {
+      "component": "current_available_score_v13",
+      "weight": "",
+      "role": "current diagnostic score before new-hole challenge",
+      "source": "benchmark_suite_scoring_v1",
+      "n_rows": "",
+      "status": "available_score=0.03580822013121358; promotable=True; gates=",
+      "train_on_this": false
+    },
+    {
+      "component": "current_available_score_v15",
+      "weight": "",
+      "role": "current diagnostic score before new-hole challenge",
+      "source": "benchmark_suite_scoring_v1",
+      "n_rows": "",
+      "status": "available_score=0.024439110976850743; promotable=False; gates=broad_blind_stress_regression;new_hole_challenge_missing_for_final_promotion",
+      "train_on_this": false
+    }
+  ],
+  "promotion_gates": {
+    "broad_fixed_max_regression_fraction": 0.05,
+    "anchor_max_regression_fraction": 0.08,
+    "active_hole_must_improve_vs_v13": true,
+    "new_hole_challenge_required": true,
+    "new_hole_challenge_must_beat_v13": true,
+    "new_hole_challenge_v15_overfit_guard": "future v16 must improve new holes without losing the broad fixed benchmark."
+  },
+  "v16_training_policy_after_benchmark": {
+    "start_only_after_new_hole_scores": true,
+    "v15_active_hole_250k_policy": "Use v15 250K only as training/diagnostic history, not as validation.",
+    "recommended_mix_if_v15_overfits": {
+      "broad_space_filling_12d": 0.55,
+      "active_hole_repair_rows": 0.15,
+      "new_hole_like_bridge_rows": 0.15,
+      "hard_vector_couplings": 0.1,
+      "anchor_easy_regimes": 0.05
+    },
+    "do_not_train_on_exact_new_hole_challenge_rows": true
+  },
+  "input_summaries": {
+    "benchmark_suite_summary": "training_results/model_selection_reports/benchmark_suite_scoring_v1_20260620_095844_utc/benchmark_suite_score_summary.json",
+    "top_failure_summary": "training_results/model_selection_reports/v15_top_failed_region_retest_20260620_095843_utc/v15_top_failed_region_retest_summary.json"
+  },
+  "files": {
+    "manifest": "training_results/model_selection_reports/generalization_benchmark_v1_20260621_054229_utc/generalization_benchmark_manifest.json",
+    "components": "training_results/model_selection_reports/generalization_benchmark_v1_20260621_054229_utc/generalization_benchmark_components.csv",
+    "scoring_policy": "training_results/model_selection_reports/generalization_benchmark_v1_20260621_054229_utc/generalization_benchmark_scoring_policy.json",
+    "report": "training_results/model_selection_reports/generalization_benchmark_v1_20260621_054229_utc/generalization_benchmark_report.md"
+  }
+}

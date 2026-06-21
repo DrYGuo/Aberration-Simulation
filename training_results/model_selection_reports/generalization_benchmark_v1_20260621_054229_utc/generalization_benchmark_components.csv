@@ -1,0 +1,9 @@
+component,weight,role,source,n_rows,status,train_on_this
+broad_fixed_validation_blind_stress,0.2,preserve broad fixed split generalization,metrics_model_loop.json validation/blind/stress,,scored_for_v13_v15,False
+active_hole_repair,0.15,ensure previously discovered v13 holes are repaired,v15_active_hole_retest plus v13 top active-failure retest,3988,scored_for_v13_v15,False
+new_hole_challenge,0.2,held-out new holes not used by v15 training,training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc/selected_probe_design.csv,5000,frozen_design_pending_simulation,False
+broad_12d_representative_validation,0.2,large fresh representative validation design for the 12D coupled space,training_results/model_selection_reports/broad_12d_representative_validation_v1_20260621_054222_utc/broad_12d_representative_validation_design.csv,100000,frozen_design_pending_simulation,False
+hard_vector_diagnostics,0.15,guard A3/S3/B2/A1 vector magnitude and angle failures,vector_diagnostics.json and future new-hole vector diagnostics,,partially_scored_for_fixed_splits,False
+anchor_regression_guard,0.1,prevent over-specialized active-hole repair from damaging easy/anchor regimes,training_results/model_selection_reports/anchor_easy_validation_v1_20260621_054222_utc/anchor_easy_validation_design.csv,5000,frozen_design_pending_simulation,False
+current_available_score_v13,,current diagnostic score before new-hole challenge,benchmark_suite_scoring_v1,,available_score=0.03580822013121358; promotable=True; gates=,False
+current_available_score_v15,,current diagnostic score before new-hole challenge,benchmark_suite_scoring_v1,,available_score=0.024439110976850743; promotable=False; gates=broad_blind_stress_regression;new_hole_challenge_missing_for_final_promotion,False

@@ -1,0 +1,90 @@
+{
+  "status": "partial",
+  "created_utc": "2026-06-21T05:39:08.089940+00:00",
+  "git_commit": "bd1c655",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "config": "configs/active_12d_generalization_benchmark_v1.json",
+  "v13_csv": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_20260615_021848_utc/training_features_enhanced.csv",
+  "v13_csv_sha256": "08c72ebb7941244c8420ac4c88dd96676dac16288e3bf395e08e67529a9de2ad",
+  "v13_run_dir": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_20260615_065556_utc",
+  "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json",
+  "output_dir": "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc",
+  "split_counts": {
+    "train": 992556,
+    "validation": 26977,
+    "blind": 27370,
+    "stress": 28097
+  },
+  "proposal_summary": {
+    "seed": 3101,
+    "selected_probe_count": 5000,
+    "reference_train_rows": 992556,
+    "reference_matrix_rows": 300000,
+    "nearest_neighbor_method": "sklearn",
+    "residual_seed_rows": 2000,
+    "mode_summaries": {
+      "genetic_algorithm": {
+        "raw_candidates": 3520,
+        "selected": 1200,
+        "nn_distance_median": 1.1524163484573364,
+        "score_median": 0.5445254445075989
+      },
+      "far_nn": {
+        "raw_candidates": 12857,
+        "selected": 950,
+        "nn_distance_median": 0.7812080085277557,
+        "score_median": 0.5186393558979034
+      },
+      "residual_jitter": {
+        "raw_candidates": 3400,
+        "selected": 850,
+        "nn_distance_median": 0.7682390809059143,
+        "score_median": 0.5073426961898804
+      },
+      "high_amp_oblique": {
+        "raw_candidates": 2250,
+        "selected": 750,
+        "nn_distance_median": 0.9609382152557373,
+        "score_median": 0.5407376289367676
+      },
+      "high_amp_bridge": {
+        "raw_candidates": 1500,
+        "selected": 500,
+        "nn_distance_median": 0.8413056135177612,
+        "score_median": 0.2003193497657776
+      },
+      "bridge_anchor": {
+        "raw_candidates": 12857,
+        "selected": 500,
+        "nn_distance_median": 0.5330030620098114,
+        "score_median": 0.1101941205561161
+      },
+      "sobol_lhs": {
+        "raw_candidates": 12857,
+        "selected": 250,
+        "nn_distance_median": 0.8464331030845642,
+        "score_median": 0.5479386150836945
+      }
+    },
+    "selected_probe_design_csv": "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_20260621_053803_utc/selected_probe_design.csv",
+    "regime_counts": {
+      "coupled_full_random": 4953,
+      "coupled_sparse_random": 47
+    },
+    "proposal_mode_counts": {
+      "high_amp_bridge": 500,
+      "bridge_anchor": 500,
+      "genetic_algorithm": 1200,
+      "residual_jitter": 850,
+      "far_nn": 950,
+      "high_amp_oblique": 750,
+      "sobol_lhs": 250
+    }
+  },
+  "simulation_manifest": {
+    "status": "skipped",
+    "reason": "simulation disabled or proposal-only"
+  },
+  "finished_utc": "2026-06-21T05:42:16.883082+00:00"
+}
