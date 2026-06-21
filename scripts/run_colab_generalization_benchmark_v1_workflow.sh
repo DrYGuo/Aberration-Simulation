@@ -98,6 +98,24 @@ restore_dir_from_drive() {
   printf '%s\n' "$dest_dir"
 }
 
+restore_file_from_drive() {
+  local label="$1"
+  local local_path="$2"
+  local drive_glob="$3"
+  if [ -f "$local_path" ]; then
+    return 0
+  fi
+  local found
+  found=$(ls -td $drive_glob 2>/dev/null | head -1 || true)
+  if [ -z "$found" ]; then
+    echo "Could not find $label locally or in Drive backup root: $DRIVE_BACKUP_ROOT" >&2
+    return 1
+  fi
+  echo "Restoring $label from Drive: $found" >&2
+  mkdir -p "$(dirname "$local_path")"
+  cp "$found" "$local_path"
+}
+
 sync_dir_to_drive() {
   local source="$1"
   local dest="$DRIVE_BACKUP_ROOT/$DRIVE_BACKUP_RUN_NAME/$source"
@@ -116,6 +134,10 @@ sync_dir_to_drive() {
 
 write_stage "restore_inputs"
 V2_SPLIT_MANIFEST="configs/benchmark_split_v12_v2_row_keys.json"
+restore_file_from_drive \
+  "benchmark-v2 split manifest" \
+  "$V2_SPLIT_MANIFEST" \
+  "$DRIVE_BACKUP_ROOT/*/configs/benchmark_split_v12_v2_row_keys.json"
 V13_CSV=$(restore_csv_folder_from_drive \
   "v13 1M" \
   "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
