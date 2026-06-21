@@ -1,6 +1,6 @@
 {
-  "description": "Freeze generalization benchmark v1: 5K held-out new-hole probes, 100K broad 12D representative validation rows, and 5K anchor/easy validation rows. No v16 training, simulation, or model inference is launched; remaining cycles are idempotent no-op exits after the marker exists.",
-  "config_id": "generalization-benchmark-v1-freeze",
+  "description": "Evaluate frozen generalization benchmark v1: simulate/extract features and run saved v13/v15 checkpoint inference on the 5K new-hole challenge, 100K broad 12D validation, and 5K anchor/easy validation. No v16 training.",
+  "config_id": "generalization-benchmark-v1-evaluation",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_generalization_benchmark_v1_workflow.sh"
+    "scripts/run_colab_generalization_benchmark_v1_evaluation_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
