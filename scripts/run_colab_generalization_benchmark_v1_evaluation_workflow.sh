@@ -175,57 +175,57 @@ write_stage "restore_inputs"
 restore_file_from_drive \
   "benchmark-v2 split manifest" \
   "$V2_SPLIT_MANIFEST" \
-  "$DRIVE_BACKUP_ROOT"/*/configs/benchmark_split_v12_v2_row_keys.json
+  "$DRIVE_BACKUP_ROOT/*/configs/benchmark_split_v12_v2_row_keys.json"
 
 V13_CSV=$(restore_csv_folder_from_drive \
   "v13 1M" \
   "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv" \
   "training_results/feature_regression_enhanced")
 
 V15_CSV=$(restore_csv_folder_from_drive \
   "v15 active-hole expanded 250k" \
   "training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/feature_regression_enhanced/enhanced_v15_active_hole_expanded_250k_*/training_features_enhanced.csv" \
   "training_results/feature_regression_enhanced")
 
 BENCHMARK_DIR=$(restore_dir_from_drive \
   "generalization benchmark v1 manifest" \
   "training_results/model_selection_reports/generalization_benchmark_v1_*/generalization_benchmark_manifest.json" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_reports/generalization_benchmark_v1_*/generalization_benchmark_manifest.json \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_reports/generalization_benchmark_v1_*/generalization_benchmark_manifest.json" \
   "training_results/model_selection_reports")
 BENCHMARK_MANIFEST="$BENCHMARK_DIR/generalization_benchmark_manifest.json"
 
 NEW_HOLE_DIR=$(restore_dir_from_drive \
   "generalization benchmark new-hole design" \
   "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/selected_probe_design.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/selected_probe_design.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/selected_probe_design.csv" \
   "training_results/model_selection_reports")
 NEW_HOLE_DESIGN="$NEW_HOLE_DIR/selected_probe_design.csv"
 
 BROAD_DIR=$(restore_dir_from_drive \
   "broad 12D representative validation design" \
   "training_results/model_selection_reports/broad_12d_representative_validation_v1_*/broad_12d_representative_validation_design.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_reports/broad_12d_representative_validation_v1_*/broad_12d_representative_validation_design.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_reports/broad_12d_representative_validation_v1_*/broad_12d_representative_validation_design.csv" \
   "training_results/model_selection_reports")
 BROAD_DESIGN="$BROAD_DIR/broad_12d_representative_validation_design.csv"
 
 ANCHOR_DIR=$(restore_dir_from_drive \
   "anchor/easy validation design" \
   "training_results/model_selection_reports/anchor_easy_validation_v1_*/anchor_easy_validation_design.csv" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_reports/anchor_easy_validation_v1_*/anchor_easy_validation_design.csv \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_reports/anchor_easy_validation_v1_*/anchor_easy_validation_design.csv" \
   "training_results/model_selection_reports")
 ANCHOR_DESIGN="$ANCHOR_DIR/anchor_easy_validation_design.csv"
 
 V13_RUN_DIR=$(restore_dir_from_drive \
   "v13 seed23 saved checkpoint run" \
   "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt" \
   "training_results/model_selection_loop")
 V15_RUN_DIR=$(restore_dir_from_drive \
   "v15 active-hole saved checkpoint run" \
   "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt" \
-  "$DRIVE_BACKUP_ROOT"/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt \
+  "$DRIVE_BACKUP_ROOT/*/training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_*/model_loop_candidate.pt" \
   "training_results/model_selection_loop")
 
 require_checkpoint "v13" "$V13_RUN_DIR"
