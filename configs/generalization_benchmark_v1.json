@@ -1,0 +1,78 @@
+{
+  "benchmark_id": "generalization_benchmark_v1",
+  "description": "Frozen model-selection benchmark for 12D aberration-regression generalization. This is diagnostic/test data only and must not be used as training data.",
+  "train_on_this": false,
+  "selection_primary_metric": true,
+  "diagnostic_only_until_new_hole_scores_exist": true,
+  "baseline_model": "v13_1m_seed23_d66_grouped_head",
+  "candidate_models": [
+    "v13_1m_seed23_d66_grouped_head",
+    "v15_active_hole_expanded_250k_seed23",
+    "future_v16_candidates"
+  ],
+  "components": {
+    "broad_fixed_validation_blind_stress": {
+      "weight": 0.30,
+      "role": "preserve broad fixed split generalization",
+      "source": "metrics_model_loop.json validation/blind/stress",
+      "train_on_this": false
+    },
+    "active_hole_repair": {
+      "weight": 0.20,
+      "role": "ensure previously discovered v13 holes are repaired",
+      "source": "v15_active_hole_retest plus v13 top active-failure retest",
+      "train_on_this": false
+    },
+    "new_hole_challenge": {
+      "weight": 0.25,
+      "role": "held-out new holes not used by v15 training",
+      "source": "active_12d_generalization_benchmark_v1_new_holes selected_probe_design.csv",
+      "train_on_this": false
+    },
+    "hard_vector_diagnostics": {
+      "weight": 0.15,
+      "role": "guard A3/S3/B2/A1 vector magnitude and angle failures",
+      "source": "vector_diagnostics.json and future new-hole vector diagnostics",
+      "train_on_this": false
+    },
+    "anchor_regression_guard": {
+      "weight": 0.10,
+      "role": "prevent over-specialized active-hole repair from damaging easy/anchor regimes",
+      "source": "C3/B2/A2/easy-target fixed-split diagnostics",
+      "train_on_this": false
+    }
+  },
+  "promotion_gates": {
+    "broad_fixed_max_regression_fraction": 0.05,
+    "anchor_max_regression_fraction": 0.08,
+    "active_hole_must_improve_vs_v13": true,
+    "new_hole_challenge_required": true,
+    "new_hole_challenge_must_beat_v13": true,
+    "new_hole_challenge_v15_overfit_guard": "future v16 must improve new holes without losing the broad fixed benchmark."
+  },
+  "new_hole_design_policy": {
+    "probe_count": 5000,
+    "include_modes": [
+      "genetic_algorithm",
+      "far_nn",
+      "residual_jitter",
+      "high_amp_oblique",
+      "high_amp_bridge",
+      "bridge_anchor",
+      "sobol_lhs"
+    ],
+    "do_not_use_for_training": true,
+    "simulate_and_evaluate_later": true
+  },
+  "v16_training_policy_after_benchmark": {
+    "start_only_after_new_hole_scores": true,
+    "recommended_mix_if_v15_overfits": {
+      "broad_space_filling_12d": 0.55,
+      "active_hole_repair_rows": 0.15,
+      "new_hole_like_bridge_rows": 0.15,
+      "hard_vector_couplings": 0.10,
+      "anchor_easy_regimes": 0.05
+    },
+    "do_not_train_on_exact_new_hole_challenge_rows": true
+  }
+}

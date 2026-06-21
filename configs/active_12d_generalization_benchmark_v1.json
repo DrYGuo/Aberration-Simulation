@@ -1,0 +1,99 @@
+{
+  "workflow_id": "active_12d_generalization_benchmark_v1_new_holes",
+  "run_prefix": "v13_active_12d_generalization_benchmark_v1_new_holes",
+  "description": "Proposal-only held-out new-hole challenge design for generalization benchmark v1. These probes are diagnostic/test candidates only and must not be used for v15/v16 training.",
+  "champion": {
+    "name": "v13 1M seed23 D66 grouped-head",
+    "run_glob": "training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v13_1m_d66_seed23_residual_nn_*",
+    "dataset_glob": "training_results/feature_regression_enhanced/enhanced_v13_1m_spacefill_*/training_features_enhanced.csv",
+    "benchmark_split_manifest": "configs/benchmark_split_v12_v2_row_keys.json"
+  },
+  "target_scales": {
+    "C1": 100.0,
+    "C3": 2.0,
+    "A1_x": 60.0,
+    "A1_y": 60.0,
+    "B2_x": 3.0,
+    "B2_y": 3.0,
+    "A2_x": 16.0,
+    "A2_y": 16.0,
+    "S3_x": 100.0,
+    "S3_y": 100.0,
+    "A3_x": 100.0,
+    "A3_y": 100.0
+  },
+  "proposal": {
+    "seed": 3101,
+    "selected_probe_count": 5000,
+    "candidate_pool_size": 90000,
+    "reference_sample_size": 300000,
+    "nearest_neighbor_chunk_size": 25000,
+    "top_residual_seed_count": 2000,
+    "high_amp_bridge_target_nn_distance": 0.70,
+    "mode_counts": {
+      "genetic_algorithm": 1200,
+      "far_nn": 950,
+      "residual_jitter": 850,
+      "high_amp_oblique": 750,
+      "high_amp_bridge": 500,
+      "bridge_anchor": 500,
+      "sobol_lhs": 250
+    },
+    "regime_weights": {
+      "coupled_full_random": 0.62,
+      "coupled_sparse_random": 0.08,
+      "coupled_A3_S3_random": 0.09,
+      "coupled_B2_S3_random": 0.07,
+      "coupled_C3_A3_S3_random": 0.05,
+      "coupled_A1_B2_S3_random": 0.05,
+      "coupled_A1_S3_random": 0.04
+    },
+    "genetic_algorithm": {
+      "population_size": 1536,
+      "generations": 44,
+      "elite_fraction": 0.16,
+      "mutation_probability": 0.22,
+      "mutation_scale": 0.12,
+      "immigrant_fraction": 0.12,
+      "fitness_weights": {
+        "nearest_neighbor_distance": 0.34,
+        "known_residual_similarity": 0.30,
+        "physical_relevance": 0.16,
+        "diversity_proxy": 0.14,
+        "boundary_penalty": 0.06
+      }
+    }
+  },
+  "simulation": {
+    "enabled": false,
+    "batch_base_cases": 192
+  },
+  "inference": {
+    "enabled": false,
+    "predict_batch_size": 65536
+  },
+  "classification": {
+    "failure_top_fraction": 0.15,
+    "coverage_limited_nn_quantile": 0.72,
+    "dense_failure_nn_quantile": 0.52
+  },
+  "recommended_plan": {
+    "future_dataset_name": "heldout_generalization_benchmark_v1",
+    "do_not_train_in_this_workflow": true,
+    "starting_policy": "Freeze new-hole challenge probes before training v16. Later simulate/evaluate v13 and v15 on this held-out design, then use the score to choose v16 sampling."
+  },
+  "artifact_policy": {
+    "github_lightweight_only": true,
+    "drive_backup_large_artifacts": true,
+    "do_not_push": [
+      "active_hole_search_probe_features.csv",
+      "*.pt",
+      "*.pth",
+      "*.ckpt",
+      "*.npy",
+      "*.npz",
+      "*.h5",
+      "*.zip"
+    ]
+  }
+}

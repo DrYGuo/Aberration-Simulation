@@ -4,9 +4,9 @@ Last updated: 2026-06-20
 
 ## Stable Commit
 
-- Latest evaluated Colab result commit: `007d60f`
+- Latest evaluated Colab result commit: `1929b28`
 - Documentation in this file reflects evaluated Colab results through the completed
-  v15 active-hole retest.
+  benchmark-suite scoring and exact v15-on-v13-top-failure retest.
 - Repository: `https://github.com/DrYGuo/Aberration-Simulation`
 - Branch: `main`
 
@@ -37,11 +37,17 @@ small plots, and concise reports.
 - Latest completed model-selection batch config: `configs/model_selection_batch_v13_1m_d66.json`
 - Current Colab worker config: `experiments/colab_worker_model_loop.json`
 - Latest completed Colab worker command:
-  - `scripts/run_colab_v15_active_hole_retest_workflow.sh`
-  - config id: `v15-active-hole-retest`
+  - `scripts/run_colab_benchmark_suite_scoring_workflow.sh`
+  - config id: `benchmark-suite-scoring-v1`
   - cycles: `10`
-  - mode: restored v15 active-hole-expanded data, rebuilt/saved the v15 seed23
-    checkpoint if needed, and retested restored active-hole probe features.
+  - mode: report-only benchmark-suite scoring and exact v15-on-v13-top-failure
+    diagnostics. No training was launched.
+- Current queued Colab worker command:
+  - `scripts/run_colab_generalization_benchmark_v1_workflow.sh`
+  - config id: `generalization-benchmark-v1-freeze`
+  - cycles: `10`
+  - mode: freeze a held-out new-hole probe design and generalization benchmark
+    v1. No v16 training, simulation, or inference is launched in this step.
 - Latest completed model-selection batch results:
   - `training_results/model_selection_batches/v13_1m_d66_20260615_042743_utc/batch_summary.csv`
 - Latest completed 1M expansion config:
@@ -57,6 +63,28 @@ small plots, and concise reports.
   - matched active-hole probes: `39,896`
   - Drive backup: `/content/drive/MyDrive/Aberration-Simulation-Colab-Backups/v15_active_hole_retest_latest`
   - rebuilt checkpoint: `training_results/model_selection_loop/D66_grouped_width320_lr6e-4_dropout0.075_v15_active_hole_expanded_250k_d66_seed23_checkpoint_rebuild_20260620_060115_utc`
+- Benchmark-suite scoring v1:
+  - `training_results/model_selection_reports/benchmark_suite_scoring_v1_20260620_095844_utc/benchmark_suite_score_report.md`
+  - available suite score: v13 `0.03581`, v15 `0.02444`
+  - promotion-gate winner: v13
+  - reason v15 is not promoted: broad blind/stress regression is `6.88%`,
+    exceeding the configured `5%` gate, and the new-hole challenge is not yet
+    frozen/scored.
+- Exact v15-on-v13-top-failure retest:
+  - `training_results/model_selection_reports/v15_top_failed_region_retest_20260620_095843_utc/v15_top_failed_region_retest_report.md`
+  - requested rows: `3,988`
+  - matched rows: `3,988`
+  - missing rows: `0`
+  - weighted normalized RMSE: `0.14255 -> 0.07639`
+  - overall mixed-unit RMSE: `9.3005 -> 5.0273`
+  - S3 vector RMSE: `35.68 -> 23.39 um`
+  - A3 vector RMSE: `30.73 -> 13.13 um`
+- Queued generalization benchmark v1 configs:
+  - `configs/generalization_benchmark_v1.json`
+  - `configs/active_12d_generalization_benchmark_v1.json`
+  - goal: freeze held-out new-hole probes before v16 training so model
+    selection prioritizes 12D generalization rather than only the old fixed
+    validation/blind/stress split.
 - Prepared v15 active-hole expansion config:
   - `configs/targeted_expansion_v15_active_hole_250k.json`
   - `configs/model_selection_batch_v15_active_hole_250k_d66.json`
@@ -218,6 +246,11 @@ Current interpretation:
   derived report from the full Drive retest artifacts.
 - Current scientific conclusion:
   - v15 repaired searched holes but damaged old fixed-benchmark balance.
+  - Therefore v13 remains the promoted baseline.
+  - The next step is not v16 training yet; it is freezing a broader
+    generalization benchmark with a held-out new-hole challenge that v15 did
+    not train on. After v13/v15 are evaluated on that benchmark, v16 sampling
+    should be designed from the benchmark failure pattern.
   - The old fixed stress/hard tests are not sufficiently representative of the
     full 12D space.
   - The next model-selection metric must combine a representative broad

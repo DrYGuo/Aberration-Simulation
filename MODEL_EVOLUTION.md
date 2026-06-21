@@ -1156,3 +1156,74 @@ Artifact policy:
   simulations should still be avoided. Cached datasets should be identified by
   coefficient case table, profile/focus settings, feature extractor version,
   target convention, and CSV SHA-256.
+
+## 2026-06-20: Benchmark-Suite Scoring And Generalization Pivot
+
+The benchmark-suite scoring and exact top-failure retest completed after the
+v15 active-hole-expanded run.
+
+Key result:
+
+- v13 remains the promoted baseline.
+- v15 repairs the searched active-hole regions strongly, but is not promoted
+  because it regresses the old broad fixed blind/stress benchmark.
+
+Exact v15-on-v13-top-failure retest:
+
+- subset: the exact `3,988` v13 active-hole top-failure rows
+- matched rows: `3,988`
+- missing rows: `0`
+- weighted normalized RMSE: `0.14255 -> 0.07639`
+- overall mixed-unit RMSE: `9.3005 -> 5.0273`
+- C1 RMSE: `10.93 -> 6.82 nm`
+- A1 vector RMSE: `17.61 -> 9.09 nm`
+- B2 vector RMSE: `0.669 -> 0.343 um`
+- S3 vector RMSE: `35.68 -> 23.39 um`
+- A3 vector RMSE: `30.73 -> 13.13 um`
+
+Benchmark-suite v1:
+
+- available score: v13 `0.03581`, v15 `0.02444`
+- promotion-gate winner: v13
+- v15 gate failure: broad blind/stress regression `6.88%`, above the `5%`
+  gate
+- new-hole challenge is still missing, so the suite remains diagnostic rather
+  than final.
+
+Interpretation:
+
+- The active-hole failure modes are learnable from the current feature family.
+- The v15 sampling distribution over-specialized enough to reduce broad
+  generalization.
+- The old fixed validation/blind/stress sets are not sufficient as the only
+  definition of generalization, but they still serve as anchor guards against
+  overfitting to discovered holes.
+
+Next benchmark direction:
+
+- Freeze `generalization_benchmark_v1` before v16 training.
+- Include:
+  - broad fixed validation/blind/stress behavior,
+  - previous active-hole repair,
+  - a held-out new-hole challenge not used for v15 training,
+  - A1/B2/S3/A3 vector magnitude/orientation diagnostics,
+  - anchor/easy-regime regression guards.
+- Do not train on the exact held-out new-hole probes.
+- Use new-hole benchmark results to decide whether v16 should prioritize
+  balanced sampling, feature/model/loss changes, or measurement-geometry
+  changes.
+
+Prepared configs/scripts:
+
+- `configs/generalization_benchmark_v1.json`
+- `configs/active_12d_generalization_benchmark_v1.json`
+- `scripts/prepare_generalization_benchmark_v1.py`
+- `scripts/run_colab_generalization_benchmark_v1_workflow.sh`
+
+Queued Colab worker mode:
+
+- config id: `generalization-benchmark-v1-freeze`
+- command: `bash scripts/run_colab_generalization_benchmark_v1_workflow.sh`
+- action: proposal-only new-hole design plus benchmark manifest/report
+- explicitly no v16 training, no simulation, and no model inference in this
+  step

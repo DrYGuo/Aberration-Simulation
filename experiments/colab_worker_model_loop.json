@@ -1,6 +1,6 @@
 {
-  "description": "Run report-only benchmark-suite scoring and exact v15-on-v13-top-failure diagnostics. No v16 training or data generation is launched; remaining cycles are idempotent no-op exits after the marker exists.",
-  "config_id": "benchmark-suite-scoring-v1",
+  "description": "Freeze generalization benchmark v1 and a held-out new-hole probe design. No v16 training, simulation, or model inference is launched; remaining cycles are idempotent no-op exits after the marker exists.",
+  "config_id": "generalization-benchmark-v1-freeze",
   "cycles": 10,
   "sleep_seconds": 0,
   "branch": "main",
@@ -12,7 +12,7 @@
   "commit_message_prefix": "Add Colab model-loop artifacts",
   "command": [
     "bash",
-    "scripts/run_colab_benchmark_suite_scoring_workflow.sh"
+    "scripts/run_colab_generalization_benchmark_v1_workflow.sh"
   ],
   "result_globs": [
     "configs/benchmark_split_v6_frozen_row_keys.json",
@@ -100,7 +100,19 @@
     "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.md",
     "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.json",
     "training_results/model_selection_reports/benchmark_suite_scoring_v1_*/*.csv",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/active_hole_search_report.md",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/active_hole_search_summary.json",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/active_hole_search_state.json",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/proposal_summary.json",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/simulation_manifest.json",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/inference_manifest.json",
+    "training_results/model_selection_reports/v13_active_12d_generalization_benchmark_v1_new_holes_*/selected_probe_design.csv",
+    "training_results/model_selection_reports/generalization_benchmark_v1_*/*.md",
+    "training_results/model_selection_reports/generalization_benchmark_v1_*/*.json",
+    "training_results/model_selection_reports/generalization_benchmark_v1_*/*.csv",
     "configs/benchmark_suite_scoring_v1.json",
+    "configs/generalization_benchmark_v1.json",
+    "configs/active_12d_generalization_benchmark_v1.json",
     "configs/targeted_expansion_v15_active_hole_250k.json",
     "configs/model_selection_batch_v15_active_hole_250k_d66.json",
     "configs/targeted_expansion_v15_active_hole_expanded_250k.json",
